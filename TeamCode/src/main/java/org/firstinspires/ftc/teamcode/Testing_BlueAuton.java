@@ -29,7 +29,9 @@ public class Testing_BlueAuton extends LinearOpMode {
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-        Pose2d startPose = new Pose2d(0,0, Math.toRadians(0));
+        Pose2d startPose = new Pose2d(12,56, Math.toRadians(270));
+
+        drive.setPoseEstimate(startPose);
 
         TrajectorySequence initialMove = drive.trajectorySequenceBuilder(startPose)
                 .forward(12) // Robot drives forward
@@ -69,7 +71,7 @@ public class Testing_BlueAuton extends LinearOpMode {
 
         waitForStart();
         if (opModeIsActive()){
-            /*switch (propLocation.getPropPos()){
+            switch (propLocation.getPropPos()){
                 case LEFT:
                     propPositionTrajectory = leftTraj;
                     break;
@@ -81,12 +83,10 @@ public class Testing_BlueAuton extends LinearOpMode {
                     break;
                 default:
                     propPositionTrajectory = centerTraj;
-            }*/
+            }
 
             drive.followTrajectorySequence(initialMove);
-            drive.followTrajectorySequence(leftTraj);
-
-            //drive.followTrajectorySequence(propPositionTrajectory);
+            drive.followTrajectorySequence(propPositionTrajectory);
         }
     }
     public class detectPropLocation {
