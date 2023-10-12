@@ -118,7 +118,7 @@ public class Testing_Auton_tfod extends LinearOpMode {
             "toothbrush",
     };
     private TfodProcessor tfod;
-    private VisionPortal visionPortal;
+    public VisionPortal visionPortal;
     detectPropLocation propLocation;
     enum SpikeMark {
         LEFT,
@@ -202,7 +202,26 @@ public class Testing_Auton_tfod extends LinearOpMode {
         /*
         Logic to detect, set, and return position of Prop
          */
-        private volatile SpikeMark propPos = CENTER; //default prop position
+        private SpikeMark identifyHorizontal() {
+            double x = 0; // Defaults to the left position
+            List<Recognition> currentRecognitions = tfod.getRecognitions();
+
+            for (Recognition recognition : currentRecognitions) {
+                if (recognition.getConfidence() > highestConf){
+                    highestConf = recognition.getConfidence();
+                    highestXDistance = recognition.getLeft();
+                    highestXDistanceLabel = recognition.getLabel();
+
+                    x = (recognition.getLeft() + recognition.getRight()) / 2 ;
+                }
+            }   // end for() loop
+            if (x < 227) {
+                return SpikeMark.LEFT;
+            } else if (x >= 227 && x <= 453) {
+                return SpikeMark.CENTER;
+            } else return SpikeMark.RIGHT; //defaults to RIGHT
+        }
+        private volatile SpikeMark propPos = identifyHorizontal(); //default prop position
         public SpikeMark getPropPos() {return propPos;}
     }
     private void initTfod() {
@@ -259,5 +278,4 @@ public class Testing_Auton_tfod extends LinearOpMode {
         }   // end for() loop
 
     }
-
 }
