@@ -18,7 +18,7 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
 
-@Autonomous(name = "Blue Backstage", group = "TestAuton")
+@Autonomous(name = "Blue Backstage TFOD TEST", group = "TestAuton")
 public class Testing_Auton_tfod extends LinearOpMode {
     float highestConf = 0;
     float highestXDistance = 0;
