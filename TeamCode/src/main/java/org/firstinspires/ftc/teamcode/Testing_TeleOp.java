@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.subsystems.Gripper;
 
 /**
  * This is a simple teleop routine for testing localization. Drive the robot around like a normal
@@ -26,6 +27,8 @@ public class Testing_TeleOp extends LinearOpMode {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        Gripper gripper = new Gripper(hardwareMap);
+
         waitForStart();
 
         while (!isStopRequested()) {
@@ -38,6 +41,7 @@ public class Testing_TeleOp extends LinearOpMode {
             );
 
             drive.update();
+            gripper.update(gamepad2.left_stick_y,gamepad2.right_bumper);
 
             Pose2d poseEstimate = drive.getPoseEstimate();
             telemetry.addData("x", poseEstimate.getX());
