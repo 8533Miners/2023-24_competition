@@ -1,17 +1,13 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.opMode;
 
-import static org.firstinspires.ftc.teamcode.Testing_BlueAuton.SpikeMark.CENTER;
-import static org.firstinspires.ftc.teamcode.Testing_BlueAuton.SpikeMark.LEFT;
-import static org.firstinspires.ftc.teamcode.Testing_BlueAuton.SpikeMark.RIGHT;
+import static org.firstinspires.ftc.teamcode.opMode.Testing_BlueAuton.SpikeMark.CENTER;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.trajectorysequence.sequencesegment.TrajectorySegment;
 
 @Autonomous(name = "Blue Backstage", group = "TestAuton")
 /*
