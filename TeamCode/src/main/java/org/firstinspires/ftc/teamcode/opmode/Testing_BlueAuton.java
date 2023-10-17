@@ -1,6 +1,6 @@
-package org.firstinspires.ftc.teamcode.opMode;
+package org.firstinspires.ftc.teamcode.opmode;
 
-import static org.firstinspires.ftc.teamcode.opMode.Testing_BlueAuton.SpikeMark.CENTER;
+import static org.firstinspires.ftc.teamcode.opmode.Testing_BlueAuton.SpikeMark.CENTER;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
