@@ -137,9 +137,7 @@ public class Testing_Auton_tfod extends LinearOpMode {
         drive.setPoseEstimate(startPose);
 
         TrajectorySequence initialMove = drive.trajectorySequenceBuilder(startPose)
-                .forward(12) // Robot drives forward
-                .turn(Math.toRadians(-30)) // robot pivots
-                .waitSeconds(3) // do you Identify Prop
+                .strafeLeft(5)
                 .build();
 
         TrajectorySequence centerTraj = drive.trajectorySequenceBuilder(initialMove.end())
@@ -215,9 +213,9 @@ public class Testing_Auton_tfod extends LinearOpMode {
                     x = (recognition.getLeft() + recognition.getRight()) / 2 ;
                 }
             }   // end for() loop
-            if (x < 227) {
+            if (x < 320) {
                 return SpikeMark.LEFT;
-            } else if (x >= 227 && x <= 453) {
+            } else if (x >= 320) {
                 return SpikeMark.CENTER;
             } else return SpikeMark.RIGHT; //defaults to RIGHT
         }
