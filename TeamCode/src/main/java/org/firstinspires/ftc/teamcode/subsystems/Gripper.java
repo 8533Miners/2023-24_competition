@@ -21,10 +21,16 @@ public class Gripper {
         pusher.scaleRange(0.0,1.0);//PUSHER_MIN_PERCENT,PUSHER_MAX_PERCENT);
     }
 
-    public void update(float gripper_close_percent, boolean pusher_down) {
-        claw.setPosition(gripper_close_percent);
+    public void update(boolean clawOpen, boolean clawScore, boolean pusherDown) {
+        if (clawOpen) {
+            claw.setPosition(SubSystemConstants.ClawPosition.OPEN.getClawPosition());
+        } else if (clawScore) {
+            claw.setPosition(SubSystemConstants.ClawPosition.SCORE.getClawPosition());
+        } else {
+            claw.setPosition(SubSystemConstants.ClawPosition.CLOSED.getClawPosition());
+        }
 
-        if(pusher_down) {
+        if(pusherDown) {
             pusher.setPosition(PUSHER_DOWN_POSITION);
         } else {
             pusher.setPosition(PUSHER_UP_POSITION);

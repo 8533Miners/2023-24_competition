@@ -20,15 +20,15 @@ public class SubSystemConstants {
     }
     public enum ClawPosition {
         // Percent of claw servo range
-        OPEN(0),
-        CLOSED(100),
-        SCORE(40);
-        private final int clawPosition;
+        OPEN(0.0),
+        SCORE(0.575),
+        CLOSED(1.0);
+        private final double clawPosition;
 
-        ClawPosition(int clawPosition) {
+        ClawPosition(double clawPosition) {
             this.clawPosition = clawPosition;
         }
-        public int getClawPosition() {
+        public double getClawPosition() {
             return clawPosition;
         }
     }

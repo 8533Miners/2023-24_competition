@@ -27,10 +27,7 @@ public class Testing_Servo extends LinearOpMode {
         waitForStart();
 
         while (!isStopRequested()) {
-            gripper.update(gamepad2.left_stick_y,gamepad2.right_bumper);
-
+            gripper.update(gamepad2.dpad_up,gamepad2.dpad_down,gamepad2.right_bumper);
         }
-
-
     }
 }
