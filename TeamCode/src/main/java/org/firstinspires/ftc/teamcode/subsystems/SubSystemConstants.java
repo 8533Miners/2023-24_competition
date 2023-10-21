@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+
 public class SubSystemConstants {
 
     public enum PlacerHeight {
@@ -20,7 +22,7 @@ public class SubSystemConstants {
     }
     public enum ClawPosition {
         // Percent of claw servo range
-        OPEN(0.0),
+        OPEN(0.0), //TODO find value
         SCORE(0.575),
         CLOSED(1.0);
         private final double clawPosition;
@@ -32,4 +34,26 @@ public class SubSystemConstants {
             return clawPosition;
         }
     }
+
+    public enum EjectorPosition {
+        // Percent of ejector servo range
+        RETRACT(0.0),
+        CRADLE(0.74),
+        PUSH_FIRST(0.82),
+        PUSH_BOTH(0.86);
+        private final double ejectorPosition;
+        EjectorPosition(double ejectorPosition) {
+            this.ejectorPosition = ejectorPosition;
+        }
+        public double getEjectorPosition() {
+            return ejectorPosition;
+        }
+    }
+    public static final PIDFCoefficients ELEVTATOR_PIDF_COEF = new PIDFCoefficients(
+            1.0,
+            0.0,
+            1.0,
+            0.0
+    );
+
 }

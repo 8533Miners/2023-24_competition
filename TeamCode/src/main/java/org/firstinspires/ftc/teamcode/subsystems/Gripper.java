@@ -1,40 +1,67 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import org.firstinspires.ftc.teamcode.subsystems.SubSystemConstants.*;
 
+/*
+* Ideal Functions:
+* Ready to receive pixel (claw open, ejector retracted)
+* Stowed (claw closed, ejector retracted)
+* Transfer (claw closed, ejector cradled)
+* Score first pixel (claw score, ejector push first)
+* Score second pixel (claw score, ejector push both)
+* Return (claw open, ejector retracted) [currently the same as ready]
+*
+* Configurable Parameters:
+* Located in SubSystemConstants in:
+* ClawPosition
+* EjectorPosition
+*
+* Unintended Outputs:
+* Ejector keeps gripper from being fully returned
+* Ejector catches on claw when scoring pixel keeping the pixel from being pushed
+* Ejector catches on claw when going back to retracted
+*/
 public class Gripper {
     private Servo claw;
-    private Servo pusher;
-    private final double CLAW_MIN_PERCENT = 0.0;
-    private final double CLAW_MAX_PERCENT = 1.0;
-    private final double PUSHER_UP_POSITION = 0.0;
-    private final double PUSHER_DOWN_POSITION = 1.0;
-
-
+    private Servo ejector;
+    public enum GripperState {
+        READY(ClawPosition.OPEN,
+                EjectorPosition.RETRACT),
+        STOWED(ClawPosition.CLOSED,
+                EjectorPosition.RETRACT),
+        TRANSFER(ClawPosition.CLOSED,
+                EjectorPosition.CRADLE),
+        SCORE_FIRST(ClawPosition.SCORE,
+                EjectorPosition.PUSH_FIRST),
+        SCORE_SECOND(ClawPosition.SCORE,
+                EjectorPosition.PUSH_BOTH),
+        RETURN(ClawPosition.OPEN,
+                EjectorPosition.RETRACT);
+        public final double claw_pos;
+        public final double ejec_pos;
+        GripperState(ClawPosition claw_pos, EjectorPosition ejec_pos) {
+            this.claw_pos = claw_pos.getClawPosition();
+            this.ejec_pos = ejec_pos.getEjectorPosition();
+        }
+    }
     public Gripper(HardwareMap hardwareMap) {
         claw = hardwareMap.get(Servo.class, "claw");
-        pusher = hardwareMap.get(Servo.class, "pusher");
+        ejector = hardwareMap.get(Servo.class, "ejector"); //TODO update config name
 
+        //Unneeded when setting the MAX and MIN points with the REV servo programmer
         //claw.scaleRange(CLAW_MIN_PERCENT,CLAW_MAX_PERCENT);
-        pusher.scaleRange(0.0,1.0);//PUSHER_MIN_PERCENT,PUSHER_MAX_PERCENT);
+        //pusher.scaleRange(0.0,1.0);//PUSHER_MIN_PERCENT,PUSHER_MAX_PERCENT);
     }
 
-    public void update(boolean clawOpen, boolean clawScore, boolean pusherDown) {
-        if (clawOpen) {
-            claw.setPosition(SubSystemConstants.ClawPosition.OPEN.getClawPosition());
-        } else if (clawScore) {
-            claw.setPosition(SubSystemConstants.ClawPosition.SCORE.getClawPosition());
-        } else {
-            claw.setPosition(SubSystemConstants.ClawPosition.CLOSED.getClawPosition());
-        }
-
-        if(pusherDown) {
-            pusher.setPosition(PUSHER_DOWN_POSITION);
-        } else {
-            pusher.setPosition(PUSHER_UP_POSITION);
-        }
+    public void update(GripperState desired_state) {
+        /*
+         * TODO we may need to consider timing to reach desired state to correct for some
+         *  unintended states
+         */
+        claw.setPosition(desired_state.claw_pos);
+        ejector.setPosition(desired_state.ejec_pos);
     }
 
 }

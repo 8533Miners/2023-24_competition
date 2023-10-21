@@ -40,7 +40,7 @@ public class Testing_TeleOp extends LinearOpMode {
             );
 
             drive.update();
-            gripper.update(gamepad2.dpad_up,gamepad2.dpad_down,gamepad2.right_bumper);
+            //gripper.update(gamepad2.dpad_up,gamepad2.dpad_down,gamepad2.right_bumper);
 
             Pose2d poseEstimate = drive.getPoseEstimate();
             telemetry.addData("x", poseEstimate.getX());
