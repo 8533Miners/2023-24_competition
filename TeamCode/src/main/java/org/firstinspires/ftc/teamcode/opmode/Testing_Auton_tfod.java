@@ -1,6 +1,8 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.opmode;
 
-import static org.firstinspires.ftc.teamcode.Testing_Auton_tfod.SpikeMark.CENTER;
+import static org.firstinspires.ftc.teamcode.opmode.Testing_Auton_tfod.SpikeMark.CENTER;
+import static org.firstinspires.ftc.teamcode.opmode.Testing_Auton_tfod.SpikeMark.LEFT;
+import static org.firstinspires.ftc.teamcode.opmode.Testing_Auton_tfod.SpikeMark.RIGHT;
 
 import android.util.Size;
 
@@ -24,6 +26,7 @@ public class Testing_Auton_tfod extends LinearOpMode {
     float highestXDistance = 0;
     String highestXDistanceLabel = " ";
     public ElapsedTime runtime = new ElapsedTime();
+    public boolean propDetected = false;
     private static final String TFOD_MODEL_ASSET = "ssd_mobilenet_v2_320x320_coco17_tpu_8.tflite";
     private static final String[] LABELS = {
             "person",
@@ -141,30 +144,21 @@ public class Testing_Auton_tfod extends LinearOpMode {
                 .build();
 
         TrajectorySequence centerTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                .turn(Math.toRadians(30)) // rotate robot towards center
-                .forward(12)
-                .waitSeconds(3) // place purple pixel
+                .forward(20)
+                .waitSeconds(3) // place purple pixle
                 .turn(Math.toRadians(90)) // rotate towards backdrop
-                .forward(39)
+                .forward(28)
                 .waitSeconds(3) // place yellow pixel
                 .build();
 
         TrajectorySequence leftTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                .turn(Math.toRadians(30)) // rotate robot towards center
-                .forward(12)
-                .waitSeconds(3) // place purple pixel
-                .turn(Math.toRadians(90)) // rotate towards backdrop
-                .forward(39)
-                .waitSeconds(3) // place yellow pixel
+                .forward(6)
+                .strafeLeft(6)
                 .build();
 
         TrajectorySequence rightTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                .turn(Math.toRadians(30)) // rotate robot towards center
-                .forward(12)
-                .waitSeconds(3) // place purple pixel
-                .turn(Math.toRadians(90)) // rotate towards backdrop
-                .forward(39)
-                .waitSeconds(3) // place yellow pixel
+                .forward(6)
+                .strafeRight(6)
                 .build();
 
         TrajectorySequence propPositionTrajectory = null;
@@ -173,11 +167,36 @@ public class Testing_Auton_tfod extends LinearOpMode {
         waitForStart();
         if (opModeIsActive()){
             runtime.reset();
-            while (opModeIsActive() & runtime.seconds() < 5) { // move on if detection taking longer than 5 seconds.
+            drive.followTrajectorySequence(initialMove);
+            while (opModeIsActive() & propDetected == false & runtime.seconds() < 5) { // move on if detection taking longer than 5 seconds.
                 telemetryTfod();
                 telemetry.update();
+                propLocation.getPropPos();
+
             }
-            switch (propLocation.getPropPos()){
+
+            if (propPositionTrajectory != null){
+                drive.followTrajectorySequence(propPositionTrajectory);
+            }
+        visionPortal.close();
+    }
+    public class detectPropLocation {
+        /*
+        Logic to detect, set, and return position of Prop
+         */
+        private SpikeMark identifyHorizontal() {
+            double x = 0; // Defaults to the left position
+            List<Recognition> currentRecognitions = tfod.getRecognitions();
+
+            for (Recognition recognition : currentRecognitions) {
+                if (recognition.getConfidence() > highestConf & recognition.getLabel().equals("cup")){
+                    highestConf = recognition.getConfidence();
+                    propDetected = true;
+
+                    x = (recognition.getLeft() + recognition.getRight()) / 2 ;
+                }
+            }   // end for() loop
+            switch (propLocation.getPropPos()) {
                 case LEFT:
                     propPositionTrajectory = leftTraj;
                     break;
@@ -190,36 +209,16 @@ public class Testing_Auton_tfod extends LinearOpMode {
                 default:
                     propPositionTrajectory = centerTraj;
             }
-
-            //drive.followTrajectorySequence(initialMove);
-            //drive.followTrajectorySequence(propPositionTrajectory);
+            telemetry.addData("position", propLocation.getPropPos());
+            telemetry.update();
         }
-        visionPortal.close();
-    }
-    public class detectPropLocation {
-        /*
-        Logic to detect, set, and return position of Prop
-         */
-        private SpikeMark identifyHorizontal() {
-            double x = 0; // Defaults to the left position
-            List<Recognition> currentRecognitions = tfod.getRecognitions();
-
-            for (Recognition recognition : currentRecognitions) {
-                if (recognition.getConfidence() > highestConf){
-                    highestConf = recognition.getConfidence();
-                    highestXDistance = recognition.getLeft();
-                    highestXDistanceLabel = recognition.getLabel();
-
-                    x = (recognition.getLeft() + recognition.getRight()) / 2 ;
-                }
-            }   // end for() loop
             if (x < 320) {
-                return SpikeMark.LEFT;
+                return LEFT;
             } else if (x >= 320) {
-                return SpikeMark.CENTER;
-            } else return SpikeMark.RIGHT; //defaults to RIGHT
+                return CENTER;
+            } else return RIGHT; //defaults to RIGHT
         }
-        private volatile SpikeMark propPos = identifyHorizontal(); //default prop position
+        SpikeMark propPos = identifyHorizontal(); //default prop position
         public SpikeMark getPropPos() {return propPos;}
     }
     private void initTfod() {
