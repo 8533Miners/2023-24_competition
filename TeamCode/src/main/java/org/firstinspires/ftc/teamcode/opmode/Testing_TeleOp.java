@@ -22,6 +22,7 @@ public class Testing_TeleOp extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
+        final double ALLIANCE_HEADING_ADJUSTMENT = 0; //TODO this needs to change for red alliance
         boolean is_field_oriented = false;
         boolean left_bumper_prev = false;
 
@@ -29,7 +30,7 @@ public class Testing_TeleOp extends LinearOpMode {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        Gripper gripper = new Gripper(hardwareMap);
+        //Gripper gripper = new Gripper(hardwareMap);
 
         waitForStart();
 
@@ -41,14 +42,14 @@ public class Testing_TeleOp extends LinearOpMode {
             float controller_forward = -gamepad1.left_stick_y;
             float controller_strafe = -gamepad1.left_stick_x;
             float controller_rotation = -gamepad1.right_stick_x;
-            double robot_heading = drive.getExternalHeading();
+            double robot_heading = drive.getPoseEstimate().getHeading()+ALLIANCE_HEADING_ADJUSTMENT;
 
             Pose2d field_oriented;
             if(is_field_oriented) {
                 field_oriented = new Pose2d(
-                        ((Math.cos(robot_heading) * controller_forward) -
+                        ((Math.cos(robot_heading) * controller_forward) +
                                 (Math.sin(robot_heading) * controller_strafe)),
-                        ((Math.sin(robot_heading) * controller_forward) +
+                        ((Math.sin(robot_heading) * -controller_forward) +
                                 (Math.cos(robot_heading) * controller_strafe)),
                         (controller_rotation)
                 );
