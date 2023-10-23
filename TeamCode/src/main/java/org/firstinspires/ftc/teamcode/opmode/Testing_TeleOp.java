@@ -22,6 +22,9 @@ public class Testing_TeleOp extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
+        boolean is_field_oriented = false;
+        boolean left_bumper_prev = false;
+
         //drive is declared in the SampleMecanumDrive
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -31,13 +34,32 @@ public class Testing_TeleOp extends LinearOpMode {
         waitForStart();
 
         while (!isStopRequested()) {
-            drive.setWeightedDrivePower(
-                    new Pose2d(
-                            -gamepad1.left_stick_y,
-                            -gamepad1.left_stick_x,
-                            -gamepad1.right_stick_x
-                    )
-            );
+            boolean left_bumper_cur = gamepad1.left_bumper;
+            if(left_bumper_prev && !left_bumper_cur) {is_field_oriented = !is_field_oriented;}
+            left_bumper_prev = left_bumper_cur;
+
+            float controller_forward = -gamepad1.left_stick_y;
+            float controller_strafe = -gamepad1.left_stick_x;
+            float controller_rotation = -gamepad1.right_stick_x;
+            double robot_heading = drive.getExternalHeading();
+
+            Pose2d field_oriented;
+            if(is_field_oriented) {
+                field_oriented = new Pose2d(
+                        ((Math.cos(robot_heading) * controller_forward) -
+                                (Math.sin(robot_heading) * controller_strafe)),
+                        ((Math.sin(robot_heading) * controller_forward) +
+                                (Math.cos(robot_heading) * controller_strafe)),
+                        (controller_rotation)
+                );
+            } else {
+                field_oriented = new Pose2d(
+                        controller_forward,
+                        controller_strafe,
+                        controller_rotation
+                );
+            }
+            drive.setWeightedDrivePower(field_oriented);
 
             drive.update();
             //gripper.update(gamepad2.dpad_up,gamepad2.dpad_down,gamepad2.right_bumper);
@@ -46,6 +68,7 @@ public class Testing_TeleOp extends LinearOpMode {
             telemetry.addData("x", poseEstimate.getX());
             telemetry.addData("y", poseEstimate.getY());
             telemetry.addData("heading", poseEstimate.getHeading());
+            telemetry.addData("field_oriented", is_field_oriented);
             telemetry.update();
         }
 
