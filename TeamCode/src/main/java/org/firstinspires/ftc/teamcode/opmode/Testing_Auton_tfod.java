@@ -1,9 +1,5 @@
 package org.firstinspires.ftc.teamcode.opmode;
 
-import static org.firstinspires.ftc.teamcode.opmode.Testing_Auton_tfod.SpikeMark.CENTER;
-import static org.firstinspires.ftc.teamcode.opmode.Testing_Auton_tfod.SpikeMark.LEFT;
-import static org.firstinspires.ftc.teamcode.opmode.Testing_Auton_tfod.SpikeMark.RIGHT;
-
 import android.util.Size;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -14,19 +10,25 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.subsystems.vision.SpikeMark;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
+import org.firstinspires.ftc.teamcode.subsystems.vision.TFObjectPropDetect;
 
 import java.util.List;
 
 @Autonomous(name = "Blue Backstage TFOD TEST", group = "TestAuton")
 public class Testing_Auton_tfod extends LinearOpMode {
+    TFObjectPropDetect tfObjectPropDetect;
+    public int CAMERA_WIDTH = 640;
+    int CAMERA_HEIGHT = 480;
+    public String labelToDetect = "cup";
+    public boolean propDetected = false;
     float highestConf = 0;
     float highestXDistance = 0;
     String highestXDistanceLabel = " ";
     public ElapsedTime runtime = new ElapsedTime();
-    public boolean propDetected = false;
     private static final String TFOD_MODEL_ASSET = "ssd_mobilenet_v2_320x320_coco17_tpu_8.tflite";
     private static final String[] LABELS = {
             "person",
@@ -122,16 +124,11 @@ public class Testing_Auton_tfod extends LinearOpMode {
     };
     private TfodProcessor tfod;
     public VisionPortal visionPortal;
-    detectPropLocation propLocation;
-    enum SpikeMark {
-        LEFT,
-        CENTER,
-        RIGHT
-    }
+
     public void runOpMode() throws InterruptedException{
         initTfod();
 
-        propLocation = new detectPropLocation();
+        tfObjectPropDetect = new TFObjectPropDetect(tfod, CAMERA_WIDTH, labelToDetect);
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
@@ -144,21 +141,30 @@ public class Testing_Auton_tfod extends LinearOpMode {
                 .build();
 
         TrajectorySequence centerTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                .forward(20)
-                .waitSeconds(3) // place purple pixle
+                .turn(Math.toRadians(30)) // rotate robot towards center
+                .forward(12)
+                .waitSeconds(3) // place purple pixel
                 .turn(Math.toRadians(90)) // rotate towards backdrop
-                .forward(28)
+                .forward(39)
                 .waitSeconds(3) // place yellow pixel
                 .build();
 
         TrajectorySequence leftTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                .forward(6)
-                .strafeLeft(6)
+                .turn(Math.toRadians(30)) // rotate robot towards center
+                .forward(12)
+                .waitSeconds(3) // place purple pixel
+                .turn(Math.toRadians(90)) // rotate towards backdrop
+                .forward(39)
+                .waitSeconds(3) // place yellow pixel
                 .build();
 
         TrajectorySequence rightTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                .forward(6)
-                .strafeRight(6)
+                .turn(Math.toRadians(30)) // rotate robot towards center
+                .forward(12)
+                .waitSeconds(3) // place purple pixel
+                .turn(Math.toRadians(90)) // rotate towards backdrop
+                .forward(39)
+                .waitSeconds(3) // place yellow pixel
                 .build();
 
         TrajectorySequence propPositionTrajectory = null;
@@ -166,61 +172,38 @@ public class Testing_Auton_tfod extends LinearOpMode {
 
         waitForStart();
         if (opModeIsActive()){
-            runtime.reset();
             drive.followTrajectorySequence(initialMove);
-            while (opModeIsActive() & propDetected == false & runtime.seconds() < 5) { // move on if detection taking longer than 5 seconds.
+
+            runtime.reset();
+            while (opModeIsActive() & !propDetected & runtime.seconds() < 5) { // move on if detection taking longer than 5 seconds.
                 telemetryTfod();
                 telemetry.update();
-                propLocation.getPropPos();
-
+                switch (tfObjectPropDetect.getSpikeMark()){
+                    case NONE:
+                        propDetected = false;
+                        break;
+                    case LEFT:
+                        propPositionTrajectory = leftTraj;
+                        propDetected = true;
+                        break;
+                    case RIGHT:
+                        propPositionTrajectory = rightTraj;
+                        propDetected = true;
+                        break;
+                    case CENTER:
+                        propPositionTrajectory = centerTraj;
+                        propDetected = true;
+                        break;
+                    default:
+                        propPositionTrajectory = centerTraj;
+                }
             }
 
-            if (propPositionTrajectory != null){
-                drive.followTrajectorySequence(propPositionTrajectory);
-            }
+            drive.followTrajectorySequence(propPositionTrajectory);
+        }
         visionPortal.close();
     }
-    public class detectPropLocation {
-        /*
-        Logic to detect, set, and return position of Prop
-         */
-        private SpikeMark identifyHorizontal() {
-            double x = 0; // Defaults to the left position
-            List<Recognition> currentRecognitions = tfod.getRecognitions();
 
-            for (Recognition recognition : currentRecognitions) {
-                if (recognition.getConfidence() > highestConf & recognition.getLabel().equals("cup")){
-                    highestConf = recognition.getConfidence();
-                    propDetected = true;
-
-                    x = (recognition.getLeft() + recognition.getRight()) / 2 ;
-                }
-            }   // end for() loop
-            switch (propLocation.getPropPos()) {
-                case LEFT:
-                    propPositionTrajectory = leftTraj;
-                    break;
-                case RIGHT:
-                    propPositionTrajectory = rightTraj;
-                    break;
-                case CENTER:
-                    propPositionTrajectory = centerTraj;
-                    break;
-                default:
-                    propPositionTrajectory = centerTraj;
-            }
-            telemetry.addData("position", propLocation.getPropPos());
-            telemetry.update();
-        }
-            if (x < 320) {
-                return LEFT;
-            } else if (x >= 320) {
-                return CENTER;
-            } else return RIGHT; //defaults to RIGHT
-        }
-        SpikeMark propPos = identifyHorizontal(); //default prop position
-        public SpikeMark getPropPos() {return propPos;}
-    }
     private void initTfod() {
 
         tfod = new TfodProcessor.Builder()
@@ -236,7 +219,7 @@ public class Testing_Auton_tfod extends LinearOpMode {
 
         builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
 
-        builder.setCameraResolution(new Size(640, 480));
+        builder.setCameraResolution(new Size(CAMERA_WIDTH, CAMERA_HEIGHT));
 
         builder.enableLiveView(true);
 
