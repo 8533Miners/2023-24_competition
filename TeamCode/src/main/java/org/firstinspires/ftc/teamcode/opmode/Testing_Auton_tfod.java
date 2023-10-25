@@ -137,37 +137,40 @@ public class Testing_Auton_tfod extends LinearOpMode {
         drive.setPoseEstimate(startPose);
 
         TrajectorySequence initialMove = drive.trajectorySequenceBuilder(startPose)
-                .strafeLeft(5)
-                .build();
-
-        TrajectorySequence centerTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                .turn(Math.toRadians(30)) // rotate robot towards center
-                .forward(12)
-                .waitSeconds(3) // place purple pixel
-                .turn(Math.toRadians(90)) // rotate towards backdrop
-                .forward(39)
-                .waitSeconds(3) // place yellow pixel
+                .strafeLeft(4)
                 .build();
 
         TrajectorySequence leftTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                .turn(Math.toRadians(30)) // rotate robot towards center
-                .forward(12)
-                .waitSeconds(3) // place purple pixel
-                .turn(Math.toRadians(90)) // rotate towards backdrop
-                .forward(39)
-                .waitSeconds(3) // place yellow pixel
+                .strafeLeft(5)
+//                .turn(Math.toRadians(0)) // rotate robot towards center
+//                .forward(12)
+//                .waitSeconds(3) // place purple pixel
+//                .turn(Math.toRadians(90)) // rotate towards backdrop
+//                .forward(39)
+//                .waitSeconds(3) // place yellow pixel
+                .build();
+
+        TrajectorySequence centerTraj = drive.trajectorySequenceBuilder(initialMove.end())
+                .forward(5)
+//                .turn(Math.toRadians(30)) // rotate robot towards center
+//                .forward(12)
+//                .waitSeconds(3) // place purple pixel
+//                .turn(Math.toRadians(90)) // rotate towards backdrop
+//                .forward(39)
+//                .waitSeconds(3) // place yellow pixel
                 .build();
 
         TrajectorySequence rightTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                .turn(Math.toRadians(30)) // rotate robot towards center
-                .forward(12)
-                .waitSeconds(3) // place purple pixel
-                .turn(Math.toRadians(90)) // rotate towards backdrop
-                .forward(39)
-                .waitSeconds(3) // place yellow pixel
+                .strafeRight(10)
+//                .turn(Math.toRadians(60)) // rotate robot towards center
+//                .forward(12)
+//                .waitSeconds(3) // place purple pixel
+//                .turn(Math.toRadians(90)) // rotate towards backdrop
+//                .forward(39)
+//                .waitSeconds(3) // place yellow pixel
                 .build();
 
-        TrajectorySequence propPositionTrajectory = null;
+        TrajectorySequence propPositionTrajectory = rightTraj;
 
 
         waitForStart();
@@ -177,17 +180,15 @@ public class Testing_Auton_tfod extends LinearOpMode {
             runtime.reset();
             while (opModeIsActive() & !propDetected & runtime.seconds() < 5) { // move on if detection taking longer than 5 seconds.
                 telemetryTfod();
+                SpikeMark location = tfObjectPropDetect.getSpikeMark();
+                telemetry.addData("Spike Mark Location", location.toString());
                 telemetry.update();
-                switch (tfObjectPropDetect.getSpikeMark()){
+                switch (location){
                     case NONE:
                         propDetected = false;
                         break;
                     case LEFT:
                         propPositionTrajectory = leftTraj;
-                        propDetected = true;
-                        break;
-                    case RIGHT:
-                        propPositionTrajectory = rightTraj;
                         propDetected = true;
                         break;
                     case CENTER:

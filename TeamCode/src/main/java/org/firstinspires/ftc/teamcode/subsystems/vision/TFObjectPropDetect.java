@@ -31,12 +31,16 @@ public class TFObjectPropDetect {
                 x = (recognition.getLeft() + recognition.getRight()) / 2 ;
             }
         }
-        if (x < CAMERA_WIDTH/2) {
-            spikeMark = SpikeMark.LEFT;
-        } else if (x >= CAMERA_WIDTH/2) {
-            spikeMark = SpikeMark.CENTER;
-        } else spikeMark = SpikeMark.RIGHT; //defaults to RIGHT
 
+        if (currentRecognitions.size() >= 1) {
+            if (x < CAMERA_WIDTH/2) {
+                spikeMark = SpikeMark.LEFT;
+            } else {
+                spikeMark = SpikeMark.CENTER;
+            }
+        } else {
+            spikeMark = SpikeMark.NONE; //Defaults to RIGHT
+        }
         return spikeMark;
     }
 
