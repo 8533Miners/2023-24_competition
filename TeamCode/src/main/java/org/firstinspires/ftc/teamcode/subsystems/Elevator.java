@@ -3,7 +3,20 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-
+/*
+ * Ideal Functions:
+ * Seek elevator seeking a position
+ *
+ * Configurable Parameters:
+ * Located in SubSystemConstants in:
+ * ELEVTATOR_PIDF_COEF
+ * Located in Elevator:
+ * ELEVATOR_TARGET_POSITION_TOLERANCE
+ *
+ * Unintended Outputs:
+ * Elevator belt system jams
+ * Elevator Gripper jams when returning to stowed position
+ */
 public class Elevator {
     private DcMotorEx elevator_motor;
     private final int ELEVATOR_TARGET_POSITION_TOLERANCE = 0;//TODO
@@ -21,6 +34,5 @@ public class Elevator {
     public void update(int target_position) {
         elevator_motor.setTargetPosition(target_position);
     }
-
 
 }
