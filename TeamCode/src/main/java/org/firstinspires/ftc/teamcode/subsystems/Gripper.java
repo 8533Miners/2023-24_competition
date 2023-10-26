@@ -47,8 +47,8 @@ public class Gripper {
         }
     }
     public Gripper(HardwareMap hardwareMap) {
-        claw = hardwareMap.get(Servo.class, "claw");
-        ejector = hardwareMap.get(Servo.class, "ejector");
+        claw = hardwareMap.get(Servo.class, "claw_servo");
+        ejector = hardwareMap.get(Servo.class, "ejector_servo");
 
         //Unneeded when setting the MAX and MIN points with the REV servo programmer
         //claw.scaleRange(CLAW_MIN_PERCENT,CLAW_MAX_PERCENT);
@@ -58,7 +58,8 @@ public class Gripper {
     public void update(GripperState desired_state) {
         /*
          * TODO we may need to consider timing to reach desired state to correct for some
-         *  unintended states
+         *  unintended states if so we would keep track of current state and move towards
+         *  our desired state
          */
         claw.setPosition(desired_state.claw_pos);
         ejector.setPosition(desired_state.ejec_pos);
