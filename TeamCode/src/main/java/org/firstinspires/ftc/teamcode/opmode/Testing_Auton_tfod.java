@@ -1,6 +1,4 @@
-package org.firstinspires.ftc.teamcode;
-
-import static org.firstinspires.ftc.teamcode.Testing_Auton_tfod.SpikeMark.CENTER;
+package org.firstinspires.ftc.teamcode.opmode;
 
 import android.util.Size;
 
@@ -12,14 +10,21 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.subsystems.vision.SpikeMark;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
+import org.firstinspires.ftc.teamcode.subsystems.vision.TFObjectPropDetect;
 
 import java.util.List;
 
 @Autonomous(name = "Blue Backstage TFOD TEST", group = "TestAuton")
 public class Testing_Auton_tfod extends LinearOpMode {
+    TFObjectPropDetect tfObjectPropDetect;
+    public int CAMERA_WIDTH = 640;
+    int CAMERA_HEIGHT = 480;
+    public String labelToDetect = "cup";
+    public boolean propDetected = false;
     float highestConf = 0;
     float highestXDistance = 0;
     String highestXDistanceLabel = " ";
@@ -119,16 +124,11 @@ public class Testing_Auton_tfod extends LinearOpMode {
     };
     private TfodProcessor tfod;
     public VisionPortal visionPortal;
-    detectPropLocation propLocation;
-    enum SpikeMark {
-        LEFT,
-        CENTER,
-        RIGHT
-    }
+
     public void runOpMode() throws InterruptedException{
         initTfod();
 
-        propLocation = new detectPropLocation();
+        tfObjectPropDetect = new TFObjectPropDetect(tfod, CAMERA_WIDTH, labelToDetect);
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
@@ -137,91 +137,74 @@ public class Testing_Auton_tfod extends LinearOpMode {
         drive.setPoseEstimate(startPose);
 
         TrajectorySequence initialMove = drive.trajectorySequenceBuilder(startPose)
-                .strafeLeft(5)
-                .build();
-
-        TrajectorySequence centerTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                .turn(Math.toRadians(30)) // rotate robot towards center
-                .forward(12)
-                .waitSeconds(3) // place purple pixel
-                .turn(Math.toRadians(90)) // rotate towards backdrop
-                .forward(39)
-                .waitSeconds(3) // place yellow pixel
+                .strafeLeft(4)
                 .build();
 
         TrajectorySequence leftTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                .turn(Math.toRadians(30)) // rotate robot towards center
-                .forward(12)
-                .waitSeconds(3) // place purple pixel
-                .turn(Math.toRadians(90)) // rotate towards backdrop
-                .forward(39)
-                .waitSeconds(3) // place yellow pixel
+                .strafeLeft(5)
+//                .turn(Math.toRadians(0)) // rotate robot towards center
+//                .forward(12)
+//                .waitSeconds(3) // place purple pixel
+//                .turn(Math.toRadians(90)) // rotate towards backdrop
+//                .forward(39)
+//                .waitSeconds(3) // place yellow pixel
+                .build();
+
+        TrajectorySequence centerTraj = drive.trajectorySequenceBuilder(initialMove.end())
+                .forward(5)
+//                .turn(Math.toRadians(30)) // rotate robot towards center
+//                .forward(12)
+//                .waitSeconds(3) // place purple pixel
+//                .turn(Math.toRadians(90)) // rotate towards backdrop
+//                .forward(39)
+//                .waitSeconds(3) // place yellow pixel
                 .build();
 
         TrajectorySequence rightTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                .turn(Math.toRadians(30)) // rotate robot towards center
-                .forward(12)
-                .waitSeconds(3) // place purple pixel
-                .turn(Math.toRadians(90)) // rotate towards backdrop
-                .forward(39)
-                .waitSeconds(3) // place yellow pixel
+                .strafeRight(10)
+//                .turn(Math.toRadians(60)) // rotate robot towards center
+//                .forward(12)
+//                .waitSeconds(3) // place purple pixel
+//                .turn(Math.toRadians(90)) // rotate towards backdrop
+//                .forward(39)
+//                .waitSeconds(3) // place yellow pixel
                 .build();
 
-        TrajectorySequence propPositionTrajectory = null;
+        TrajectorySequence propPositionTrajectory = rightTraj;
 
 
         waitForStart();
         if (opModeIsActive()){
+            drive.followTrajectorySequence(initialMove);
+
             runtime.reset();
-            while (opModeIsActive() & runtime.seconds() < 5) { // move on if detection taking longer than 5 seconds.
+            while (opModeIsActive() & !propDetected & runtime.seconds() < 5) { // move on if detection taking longer than 5 seconds.
                 telemetryTfod();
+                SpikeMark location = tfObjectPropDetect.getSpikeMark();
+                telemetry.addData("Spike Mark Location", location.toString());
                 telemetry.update();
-            }
-            switch (propLocation.getPropPos()){
-                case LEFT:
-                    propPositionTrajectory = leftTraj;
-                    break;
-                case RIGHT:
-                    propPositionTrajectory = rightTraj;
-                    break;
-                case CENTER:
-                    propPositionTrajectory = centerTraj;
-                    break;
-                default:
-                    propPositionTrajectory = centerTraj;
+                switch (location){
+                    case NONE:
+                        propDetected = false;
+                        break;
+                    case LEFT:
+                        propPositionTrajectory = leftTraj;
+                        propDetected = true;
+                        break;
+                    case CENTER:
+                        propPositionTrajectory = centerTraj;
+                        propDetected = true;
+                        break;
+                    default:
+                        propPositionTrajectory = centerTraj;
+                }
             }
 
-            //drive.followTrajectorySequence(initialMove);
-            //drive.followTrajectorySequence(propPositionTrajectory);
+            drive.followTrajectorySequence(propPositionTrajectory);
         }
         visionPortal.close();
     }
-    public class detectPropLocation {
-        /*
-        Logic to detect, set, and return position of Prop
-         */
-        private SpikeMark identifyHorizontal() {
-            double x = 0; // Defaults to the left position
-            List<Recognition> currentRecognitions = tfod.getRecognitions();
 
-            for (Recognition recognition : currentRecognitions) {
-                if (recognition.getConfidence() > highestConf){
-                    highestConf = recognition.getConfidence();
-                    highestXDistance = recognition.getLeft();
-                    highestXDistanceLabel = recognition.getLabel();
-
-                    x = (recognition.getLeft() + recognition.getRight()) / 2 ;
-                }
-            }   // end for() loop
-            if (x < 320) {
-                return SpikeMark.LEFT;
-            } else if (x >= 320) {
-                return SpikeMark.CENTER;
-            } else return SpikeMark.RIGHT; //defaults to RIGHT
-        }
-        private volatile SpikeMark propPos = identifyHorizontal(); //default prop position
-        public SpikeMark getPropPos() {return propPos;}
-    }
     private void initTfod() {
 
         tfod = new TfodProcessor.Builder()
@@ -237,7 +220,7 @@ public class Testing_Auton_tfod extends LinearOpMode {
 
         builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
 
-        builder.setCameraResolution(new Size(640, 480));
+        builder.setCameraResolution(new Size(CAMERA_WIDTH, CAMERA_HEIGHT));
 
         builder.enableLiveView(true);
 

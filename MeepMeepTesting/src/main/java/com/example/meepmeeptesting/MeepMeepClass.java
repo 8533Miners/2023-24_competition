@@ -13,18 +13,18 @@ public class MeepMeepClass {
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(20, 30, Math.toRadians(180), Math.toRadians(180), 13.5)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(12, 56, Math.toRadians(270)))
-                                .forward(12) // Robot drives forward
-                                .turn(Math.toRadians(-30)) // robot pivots
+                        drive.trajectorySequenceBuilder(new Pose2d(17, 56, Math.toRadians(270)))
+                                .strafeLeft(5)
                                 .waitSeconds(3) // do you Identify Prop
-                                .turn(Math.toRadians(30)) // rotate robot towards center
-                                .forward(12)
+                                //.turn(Math.toRadians(30)) // rotate robot towards center
+                                .forward(20)
                                 .waitSeconds(3) // place purple pixle
                                 .turn(Math.toRadians(90)) // rotate towards backdrop
-                                .forward(39)
+                                .forward(28)
                                 .waitSeconds(3) // place yellow pixel
                                 .build()
                 );
+
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_CENTERSTAGE_JUICE_DARK)
                 .setDarkMode(true)
