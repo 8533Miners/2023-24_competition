@@ -47,8 +47,8 @@ public class Gripper {
         }
     }
     public Gripper(HardwareMap hardwareMap) {
-        claw = hardwareMap.get(Servo.class, "claw_servo");
-        ejector = hardwareMap.get(Servo.class, "ejector_servo");
+        claw = hardwareMap.get(Servo.class, "claw");
+        ejector = hardwareMap.get(Servo.class, "ejector");
 
         //Unneeded when setting the MAX and MIN points with the REV servo programmer
         //claw.scaleRange(CLAW_MIN_PERCENT,CLAW_MAX_PERCENT);

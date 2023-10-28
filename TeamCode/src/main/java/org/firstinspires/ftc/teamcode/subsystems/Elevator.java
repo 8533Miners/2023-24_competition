@@ -21,7 +21,7 @@ public class Elevator {
     private DcMotorEx elevator_motor;
     private final int ELEVATOR_TARGET_POSITION_TOLERANCE = 0;//TODO
     public Elevator(HardwareMap hardwareMap) {
-        elevator_motor = hardwareMap.get(DcMotorEx.class, "elevator_motor");
+        elevator_motor = hardwareMap.get(DcMotorEx.class, "elevator");
         elevator_motor.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION,
                 SubSystemConstants.ELEVTATOR_PIDF_COEF);
         elevator_motor.setTargetPositionTolerance(ELEVATOR_TARGET_POSITION_TOLERANCE);
