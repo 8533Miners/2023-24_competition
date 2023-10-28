@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 public class SubSystemConstants {
@@ -49,11 +50,10 @@ public class SubSystemConstants {
             return ejectorPosition;
         }
     }
-    public static final PIDFCoefficients ELEVTATOR_PIDF_COEF = new PIDFCoefficients(
+    public static final PIDCoefficients ELEVTATOR_PIDF_COEF = new PIDCoefficients(
             1.0,
             0.0,
-            1.0,
-            0.0
+            1.0
     );
 
 }

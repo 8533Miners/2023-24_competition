@@ -2,13 +2,15 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 public class Placer {
-    public final int PLACE_LEVEL_MAX = 10; //TODO
-    private final int ELEVATOR_STOWED = 0;//TODO
-    private final int PIXEL_HEIGHT = 0;//TODO
-    private final int BACKDROP_HEIGHT = 0;//TODO
-    private final int CLIMB_HEIGHT = 0;//TODO
-    private final int HANGING = 0;//TODO
+    public final int PLACE_LEVEL_MAX = 6;
+    private final int ELEVATOR_STOWED = 0;
+    private final int PIXEL_HEIGHT = 100;//TODO
+    private final int BACKDROP_HEIGHT = 1566;
+    private final int CLIMB_HEIGHT = 1964;
+    private final int HANGING = 1280;
     private Gripper gripper;
     private Elevator elevator;
     private Gripper.GripperState gripper_state = Gripper.GripperState.READY;
@@ -63,6 +65,9 @@ public class Placer {
         }
         gripper.update(new_gripper_state);
         elevator.update(new_elevator_position);
+    }
+    public void log(Telemetry tele){
+        elevator.log(tele);
     }
 
 }
