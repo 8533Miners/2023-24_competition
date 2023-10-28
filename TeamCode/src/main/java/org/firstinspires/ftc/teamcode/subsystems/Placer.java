@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Placer {
+    public final int PLACE_LEVEL_MAX = 10; //TODO
     private final int ELEVATOR_STOWED = 0;//TODO
     private final int PIXEL_HEIGHT = 0;//TODO
     private final int BACKDROP_HEIGHT = 0;//TODO

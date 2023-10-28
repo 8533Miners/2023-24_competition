@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 public class Robot {
@@ -15,6 +16,7 @@ public class Robot {
     private RobotState robot_state = RobotState.READY_TO_INTAKE;
     private boolean is_optr_dpad_up_prev = false;
     private boolean is_optr_dpad_dwn_prev = false;
+    private boolean is_place_second_pixel_command_prev = false;
     public enum RobotState {
         READY_TO_INTAKE,
         HOLDING_PIXELS,
@@ -29,7 +31,7 @@ public class Robot {
         drive = new SampleMecanumDrive(hardwareMap);
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
-    void updateTeleOp(Gamepad driver_controller, Gamepad operator_controller) {
+    void updateTeleOp(Gamepad driver_controller, Gamepad operator_controller, Telemetry telemetry) {
         Picker.PickerState new_picker_state;
         Placer.PlacerState new_placer_state;
 
@@ -69,6 +71,9 @@ public class Robot {
         boolean is_place_first_pixel_command = is_drv_a;
         boolean is_place_second_pixel_command = is_drv_y;
         boolean is_cancel_score_command = is_drv_b && is_optr_b;
+        //When is_place_second_pixel_command is let go from being active
+        boolean is_score_done_command = !is_place_second_pixel_command &&
+                                         is_place_second_pixel_command_prev;
 
         boolean is_prepare_to_climb_command = is_dvr_start;
         boolean is_climb_command = is_dvr_lft_trg && is_optr_lft_trg;
@@ -81,6 +86,7 @@ public class Robot {
         //Picker control
         //Driver has picker control since driving into pieces will be needed to intake
         //Picker is controlled independent of robot state
+        //TODO consider running intake when in the READY_TO_INTAKE state always and only
         //OUTAKE takes priority
         if(is_outake_command) {
             new_picker_state = Picker.PickerState.OUTAKE;
@@ -126,10 +132,11 @@ public class Robot {
                     new_placer_state = Placer.PlacerState.STOW;
                 }
             case READY_TO_SCORE:
-                if(is_place_level_increment_command) {
+                if(is_place_level_increment_command &&
+                        placer.place_level <= placer.PLACE_LEVEL_MAX) {
                     placer.place_level += 1;
                 }
-                if(is_place_level_decrement_command) {
+                if(is_place_level_decrement_command && placer.place_level >= 0) {
                     placer.place_level -= 1;
                 }
                 //Command to prepare climb take priority
@@ -138,12 +145,15 @@ public class Robot {
                     robot_state = RobotState.READY_TO_CLIMB;
                 } else if (is_cancel_score_command) {
                     //No easy way to use ejector cradle when returning b/c mechanical interference
+                    //TODO does canceling with 1 or 2 pixels cause mech. intf.
                     new_placer_state = Placer.PlacerState.STOW;
                     robot_state = RobotState.HOLDING_PIXELS;
                 } else if (is_place_first_pixel_command) {
                     new_placer_state = Placer.PlacerState.PLACE_FIRST;
                 } else if (is_place_second_pixel_command) {
                     new_placer_state = Placer.PlacerState.PLACE_SECOND;
+                } else if (is_score_done_command) {
+                    new_placer_state = Placer.PlacerState.READY_TO_INTAKE;
                 } else {
                     /* TODO
                      * May need to hold placer in scored state current logic
@@ -199,9 +209,12 @@ public class Robot {
         drone_launcher.update(is_drone_launch_command);
         drive.update();
 
-        //Insert telemetry here if applicable
+        telemetry.addData("robot_state", robot_state.toString());
+        telemetry.addData("place_level", placer.place_level);
+        telemetry.update();
 
         is_optr_dpad_up_prev = is_optr_dpad_up_cur;
         is_optr_dpad_dwn_prev = is_optr_dpad_dwn_cur;
+        is_place_second_pixel_command_prev = is_place_second_pixel_command;
     }
 }
