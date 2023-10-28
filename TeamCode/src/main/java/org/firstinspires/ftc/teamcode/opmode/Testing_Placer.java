@@ -22,6 +22,9 @@ public class Testing_Placer extends LinearOpMode {
         Placer placer = new Placer(hardwareMap);
         boolean button_up_prev = false;
         boolean button_down_prev = false;
+        boolean prev_a = false;
+        boolean prev_y = false;
+
         int state = 0;
         final int state_max = Placer.PlacerState.values().length;
         Placer.PlacerState desired_state;
@@ -31,6 +34,9 @@ public class Testing_Placer extends LinearOpMode {
         while (!isStopRequested()) {
             boolean temp_up = gamepad2.dpad_up;
             boolean temp_down = gamepad2.dpad_down;
+            boolean current_a = gamepad2.a;
+            boolean current_y = gamepad2.y;
+
 
             if(!temp_up && button_up_prev) {
                 state += 1;
@@ -42,6 +48,16 @@ public class Testing_Placer extends LinearOpMode {
             }
             button_down_prev = temp_down;
 
+            if (!current_a && prev_a && placer.place_level > 0) {
+                placer.place_level -= 1;
+            }
+            if (!current_y && prev_y && placer.place_level < placer.PLACE_LEVEL_MAX){
+                placer.place_level += 1;
+            }
+
+            prev_a = current_a;
+            prev_y = current_y;
+
             if(state < 0 ) {
                 state = 0;
             } else if (state > 5) {
@@ -49,6 +65,7 @@ public class Testing_Placer extends LinearOpMode {
             }
 
             telemetry.addData("state", state);
+            placer.log(telemetry);
             telemetry.update();
 
             switch(state) {
@@ -78,5 +95,6 @@ public class Testing_Placer extends LinearOpMode {
             placer.update(desired_state);
 
         }
+
     }
 }
