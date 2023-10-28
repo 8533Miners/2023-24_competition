@@ -22,7 +22,7 @@ public class Placer {
         READY_TO_CLIMB,
         HANG
     }
-    Placer(HardwareMap hardwareMap) {
+    public Placer(HardwareMap hardwareMap) {
         gripper = new Gripper(hardwareMap);
         elevator = new Elevator(hardwareMap);
     }
