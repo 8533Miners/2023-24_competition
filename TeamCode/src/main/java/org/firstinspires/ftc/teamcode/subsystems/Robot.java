@@ -24,14 +24,14 @@ public class Robot {
         READY_TO_CLIMB,
         HANGING
     }
-    Robot(HardwareMap hardwareMap) {
+    public Robot(HardwareMap hardwareMap) {
         picker = new Picker(hardwareMap);
         placer = new Placer(hardwareMap);
         drone_launcher = new DroneLauncher(hardwareMap);
         drive = new SampleMecanumDrive(hardwareMap);
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
-    void updateTeleOp(Gamepad driver_controller, Gamepad operator_controller, Telemetry telemetry) {
+    public void updateTeleOp(Gamepad driver_controller, Gamepad operator_controller, Telemetry telemetry) {
         Picker.PickerState new_picker_state;
         Placer.PlacerState new_placer_state;
 
