@@ -104,7 +104,7 @@ public class Robot {
             case READY_TO_INTAKE:
                 //Command to prepare climb take priority
                 if (is_prepare_to_climb_command) {
-                    //Hand from any state
+                    //Hang from any state
                     new_placer_state = Placer.PlacerState.READY_TO_CLIMB;
                     robot_state = RobotState.READY_TO_CLIMB;
                 } else if (is_hold_pixel_command) {
@@ -131,6 +131,7 @@ public class Robot {
                 } else {
                     new_placer_state = Placer.PlacerState.STOW;
                 }
+                break;//Forgetting this break was the bug
             case READY_TO_SCORE:
                 if(is_place_level_increment_command &&
                         placer.place_level <= placer.PLACE_LEVEL_MAX) {
