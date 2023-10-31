@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystems.SubSystemConstants.*;
 
 /*
@@ -63,6 +65,9 @@ public class Gripper {
          */
         claw.setPosition(desired_state.claw_pos);
         ejector.setPosition(desired_state.ejec_pos);
+    }
+
+    public void log(Telemetry tele) {
     }
 
 }

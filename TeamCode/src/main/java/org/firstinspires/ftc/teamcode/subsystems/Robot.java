@@ -204,6 +204,8 @@ public class Robot {
                 )
         );
 
+        telemetry.addData("Placer state", new_placer_state.toString());
+
         picker.update(new_picker_state);
         placer.update(new_placer_state);
         drone_launcher.update(is_drone_launch_command);
@@ -211,6 +213,7 @@ public class Robot {
 
         telemetry.addData("robot_state", robot_state.toString());
         telemetry.addData("place_level", placer.place_level);
+        placer.log(telemetry);
         telemetry.update();
 
         is_optr_dpad_up_prev = is_optr_dpad_up_cur;

@@ -68,6 +68,8 @@ public class Placer {
     }
     public void log(Telemetry tele){
         elevator.log(tele);
+        gripper.log(tele);
+        tele.addData("Gripper state", gripper_state.toString());
     }
 
 }
