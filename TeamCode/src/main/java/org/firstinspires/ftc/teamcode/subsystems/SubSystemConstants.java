@@ -23,7 +23,7 @@ public class SubSystemConstants {
     }
     public enum ClawPosition {
         // Percent of claw servo range
-        OPEN(0.0), //TODO find value
+        OPEN(0.50), //TODO find value
         SCORE(0.575),
         CLOSED(1.0);
         private final double clawPosition;
