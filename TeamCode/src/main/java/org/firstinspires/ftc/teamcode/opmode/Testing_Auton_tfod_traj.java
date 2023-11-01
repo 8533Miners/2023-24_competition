@@ -37,7 +37,7 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
     public VisionPortal visionPortal;
 
     // This variable should be dynamically set by the user interface selection, or we need to make 4x classes for each starting position
-    String startingGrid = "A2";
+    String startingGrid = "F2";
     boolean invertedDetection = false;
     int A4_starting_x = 16;
     int A4_starting_y = 62;
@@ -109,8 +109,11 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
 
         TrajectorySequence initialMove;
 
+        /*****************************
+         * Set Left Trajectories
+         * *****************************/
+
         TrajectorySequence leftTraj;
-        // Set Left Trajectories
         switch (startingGrid) {
             case "A4":
                 initialMove = drive.trajectorySequenceBuilder(startPose)
@@ -180,12 +183,16 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
                 break;
         }
 
+        /*****************************
+         * Set Center Trajectories
+         * *****************************/
+
         TrajectorySequence centerTraj;
-        // Set Center Trajectories
         switch (startingGrid) {
             case "A4":
                 centerTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                        .forward(28)
+                        .strafeRight(3)
+                        .forward(32)
                         .waitSeconds(3) // place purple pixel
                         .back(14)
                         .turn(Math.toRadians(90))
@@ -196,10 +203,10 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
                 break;
             case "A2":
                 centerTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                        .strafeLeft(2)
-                        .forward(28)
+                        .strafeLeft(3)
+                        .forward(32)
                         .waitSeconds(3) // place purple pixel
-                        .back(24)
+                        .back(30)
                         .turn(Math.toRadians(90))
                         .forward(84)
                         .waitSeconds(1) // place yellow pixel
@@ -208,7 +215,8 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
                 break;
             case "F4":
                 centerTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                        .forward(28)
+                        .strafeLeft(3)
+                        .forward(32)
                         .waitSeconds(3) // place purple pixel
                         .back(14)
                         .turn(Math.toRadians(-90))
@@ -220,7 +228,8 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
             case "F2":
             default:
                 centerTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                        .forward(28)
+                        .strafeRight(3)
+                        .forward(32)
                         .waitSeconds(3) // place purple pixel
                         .back(24)
                         .turn(Math.toRadians(-90))
@@ -230,6 +239,10 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
                         .build();
                 break;
         }
+
+        /*****************************
+         * Set Right Trajectories
+         * *****************************/
 
         TrajectorySequence rightTraj;
         // Set Right Trajectories
@@ -251,7 +264,7 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
                 break;
             case "A2":
                 rightTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                        .strafeRight(6)
+                        .strafeRight(2)
                         .forward(26)
                         .waitSeconds(3) // place purple pixel
                         .back(14)
@@ -264,7 +277,7 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
                 break;
             case "F4":
                 rightTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                        .strafeRight(8)
+                        .strafeRight(2)
                         .forward(26)
                         .waitSeconds(3) // place purple pixel
                         .back(12)
@@ -317,45 +330,34 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
                         propDetected = false;
                         break;
                     case LEFT:
-
                         trajectoryprint = "left";
                         propPositionTrajectory = leftTraj;
                         propDetected = true;
                         break;
                     case CENTER:
-
                         trajectoryprint = "center";
                         propPositionTrajectory = centerTraj;
                         propDetected = true;
                         break;
                     case RIGHT:
-
                         trajectoryprint = "right";
                         propPositionTrajectory = rightTraj;
                         propDetected = true;
+                        break;
                     default:
-                        if(invertedDetection==true) {
-
-                            trajectoryprint = "left";
-                            propPositionTrajectory = leftTraj;
-                        } else {
-
-                            trajectoryprint = "right";
-                            propPositionTrajectory = rightTraj;
-                        }
+                        trajectoryprint = "default";
+                        propPositionTrajectory = rightTraj;
+                        break;
                 }
             }
-
-            telemetry.addData("Spike Mark Location", location.toString());
-            telemetry.addData("Trajectory", trajectoryprint);
-            telemetry.update();
             drive.followTrajectorySequence(propPositionTrajectory);
         }
         visionPortal.close();
+        telemetry.addData("Spike Mark Location", location.toString());
+        telemetry.update();
     }
 
     private void initTfod() {
-
         tfod = new TfodProcessor.Builder()
                 .setModelAssetName(TFOD_MODEL_ASSET)
                 .setModelLabels(LABELS)
