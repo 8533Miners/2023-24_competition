@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystems.SubSystemConstants.*;
 
 /*
@@ -47,8 +49,8 @@ public class Gripper {
         }
     }
     public Gripper(HardwareMap hardwareMap) {
-        claw = hardwareMap.get(Servo.class, "claw_servo");
-        ejector = hardwareMap.get(Servo.class, "ejector_servo");
+        claw = hardwareMap.get(Servo.class, "claw");
+        ejector = hardwareMap.get(Servo.class, "ejector");
 
         //Unneeded when setting the MAX and MIN points with the REV servo programmer
         //claw.scaleRange(CLAW_MIN_PERCENT,CLAW_MAX_PERCENT);
@@ -63,6 +65,9 @@ public class Gripper {
          */
         claw.setPosition(desired_state.claw_pos);
         ejector.setPosition(desired_state.ejec_pos);
+    }
+
+    public void log(Telemetry tele) {
     }
 
 }

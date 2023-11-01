@@ -24,14 +24,14 @@ public class Robot {
         READY_TO_CLIMB,
         HANGING
     }
-    Robot(HardwareMap hardwareMap) {
+    public Robot(HardwareMap hardwareMap) {
         picker = new Picker(hardwareMap);
         placer = new Placer(hardwareMap);
         drone_launcher = new DroneLauncher(hardwareMap);
         drive = new SampleMecanumDrive(hardwareMap);
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
-    void updateTeleOp(Gamepad driver_controller, Gamepad operator_controller, Telemetry telemetry) {
+    public void updateTeleOp(Gamepad driver_controller, Gamepad operator_controller, Telemetry telemetry) {
         Picker.PickerState new_picker_state;
         Placer.PlacerState new_placer_state;
 
@@ -104,7 +104,7 @@ public class Robot {
             case READY_TO_INTAKE:
                 //Command to prepare climb take priority
                 if (is_prepare_to_climb_command) {
-                    //Hand from any state
+                    //Hang from any state
                     new_placer_state = Placer.PlacerState.READY_TO_CLIMB;
                     robot_state = RobotState.READY_TO_CLIMB;
                 } else if (is_hold_pixel_command) {
@@ -131,6 +131,7 @@ public class Robot {
                 } else {
                     new_placer_state = Placer.PlacerState.STOW;
                 }
+                break;//Forgetting this break was the bug
             case READY_TO_SCORE:
                 if(is_place_level_increment_command &&
                         placer.place_level <= placer.PLACE_LEVEL_MAX) {
@@ -204,6 +205,8 @@ public class Robot {
                 )
         );
 
+        telemetry.addData("Placer state", new_placer_state.toString());
+
         picker.update(new_picker_state);
         placer.update(new_placer_state);
         drone_launcher.update(is_drone_launch_command);
@@ -211,6 +214,7 @@ public class Robot {
 
         telemetry.addData("robot_state", robot_state.toString());
         telemetry.addData("place_level", placer.place_level);
+        placer.log(telemetry);
         telemetry.update();
 
         is_optr_dpad_up_prev = is_optr_dpad_up_cur;

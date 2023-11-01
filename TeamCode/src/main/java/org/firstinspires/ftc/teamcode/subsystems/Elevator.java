@@ -1,8 +1,17 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.acmerobotics.roadrunner.control.PIDCoefficients;
+import com.acmerobotics.roadrunner.control.PIDFController;
+import com.acmerobotics.roadrunner.profile.MotionProfile;
+import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
+import com.acmerobotics.roadrunner.profile.MotionState;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 /*
  * Ideal Functions:
  * Seek elevator seeking a position
@@ -19,22 +28,36 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
  */
 public class Elevator {
     private DcMotorEx elevator_motor;
-    private final int ELEVATOR_TARGET_POSITION_TOLERANCE = 0;//TODO
+    private PIDFController pidf_controller;
+
     public Elevator(HardwareMap hardwareMap) {
-        elevator_motor = hardwareMap.get(DcMotorEx.class, "elevator_motor");
-        elevator_motor.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION,
-                SubSystemConstants.ELEVTATOR_PIDF_COEF);
-        elevator_motor.setTargetPositionTolerance(ELEVATOR_TARGET_POSITION_TOLERANCE);
+        elevator_motor = hardwareMap.get(DcMotorEx.class, "elevator");
 
-        //Possibly get position
-        //Set initial seek position
-        //Possibly do some error checking
+        //TODO we need to reset elevator 0 here
 
-        elevator_motor.setMotorEnable();
+        elevator_motor.setMotorEnable();//TODO test removing this
+
+        pidf_controller = new PIDFController(
+                new PIDCoefficients(
+                        0.01,
+                        0.0,
+                        0.0)
+        );
+
+        pidf_controller.setOutputBounds(-0.5,0.5);
+        pidf_controller.setTargetPosition(0.0);
     }
 
     public void update(int target_position) {
-        elevator_motor.setTargetPosition(target_position);
+
+        elevator_motor.setTargetPosition(target_position);//TODO test removing this
+
+        pidf_controller.setTargetPosition(target_position);
+        elevator_motor.setPower(pidf_controller.update(elevator_motor.getCurrentPosition()));
+    }
+    public void log(Telemetry tele){
+        tele.addData("current encoder ticks", elevator_motor.getCurrentPosition());
+        tele.addData("current target position", pidf_controller.getTargetPosition());
     }
 
 }

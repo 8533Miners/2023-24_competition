@@ -14,8 +14,8 @@ public class Picker {
         HOLD
     }
     Picker(HardwareMap hardwareMap) {
-        left_motor = hardwareMap.get(DcMotorEx.class, "picker_left_motor");
-        right_motor = hardwareMap.get(DcMotorEx.class, "picker_right_motor");
+        left_motor = hardwareMap.get(DcMotorEx.class, "picker_left");
+        right_motor = hardwareMap.get(DcMotorEx.class, "picker_right");
         left_motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         right_motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         left_motor.setMotorEnable();
