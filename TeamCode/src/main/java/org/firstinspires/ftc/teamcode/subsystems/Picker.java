@@ -13,7 +13,7 @@ public class Picker {
         OUTAKE,
         HOLD
     }
-    Picker(HardwareMap hardwareMap) {
+    public Picker(HardwareMap hardwareMap) {
         left_motor = hardwareMap.get(DcMotorEx.class, "picker_left");
         right_motor = hardwareMap.get(DcMotorEx.class, "picker_right");
         left_motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -21,7 +21,7 @@ public class Picker {
         left_motor.setMotorEnable();
         right_motor.setMotorEnable();
     }
-    void update (PickerState desired_state) {
+    public void update (PickerState desired_state) {
         switch (desired_state) {
             case HOLD:
                 left_motor.setPower(0.0);
