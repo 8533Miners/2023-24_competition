@@ -13,11 +13,11 @@ public class MeepMeepClass {
         MeepMeep meepMeep = new MeepMeep(800);
         RoadRunnerBotEntity myBot;
 
-        //String spikeMark = "left";
+        String spikeMark = "left";
         //String spikeMark = "center";
-        String spikeMark = "right";
+        //String spikeMark = "right";
 
-        String startingGrid = "F2";
+        String startingGrid = "A4";
         int A4_starting_x = 16;
         int A4_starting_y = 62;
         int starting_heading_A = 270;
@@ -155,12 +155,8 @@ public class MeepMeepClass {
                                                 .forward(6)
                                                 .waitSeconds(1) // place yellow pixel
                                                 .back(6)
-                                                //.turn(Math.toRadians(-90))
                                                 .strafeLeft(24)
                                                 .forward(86)
-                                                //.back(14)
-                                                //.turn(Math.toRadians(-90))
-                                                //.forward(30)
                                                 .waitSeconds(1) // place yellow pixel
                                                 .waitSeconds(1) // park
                                                 .build()

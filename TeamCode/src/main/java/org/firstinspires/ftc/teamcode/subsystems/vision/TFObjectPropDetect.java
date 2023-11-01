@@ -21,7 +21,7 @@ public class TFObjectPropDetect {
         LABEL = label;
     }
 
-    public SpikeMark getSpikeMark() {
+    public SpikeMark getSpikeMark(boolean invertDetect) {
         List<Recognition> currentRecognitions = TFOD.getRecognitions();
 
         for (Recognition recognition : currentRecognitions) {
@@ -32,14 +32,26 @@ public class TFObjectPropDetect {
             }
         }
 
-        if (currentRecognitions.size() >= 1) {
-            if (x < CAMERA_WIDTH/2) {
-                spikeMark = SpikeMark.LEFT;
+        if(invertDetect==false) {
+            if (currentRecognitions.size() >= 1) {
+                if (x < CAMERA_WIDTH / 2) {
+                    spikeMark = SpikeMark.LEFT;
+                } else {
+                    spikeMark = SpikeMark.CENTER;
+                }
             } else {
-                spikeMark = SpikeMark.CENTER;
+                spikeMark = SpikeMark.NONE; //Defaults to RIGHT
             }
         } else {
-            spikeMark = SpikeMark.NONE; //Defaults to RIGHT
+            if (currentRecognitions.size() >= 1) {
+                if (x >= CAMERA_WIDTH / 2) {
+                    spikeMark = SpikeMark.RIGHT;
+                } else {
+                    spikeMark = SpikeMark.CENTER;
+                }
+            } else {
+                spikeMark = SpikeMark.NONE; //Defaults to RIGHT
+            }
         }
         return spikeMark;
     }

@@ -83,6 +83,7 @@ public class Testing_Auton_tfod extends LinearOpMode {
 
         TrajectorySequence propPositionTrajectory = rightTraj;
 
+        boolean invertedDetection = false;
 
         waitForStart();
         if (opModeIsActive()){
@@ -91,7 +92,7 @@ public class Testing_Auton_tfod extends LinearOpMode {
             runtime.reset();
             while (opModeIsActive() & !propDetected & runtime.seconds() < 5) { // move on if detection taking longer than 5 seconds.
                 telemetryTfod();
-                SpikeMark location = tfObjectPropDetect.getSpikeMark();
+                SpikeMark location = tfObjectPropDetect.getSpikeMark(invertedDetection);
                 telemetry.addData("Spike Mark Location", location.toString());
                 telemetry.update();
                 switch (location){
