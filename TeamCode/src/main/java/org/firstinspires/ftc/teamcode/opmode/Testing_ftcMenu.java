@@ -4,8 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.subsystems.menu.FtcMenu;
-import org.firstinspires.ftc.teamcode.subsystems.menu.HalDashboard;
-//import com.qualcomm.robotcore.robocol.TelemetryMessage;
+
 @Autonomous(name = "Testing FTC Menu", group = "TestAuton")
 
 public class Testing_ftcMenu extends LinearOpMode implements FtcMenu.MenuButtons {
@@ -27,28 +26,27 @@ public class Testing_ftcMenu extends LinearOpMode implements FtcMenu.MenuButtons
         NEAR_CENTER
     }
     private int delay = 0;
-    private HalDashboard halDashboard;
     private Alliance alliance = Alliance.RED_ALLIANCE;
     private StartPosition startPosition = StartPosition.LEFT;
     private ParkLocation parkLocation = ParkLocation.NEAR_WALL;
-    //private TelemetryMessage telemetryMessage;
 
     public void runOpMode() throws InterruptedException {
-        //telemetryMessage = new TelemetryMessage();
-        halDashboard = HalDashboard.getInstance(telemetry);
+        telemetry.setAutoClear(false);
 
-        while (opModeInInit())
+        while (!isStarted())
         {
             doMenus();
         }
-        while (opModeIsActive())
-        {
-            telemetry.addData("Alliance", alliance);
-            telemetry.addData("Start Position", startPosition);
-            telemetry.addData("Park Position", parkLocation);
-            telemetry.addData("Delay", delay);
-            telemetry.update();
-        }
+
+        waitForStart();
+
+        telemetry.clearAll();
+        telemetry.addData("Alliance", alliance);
+        telemetry.addData("Start Position", startPosition);
+        telemetry.addData("Park Position", parkLocation);
+        telemetry.addData("Delay", delay);
+        telemetry.update();
+
 
 
 
@@ -80,10 +78,10 @@ public class Testing_ftcMenu extends LinearOpMode implements FtcMenu.MenuButtons
     private void doMenus()
     {
 
-        FtcMenu allianceMenu = new FtcMenu("Alliance:", null, this);
-        FtcMenu positionMenu = new FtcMenu("Start Position:", allianceMenu, this);
-        FtcMenu parkMenu = new FtcMenu("Park Strategy:", positionMenu, this);
-        FtcMenu delayMenu = new FtcMenu("Start Delay", parkMenu, this);
+        FtcMenu allianceMenu = new FtcMenu( telemetry,"Alliance:", null, this);
+        FtcMenu positionMenu = new FtcMenu(telemetry,"Start Position:", allianceMenu, this);
+        FtcMenu parkMenu = new FtcMenu(telemetry,"Park Strategy:", positionMenu, this);
+        FtcMenu delayMenu = new FtcMenu(telemetry,"Start Delay", parkMenu, this);
 
 
 
@@ -110,7 +108,7 @@ public class Testing_ftcMenu extends LinearOpMode implements FtcMenu.MenuButtons
         parkLocation = (ParkLocation)parkMenu.getCurrentChoiceObject();
         delay = delayMenu.getCurrentChoice();
 
-        halDashboard.displayPrintf(4, "Selections: %s", allianceMenu.getCurrentChoiceText());
+        //halDashboard.displayPrintf(4, "Selections: %s", allianceMenu.getCurrentChoiceText());
     }
 }
 

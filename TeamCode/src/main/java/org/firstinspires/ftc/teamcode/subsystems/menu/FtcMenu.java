@@ -1,12 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems.menu;
 
 import java.util.ArrayList;
-
-
-
-
-
-
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 /**
  * This class implements a display menu system. It allows you to construct a
@@ -25,22 +20,20 @@ import java.util.ArrayList;
  */
 public class FtcMenu
 {
+    public static Telemetry telemetry;
+    public static final int MAX_NUM_TEXTLINES = 16;
     private static final String moduleName = "FtcMenu";
-
-
     private static final long LOOP_INTERVAL     = 50;
-
     private static final int MENUBUTTON_BACK    = (1 << 0);
     private static final int MENUBUTTON_ENTER   = (1 << 1);
     private static final int MENUBUTTON_UP      = (1 << 2);
     private static final int MENUBUTTON_DOWN    = (1 << 3);
 
     private static int prevButtonStates = 0;
-
-    private HalDashboard dashboard;
     private String menuTitle;
     private FtcMenu parent;
     private MenuButtons menuButtons;
+    private static FtcMenu currMenu = null;
     private ArrayList<String> choiceTextTable = new ArrayList<String>();
     private ArrayList<Object> choiceObjectTable = new ArrayList<Object>();
     private ArrayList<FtcMenu> childMenuTable = new ArrayList<FtcMenu>();
@@ -99,14 +92,14 @@ public class FtcMenu
      *               is pressed. If this is the root menu, it can be set to null.
      * @param menuButtons specifies the object that implements the MenuButtons interface.
      */
-    public FtcMenu(String menuTitle, FtcMenu parent, MenuButtons menuButtons)
+    public FtcMenu(Telemetry telemetry, String menuTitle, FtcMenu parent, MenuButtons menuButtons)
     {
         if (menuButtons == null || menuTitle == null)
         {
             throw new NullPointerException("menuTitle/menuButtons must be provided");
         }
 
-        dashboard = HalDashboard.getInstance();
+        this.telemetry = telemetry;
         this.menuTitle = menuTitle;
         this.parent = parent;
         this.menuButtons = menuButtons;
@@ -124,8 +117,6 @@ public class FtcMenu
      */
     public void addChoice(String choiceText, Object choiceObj, FtcMenu childMenu)
     {
-        final String funcName = "addChoice";
-
         choiceTextTable.add(choiceText);
         choiceObjectTable.add(choiceObj);
         childMenuTable.add(childMenu);
@@ -158,8 +149,6 @@ public class FtcMenu
      */
     public FtcMenu getParentMenu()
     {
-        final String funcName = "getParentMenu";
-
         return parent;
     }   //getParentMenu
 
@@ -170,8 +159,6 @@ public class FtcMenu
      */
     public String getTitle()
     {
-        final String funcName = "getTitle";
-
         return menuTitle;
     }   //getTitle
 
@@ -183,7 +170,6 @@ public class FtcMenu
      */
     public String getChoiceText(int choice)
     {
-        final String funcName = "getChoiceText";
         String text = null;
         int tableSize = choiceTextTable.size();
 
@@ -203,7 +189,6 @@ public class FtcMenu
      */
     public Object getChoiceObject(int choice)
     {
-        final String funcName = "getChoiceObject";
         Object obj = null;
         int tableSize = choiceObjectTable.size();
 
@@ -269,7 +254,6 @@ public class FtcMenu
      */
     public int getUserChoice()
     {
-        final String funcName = "getUserChoice";
         int choice = -1;
         boolean done = false;
 
@@ -322,7 +306,11 @@ public class FtcMenu
             // Refresh the display to show the choice movement.
             //
             displayMenu();
-            HalUtil.sleep(LOOP_INTERVAL);
+            try {
+                Thread.sleep(LOOP_INTERVAL);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         return choice;
@@ -353,7 +341,10 @@ public class FtcMenu
     {
         return getChoiceObject(getUserChoice());
     }   //getUserChoiceObject
-
+    public static void setRootMenu(FtcMenu rootMenu)
+    {
+        currMenu = rootMenu;
+    }
     /**
      * This method traverses the menu tree from the given root menu displaying each
      * menu and waiting for the user to select a choice. When the user makes a choice,
@@ -389,9 +380,9 @@ public class FtcMenu
             }
         }
         //
-        // We are done with the menus. Let's clear the dashboard.
+        // We are done with the menus
         //
-        HalDashboard.getInstance().clearDisplay();
+        telemetry.clearAll();
     }   //walkMenuTree
 
     /**
@@ -425,25 +416,31 @@ public class FtcMenu
      */
     private void displayMenu()
     {
-        final String funcName = "displayMenu";
 
         //
         // Determine the choice of the last display line on the dashboard.
         //
         int lastDisplayedChoice =
-                Math.min(firstDisplayedChoice + HalDashboard.MAX_NUM_TEXTLINES - 2,
+                Math.min(firstDisplayedChoice + MAX_NUM_TEXTLINES - 2,
                         choiceTextTable.size() - 1);
-        dashboard.clearDisplay();
-        dashboard.displayPrintf(0, menuTitle);
+        telemetry.clearAll();
+        telemetry.addLine(menuTitle);
+        //dashboard.displayPrintf(0, menuTitle);
+
         //
         // Display all the choices that will fit on the dashboard.
         //
         for (int i = firstDisplayedChoice; i <= lastDisplayedChoice; i++)
         {
-            dashboard.displayPrintf(
-                    i - firstDisplayedChoice + 1,
-                    i == currentChoice? ">>\t%s": "%s", choiceTextTable.get(i));
+            if (i == currentChoice)
+            {
+                telemetry.addData(" ", ">>\t%s", choiceTextTable.get(i));
+            } else
+            {
+                telemetry.addData("", "%s", choiceTextTable.get(i));
+            }
         }
+        telemetry.update();
     }   //displayMenu
 
     /**
@@ -467,14 +464,14 @@ public class FtcMenu
             }
 
             int lastDisplayedChoice =
-                    Math.min(firstDisplayedChoice + HalDashboard.MAX_NUM_TEXTLINES - 2,
+                    Math.min(firstDisplayedChoice + MAX_NUM_TEXTLINES - 2,
                             choiceTextTable.size() - 1);
             if (currentChoice > lastDisplayedChoice)
             {
                 //
                 // Scroll down.
                 //
-                firstDisplayedChoice = currentChoice - (HalDashboard.MAX_NUM_TEXTLINES - 2);
+                firstDisplayedChoice = currentChoice - (MAX_NUM_TEXTLINES - 2);
             }
         }
 
