@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.control.PIDFController;
 import com.acmerobotics.roadrunner.profile.MotionProfile;
 import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
 import com.acmerobotics.roadrunner.profile.MotionState;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -33,7 +34,8 @@ public class Elevator {
     public Elevator(HardwareMap hardwareMap) {
         elevator_motor = hardwareMap.get(DcMotorEx.class, "elevator");
 
-        //TODO we need to reset elevator 0 here
+        elevator_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        elevator_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         elevator_motor.setMotorEnable();//TODO test removing this
 
@@ -44,7 +46,7 @@ public class Elevator {
                         0.0)
         );
 
-        pidf_controller.setOutputBounds(-0.5,0.5);
+        pidf_controller.setOutputBounds(-1.0,1.0);
         pidf_controller.setTargetPosition(0.0);
     }
 

@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.subsystems.Picker;
 import org.firstinspires.ftc.teamcode.subsystems.vision.SpikeMark;
 import org.firstinspires.ftc.teamcode.subsystems.vision.TFObjectPropDetect;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
@@ -69,6 +70,7 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
     double trackWidth = 11.0;
     double robotLength = 16.0;
     double robotWidth = 13.5;
+    Picker picker = new Picker(hardwareMap);
 
     public void runOpMode() throws InterruptedException{
         // Just init to A4, but will set later
@@ -140,7 +142,13 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
                 leftTraj = drive.trajectorySequenceBuilder(initialMove.end())
                         .strafeLeft(8)
                         .forward(26)
-                        .waitSeconds(3) // place purple pixel
+                        .addDisplacementMarker(() -> { //start placing purple pixel
+                            picker.update(Picker.PickerState.OUTAKE);
+                        })
+                        .waitSeconds(1)
+                        .addDisplacementMarker(() -> { //stop placing purple pixel
+                            picker.update(Picker.PickerState.HOLD);
+                        })
                         .back(12)
                         .turn(Math.toRadians(90))
                         .forward(6)
@@ -159,7 +167,13 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
                         .forward(28)
                         .turn(Math.toRadians(90))
                         .forward(6)
-                        .waitSeconds(3) // place purple pixel
+                        .addDisplacementMarker(() -> { //start placing purple pixel
+                            picker.update(Picker.PickerState.OUTAKE);
+                        })
+                        .waitSeconds(1)
+                        .addDisplacementMarker(() -> { //stop placing purple pixel
+                            picker.update(Picker.PickerState.HOLD);
+                        })
                         .back(6)
                         .strafeLeft(24)
                         .forward(70)
@@ -177,7 +191,13 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
                         .forward(28)
                         .turn(Math.toRadians(90))
                         .forward(6)
-                        .waitSeconds(3) // place purple pixel
+                        .addDisplacementMarker(() -> { //start placing purple pixel
+                            picker.update(Picker.PickerState.OUTAKE);
+                        })
+                        .waitSeconds(1)
+                        .addDisplacementMarker(() -> { //stop placing purple pixel
+                            picker.update(Picker.PickerState.HOLD);
+                        })
                         .back(6)
                         .turn(Math.toRadians(-90))
                         .back(14)
@@ -197,7 +217,13 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
                 leftTraj = drive.trajectorySequenceBuilder(initialMove.end())
                         .strafeLeft(3)
                         .forward(26)
-                        .waitSeconds(3) // place purple pixel
+                        .addDisplacementMarker(() -> { //start placing purple pixel
+                            picker.update(Picker.PickerState.OUTAKE);
+                        })
+                        .waitSeconds(1)
+                        .addDisplacementMarker(() -> { //stop placing purple pixel
+                            picker.update(Picker.PickerState.HOLD);
+                        })
                         .back(14)
                         .turn(Math.toRadians(-90))
                         .strafeRight(7)
@@ -219,7 +245,13 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
                 centerTraj = drive.trajectorySequenceBuilder(initialMove.end())
                         .strafeRight(3)
                         .forward(32)
-                        .waitSeconds(3) // place purple pixel
+                        .addDisplacementMarker(() -> { //start placing purple pixel
+                            picker.update(Picker.PickerState.OUTAKE);
+                        })
+                        .waitSeconds(1)
+                        .addDisplacementMarker(() -> { //stop placing purple pixel
+                            picker.update(Picker.PickerState.HOLD);
+                        })
                         .back(14)
                         .turn(Math.toRadians(90))
                         .forward(14)
@@ -233,7 +265,13 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
                 centerTraj = drive.trajectorySequenceBuilder(initialMove.end())
                         .strafeLeft(3)
                         .forward(32)
-                        .waitSeconds(3) // place purple pixel
+                        .addDisplacementMarker(() -> { //start placing purple pixel
+                            picker.update(Picker.PickerState.OUTAKE);
+                        })
+                        .waitSeconds(1)
+                        .addDisplacementMarker(() -> { //stop placing purple pixel
+                            picker.update(Picker.PickerState.HOLD);
+                        })
                         .back(30)
                         .turn(Math.toRadians(90))
                         .forward(68)
@@ -247,7 +285,13 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
                 centerTraj = drive.trajectorySequenceBuilder(initialMove.end())
                         .strafeLeft(3)
                         .forward(32)
-                        .waitSeconds(3) // place purple pixel
+                        .addDisplacementMarker(() -> { //start placing purple pixel
+                            picker.update(Picker.PickerState.OUTAKE);
+                        })
+                        .waitSeconds(1)
+                        .addDisplacementMarker(() -> { //stop placing purple pixel
+                            picker.update(Picker.PickerState.HOLD);
+                        })
                         .back(14)
                         .turn(Math.toRadians(-90))
                         .forward(14)
@@ -261,8 +305,14 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
             default:
                 centerTraj = drive.trajectorySequenceBuilder(initialMove.end())
                         .strafeRight(3)
-                        .forward(31)
-                        .waitSeconds(3) // place purple pixel
+                        .forward(32)
+                        .addDisplacementMarker(() -> { //start placing purple pixel
+                            picker.update(Picker.PickerState.OUTAKE);
+                        })
+                        .waitSeconds(1)
+                        .addDisplacementMarker(() -> { //stop placing purple pixel
+                            picker.update(Picker.PickerState.HOLD);
+                        })
                         .back(27)
                         .turn(Math.toRadians(-90))
                         .forward(70)
@@ -284,7 +334,13 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
                         .forward(28)
                         .turn(Math.toRadians(-90))
                         .forward(6)
-                        .waitSeconds(3) // place purple pixel
+                        .addDisplacementMarker(() -> { //start placing purple pixel
+                            picker.update(Picker.PickerState.OUTAKE);
+                        })
+                        .waitSeconds(1)
+                        .addDisplacementMarker(() -> { //stop placing purple pixel
+                            picker.update(Picker.PickerState.HOLD);
+                        })
                         .back(6)
                         .turn(Math.toRadians(90))
                         .back(14)
@@ -300,7 +356,13 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
                 rightTraj = drive.trajectorySequenceBuilder(initialMove.end())
                         .strafeRight(2)
                         .forward(26)
-                        .waitSeconds(3) // place purple pixel
+                        .addDisplacementMarker(() -> { //start placing purple pixel
+                            picker.update(Picker.PickerState.OUTAKE);
+                        })
+                        .waitSeconds(1)
+                        .addDisplacementMarker(() -> { //stop placing purple pixel
+                            picker.update(Picker.PickerState.HOLD);
+                        })
                         .back(14)
                         .turn(Math.toRadians(90))
                         .strafeLeft(10)
@@ -315,7 +377,13 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
                 rightTraj = drive.trajectorySequenceBuilder(initialMove.end())
                         //.strafeRight(2)
                         .forward(26)
-                        .waitSeconds(3) // place purple pixel
+                        .addDisplacementMarker(() -> { //start placing purple pixel
+                            picker.update(Picker.PickerState.OUTAKE);
+                        })
+                        .waitSeconds(1)
+                        .addDisplacementMarker(() -> { //stop placing purple pixel
+                            picker.update(Picker.PickerState.HOLD);
+                        })
                         .back(14)
                         .turn(Math.toRadians(-90))
                         .forward(6)
@@ -331,7 +399,13 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
                         .forward(28)
                         .turn(Math.toRadians(-90))
                         .forward(9)
-                        .waitSeconds(3) // place purple pixel
+                        .addDisplacementMarker(() -> { //start placing purple pixel
+                            picker.update(Picker.PickerState.OUTAKE);
+                        })
+                        .waitSeconds(1)
+                        .addDisplacementMarker(() -> { //stop placing purple pixel
+                            picker.update(Picker.PickerState.HOLD);
+                        })
                         .back(9)
                         .strafeRight(24)
                         .forward(70)

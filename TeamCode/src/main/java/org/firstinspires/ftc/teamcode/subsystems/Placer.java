@@ -7,10 +7,10 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class Placer {
     public final int PLACE_LEVEL_MAX = 6;
     private final int ELEVATOR_STOWED = 0;
-    private final int PIXEL_HEIGHT = 100;//TODO
+    private final int PIXEL_HEIGHT = 120;//TODO
     private final int BACKDROP_HEIGHT = 1566;
     private final int CLIMB_HEIGHT = 1964;
-    private final int HANGING = 1280;
+    private final int HANGING = 1000;//1280;
     private Gripper gripper;
     private Elevator elevator;
     private Gripper.GripperState gripper_state = Gripper.GripperState.READY;

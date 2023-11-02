@@ -133,6 +133,9 @@ public class Robot {
                 }
                 break;//Forgetting this break was the bug
             case READY_TO_SCORE:
+                //Limit rotation speed while elevator is out
+                rotation = rotation / 4.0;
+
                 if(is_place_level_increment_command &&
                         placer.place_level <= placer.PLACE_LEVEL_MAX) {
                     placer.place_level += 1;
@@ -155,6 +158,7 @@ public class Robot {
                     new_placer_state = Placer.PlacerState.PLACE_SECOND;
                 } else if (is_score_done_command) {
                     new_placer_state = Placer.PlacerState.READY_TO_INTAKE;
+                    robot_state = RobotState.READY_TO_INTAKE;
                 } else {
                     /* TODO
                      * May need to hold placer in scored state current logic
