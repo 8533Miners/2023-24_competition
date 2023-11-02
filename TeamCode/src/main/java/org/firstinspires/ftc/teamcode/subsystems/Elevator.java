@@ -41,7 +41,7 @@ public class Elevator {
 
         pidf_controller = new PIDFController(
                 new PIDCoefficients(
-                        0.01,
+                        0.001,
                         0.0,
                         0.0)
         );
@@ -51,13 +51,18 @@ public class Elevator {
     }
 
     public void update(int target_position) {
-
         elevator_motor.setTargetPosition(target_position);//TODO test removing this
 
         pidf_controller.setTargetPosition(target_position);
-        elevator_motor.setPower(pidf_controller.update(elevator_motor.getCurrentPosition()));
+        if(pidf_controller.getTargetPosition() == 0 && //Note 0 here means ELEVATOR_STOWED position
+                elevator_motor.getCurrentPosition() < 60) {
+            elevator_motor.setPower(0.0);
+        } else {
+            elevator_motor.setPower(pidf_controller.update(elevator_motor.getCurrentPosition()));
+        }
+
     }
-    public void log(Telemetry tele){
+    public void log(Telemetry tele) {
         tele.addData("current encoder ticks", elevator_motor.getCurrentPosition());
         tele.addData("current target position", pidf_controller.getTargetPosition());
     }
