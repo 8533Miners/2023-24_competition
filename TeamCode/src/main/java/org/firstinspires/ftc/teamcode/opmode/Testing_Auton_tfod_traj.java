@@ -20,61 +20,75 @@ import java.util.List;
 
 @Autonomous(name = "Auton w/ TFOD", group = "TestAuton")
 public class Testing_Auton_tfod_traj extends LinearOpMode {
-    TFObjectPropDetect tfObjectPropDetect;
+    // Random Robot Variables
+    public ElapsedTime runtime = new ElapsedTime();
+
+    // Camera Property Variables
     public int CAMERA_WIDTH = 640;
     int CAMERA_HEIGHT = 480;
-    public String labelToDetect = "prop";
-    public boolean propDetected = false;
     float highestConf = 0;
     float highestXDistance = 0;
     String highestXDistanceLabel = " ";
-    public ElapsedTime runtime = new ElapsedTime();
+
+    // TFOD Variables
+    TFObjectPropDetect tfObjectPropDetect;
     private static final String TFOD_MODEL_ASSET = "model_20231023_193833.tflite";
     private static final String[] LABELS = {
             "prop"
     };
+    public String labelToDetect = "prop";
     private TfodProcessor tfod;
     public VisionPortal visionPortal;
+    public boolean propDetected = false;
 
-    // This variable should be dynamically set by the user interface selection, or we need to make 4x classes for each starting position
-    String startingGrid = "F2";
-    boolean invertedDetection = false;
+    // TODO: This variable should be dynamically set by the user interface selection,
+    // or we need to make 4x classes for each starting position
+    String startingGrid = "A2";
+    boolean parkOnWall = false;
+    boolean invertedDetection = false; // invert detections based on starting position
+
+    // A4 Starting Parameters
     int A4_starting_x = 16;
     int A4_starting_y = 62;
     int starting_heading_A = 270;
 
-
-    //String startingGrid = "A2";
+    // A2 Starting Parameters
     int A2_starting_x = -40;
     int A2_starting_y = 62;
 
-
-    //String startingGrid = "F4";
+    // F4 Starting Parameters
     int F4_starting_x = 16;
     int F4_starting_y = -62;
     int starting_heading_F = 90;
 
-
-    //String startingGrid = "F2";
+    // F2 Starting Parameters
     int F2_starting_x = -40;
     int F2_starting_y = -62;
 
+    // Robot Config Parameters
     double trackWidth = 11.0;
     double robotLength = 16.0;
     double robotWidth = 13.5;
 
     public void runOpMode() throws InterruptedException{
+        // Just init to A4, but will set later
         int startingX = A4_starting_x;
         int startingY = A4_starting_y;
         int startingHeading = starting_heading_A;
 
-        initTfod();
+        int parking_offset = 0; // how much to move towards center for parking offset
+        if( parkOnWall == false ) {
+            parking_offset = 40;
+        }
 
+        // Init TFOD
+        initTfod();
         tfObjectPropDetect = new TFObjectPropDetect(tfod, CAMERA_WIDTH, labelToDetect);
 
+        // Setup hardware mapping and drive style
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-        // set the starting position
+        // Determine the starting position based on menu config
         switch (startingGrid) {
             case "A4":
                 invertedDetection = false;
@@ -83,36 +97,40 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
                 startingHeading = starting_heading_A;
                 break;
             case "A2":
-                invertedDetection = true;
+                invertedDetection = true; // A2 has inverted detections compared to A4
                 startingX = A2_starting_x;
                 startingY = A2_starting_y;
                 startingHeading = starting_heading_A;
                 break;
             case "F4":
-                invertedDetection = true;
+                invertedDetection = true; // F4 has inverted detections compared to A4
                 startingX = F4_starting_x;
                 startingY = F4_starting_y;
                 startingHeading = starting_heading_F;
                 break;
             case "F2":
             default: // F2
-                invertedDetection = false;
+                invertedDetection = false; // F2 has looks the same as A4, so don't invert
                 startingX = F2_starting_x;
                 startingY = F2_starting_y;
                 startingHeading = starting_heading_F;
                 break;
         }
 
+        // Set starting pose
         Pose2d startPose = new Pose2d(startingX,startingY, Math.toRadians(startingHeading));
-
         drive.setPoseEstimate(startPose);
 
-        TrajectorySequence initialMove;
-
+        /**
+         * Initial Move is used for detection due to limited FoV of Camera.
+         * We move away from the trusses so we can detect the prop starting position
+         * as either center or spike mark furthest from the truss. If no prop is
+         * detected, we assume the prop is on the spike mark closest to the truss.
+         */
+        TrajectorySequence initialMove; //= setInitalMove(startingGrid);
         /*****************************
          * Set Left Trajectories
          * *****************************/
-
         TrajectorySequence leftTraj;
         switch (startingGrid) {
             case "A4":
@@ -125,7 +143,9 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
                         .waitSeconds(3) // place purple pixel
                         .back(12)
                         .turn(Math.toRadians(90))
-                        .forward(22)
+                        .forward(6)
+                        .strafeRight(parking_offset)
+                        .forward(16)
                         .waitSeconds(1) // place yellow pixel
                         .waitSeconds(1) // park
                         .build();
@@ -134,6 +154,7 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
                 initialMove = drive.trajectorySequenceBuilder(startPose)
                         .strafeRight(4)
                         .build();
+
                 leftTraj = drive.trajectorySequenceBuilder(initialMove.end())
                         .forward(28)
                         .turn(Math.toRadians(90))
@@ -141,7 +162,9 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
                         .waitSeconds(3) // place purple pixel
                         .back(6)
                         .strafeLeft(24)
-                        .forward(86)
+                        .forward(70)
+                        .strafeRight(parking_offset)
+                        .forward(16)
                         .waitSeconds(1) // place yellow pixel
                         .waitSeconds(1) // park
                         .build();
@@ -159,7 +182,9 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
                         .turn(Math.toRadians(-90))
                         .back(14)
                         .turn(Math.toRadians(-90))
-                        .forward(30)
+                        .forward(14)
+                        .strafeLeft(parking_offset)
+                        .forward(16)
                         .waitSeconds(1) // place yellow pixel
                         .waitSeconds(1) // park
                         .build();
@@ -170,13 +195,15 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
                         .strafeLeft(4)
                         .build();
                 leftTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                        .strafeLeft(6)
+                        .strafeLeft(3)
                         .forward(26)
                         .waitSeconds(3) // place purple pixel
                         .back(14)
                         .turn(Math.toRadians(-90))
-                        .strafeRight(10)
-                        .forward(94)
+                        .strafeRight(7)
+                        .forward(78)
+                        .strafeLeft(parking_offset)
+                        .forward(16)
                         .waitSeconds(1) // place yellow pixel
                         .waitSeconds(1) // park
                         .build();
@@ -186,7 +213,6 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
         /*****************************
          * Set Center Trajectories
          * *****************************/
-
         TrajectorySequence centerTraj;
         switch (startingGrid) {
             case "A4":
@@ -196,7 +222,9 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
                         .waitSeconds(3) // place purple pixel
                         .back(14)
                         .turn(Math.toRadians(90))
-                        .forward(30)
+                        .forward(14)
+                        .strafeRight(parking_offset)
+                        .forward(16)
                         .waitSeconds(1) // place yellow pixel
                         .waitSeconds(1) // park
                         .build();
@@ -208,7 +236,9 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
                         .waitSeconds(3) // place purple pixel
                         .back(30)
                         .turn(Math.toRadians(90))
-                        .forward(84)
+                        .forward(68)
+                        .strafeRight(parking_offset)
+                        .forward(16)
                         .waitSeconds(1) // place yellow pixel
                         .waitSeconds(1) // park
                         .build();
@@ -220,7 +250,9 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
                         .waitSeconds(3) // place purple pixel
                         .back(14)
                         .turn(Math.toRadians(-90))
-                        .forward(30)
+                        .forward(14)
+                        .strafeLeft(parking_offset)
+                        .forward(16)
                         .waitSeconds(1) // place yellow pixel
                         .waitSeconds(1) // park
                         .build();
@@ -229,11 +261,13 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
             default:
                 centerTraj = drive.trajectorySequenceBuilder(initialMove.end())
                         .strafeRight(3)
-                        .forward(32)
+                        .forward(31)
                         .waitSeconds(3) // place purple pixel
-                        .back(24)
+                        .back(27)
                         .turn(Math.toRadians(-90))
-                        .forward(86)
+                        .forward(70)
+                        .strafeLeft(parking_offset)
+                        .forward(16)
                         .waitSeconds(1) // place yellow pixel
                         .waitSeconds(1) // park
                         .build();
@@ -243,9 +277,7 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
         /*****************************
          * Set Right Trajectories
          * *****************************/
-
         TrajectorySequence rightTraj;
-        // Set Right Trajectories
         switch (startingGrid) {
             case "A4":
                 rightTraj = drive.trajectorySequenceBuilder(initialMove.end())
@@ -257,7 +289,9 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
                         .turn(Math.toRadians(90))
                         .back(14)
                         .turn(Math.toRadians(90))
-                        .forward(30)
+                        .forward(14)
+                        .strafeRight(parking_offset)
+                        .forward(16)
                         .waitSeconds(1) // place yellow pixel
                         .waitSeconds(1) // park
                         .build();
@@ -270,19 +304,23 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
                         .back(14)
                         .turn(Math.toRadians(90))
                         .strafeLeft(10)
-                        .forward(94)
+                        .forward(78)
+                        .strafeRight(parking_offset)
+                        .forward(16)
                         .waitSeconds(1) // place yellow pixel
                         .waitSeconds(1) // park
                         .build();
                 break;
             case "F4":
                 rightTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                        .strafeRight(2)
+                        //.strafeRight(2)
                         .forward(26)
                         .waitSeconds(3) // place purple pixel
-                        .back(12)
+                        .back(14)
                         .turn(Math.toRadians(-90))
-                        .forward(22)
+                        .forward(6)
+                        .strafeLeft(parking_offset)
+                        .forward(16)
                         .waitSeconds(1) // place yellow pixel
                         .waitSeconds(1) // park
                         .build();
@@ -292,67 +330,75 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
                 rightTraj = drive.trajectorySequenceBuilder(initialMove.end())
                         .forward(28)
                         .turn(Math.toRadians(-90))
-                        .forward(6)
+                        .forward(9)
                         .waitSeconds(3) // place purple pixel
-                        .back(6)
+                        .back(9)
                         .strafeRight(24)
-                        .forward(86)
+                        .forward(70)
+                        .strafeLeft(parking_offset)
+                        .forward(16)
                         .waitSeconds(1) // place yellow pixel
                         .waitSeconds(1) // park
                         .build();
                 break;
         }
 
+        /**
+         * Now that we have built the trajectories, we need to:
+         * 1. Do the initial move for detection
+         * 2. Detect the spike mark with the prop (or assume closest to truss)
+         * 3. Load the proper trajectory based on starting location into the
+         *    trajectory sequence
+         * 4. Run the trajectory we build out
+         */
         TrajectorySequence propPositionTrajectory = null;
-
-        String trajectoryprint = "";
         SpikeMark location = null;
         waitForStart();
         if (opModeIsActive()){
+            // 1. Do the initial move
             drive.followTrajectorySequence(initialMove);
 
             runtime.reset();
-            while (opModeIsActive() & !propDetected & runtime.seconds() < 5) { // move on if detection taking longer than 5 seconds.
+            // 2. Attempt to detect the prop for 5 seconds assume closes to truss if not
+            while (opModeIsActive() & !propDetected & runtime.seconds() < 5) {
                 telemetryTfod();
+
+                // 2. attempt to detect the spike mark location, returns NONE if no detection
                 location = tfObjectPropDetect.getSpikeMark(invertedDetection);
                 telemetry.addData("Spike Mark Location", location.toString());
                 telemetry.update();
-                switch (location){
-                    case NONE: // assume RIGHT
-                        if(invertedDetection==true) {
-                            trajectoryprint = "left";
-                            propPositionTrajectory = leftTraj;
-                        } else {
 
-                            trajectoryprint = "right";
-                            propPositionTrajectory = rightTraj;
-                        }
-                        propDetected = false;
-                        break;
+                // 3. Load the trajectory based on the detected spike mark
+                switch (location){
                     case LEFT:
-                        trajectoryprint = "left";
                         propPositionTrajectory = leftTraj;
                         propDetected = true;
                         break;
                     case CENTER:
-                        trajectoryprint = "center";
                         propPositionTrajectory = centerTraj;
                         propDetected = true;
                         break;
                     case RIGHT:
-                        trajectoryprint = "right";
                         propPositionTrajectory = rightTraj;
                         propDetected = true;
                         break;
+                    case NONE: // assume "right trajectory" or invert to left
                     default:
-                        trajectoryprint = "default";
-                        propPositionTrajectory = rightTraj;
+                        if(invertedDetection==true) {
+                            propPositionTrajectory = leftTraj;
+                        } else {
+                            propPositionTrajectory = rightTraj;
+                        }
+                        propDetected = false;
                         break;
                 }
             }
+            // 4. Run the trajectory we built out
             drive.followTrajectorySequence(propPositionTrajectory);
         }
         visionPortal.close();
+
+        // Print out detected spike mark location for debugging
         telemetry.addData("Spike Mark Location", location.toString());
         telemetry.update();
     }
@@ -408,6 +454,9 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
             telemetry.addData("- Position", "%.0f / %.0f", x, y);
             telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
         }   // end for() loop
+    }
 
+    public TrajectorySequence setInitialMove(String startingGrid) {
+        return null;
     }
 }
