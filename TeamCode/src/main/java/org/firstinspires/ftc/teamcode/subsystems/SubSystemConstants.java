@@ -23,9 +23,9 @@ public class SubSystemConstants {
     }
     public enum ClawPosition {
         // Percent of claw servo range
-        OPEN(0.50),
-        SCORE(0.575),
-        CLOSED(0.7);
+        OPEN(0.52),
+        SCORE(0.57),
+        CLOSED(0.6);
         private final double clawPosition;
 
         ClawPosition(double clawPosition) {
@@ -40,7 +40,7 @@ public class SubSystemConstants {
         // Percent of ejector servo range
         RETRACT(0.0),
         CRADLE(0.70),
-        PUSH_FIRST(0.75),
+        PUSH_FIRST(0.755),
         PUSH_BOTH(0.76);
         private final double ejectorPosition;
         EjectorPosition(double ejectorPosition) {

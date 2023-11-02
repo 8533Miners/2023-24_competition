@@ -7,10 +7,11 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class Placer {
     public final int PLACE_LEVEL_MAX = 6;
     private final int ELEVATOR_STOWED = 0;
-    private final int PIXEL_HEIGHT = 120;//TODO
+    private final int PIXEL_HEIGHT = 240;//TODO
     private final int BACKDROP_HEIGHT = 1566;
     private final int CLIMB_HEIGHT = 1964;
     private final int HANGING = 1000;//1280;
+    private final int MAX_SAFE = 2800;
     private Gripper gripper;
     private Elevator elevator;
     private Gripper.GripperState gripper_state = Gripper.GripperState.READY;
@@ -63,6 +64,10 @@ public class Placer {
                 new_elevator_position = HANGING;
                 break;
         }
+
+        //Set max height limit;
+        new_elevator_position = Math.min(new_elevator_position,MAX_SAFE);
+
         gripper.update(new_gripper_state);
         elevator.update(new_elevator_position);
     }

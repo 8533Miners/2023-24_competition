@@ -4,6 +4,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
@@ -17,6 +18,7 @@ public class Robot {
     private boolean is_optr_dpad_up_prev = false;
     private boolean is_optr_dpad_dwn_prev = false;
     private boolean is_place_second_pixel_command_prev = false;
+    private boolean is_scored_first = false;
     public enum RobotState {
         READY_TO_INTAKE,
         HOLDING_PIXELS,
@@ -45,6 +47,8 @@ public class Robot {
         boolean is_optr_rgt_trg = operator_controller.right_trigger > 0.5f;
         boolean is_dvr_lft_bpr = driver_controller.left_bumper;
         boolean is_dvr_rgt_bpr = driver_controller.right_bumper;
+        boolean is_optr_lft_bpr = operator_controller.left_bumper;
+        boolean is_optr_rgt_bpr = operator_controller.right_bumper;
         boolean is_optr_a = operator_controller.a;
         boolean is_optr_b = operator_controller.b;
         boolean is_drv_a = driver_controller.a;
@@ -53,11 +57,12 @@ public class Robot {
         boolean is_dvr_lft_trg = driver_controller.left_trigger > 0.5f;
         boolean is_optr_lft_trg = operator_controller.left_trigger > 0.5f;
         boolean is_dvr_start = driver_controller.start;
+        boolean is_optr_start = operator_controller.start;
         boolean is_dvr_back = driver_controller.back;
         boolean is_optr_back = operator_controller.back;
 
-        boolean is_outake_command = is_dvr_lft_bpr;
-        boolean is_intake_command = is_dvr_rgt_bpr;
+        boolean is_outake_command = is_optr_lft_bpr;//is_dvr_lft_bpr;
+        boolean is_intake_command = is_optr_rgt_bpr;//is_dvr_rgt_bpr;
 
         boolean is_hold_pixel_command = is_optr_a;
         boolean is_cancel_hold_command = is_optr_b;
@@ -75,7 +80,7 @@ public class Robot {
         boolean is_score_done_command = !is_place_second_pixel_command &&
                                          is_place_second_pixel_command_prev;
 
-        boolean is_prepare_to_climb_command = is_dvr_start;
+        boolean is_prepare_to_climb_command = is_optr_start;//is_dvr_start;
         boolean is_climb_command = is_dvr_lft_trg && is_optr_lft_trg;
         boolean is_climb_cancel_command = is_drv_b && is_optr_b;
 
@@ -123,6 +128,7 @@ public class Robot {
                     robot_state = RobotState.READY_TO_CLIMB;
                 } else if (is_prepare_to_score_command) {
                     new_placer_state = Placer.PlacerState.DEPLOY;
+                    is_scored_first = false;
                     robot_state = RobotState.READY_TO_SCORE;
                 } else if (is_cancel_hold_command) {
                     //A method to cancel holding in case more pixels need to picked up or a mistake
@@ -154,18 +160,18 @@ public class Robot {
                     robot_state = RobotState.HOLDING_PIXELS;
                 } else if (is_place_first_pixel_command) {
                     new_placer_state = Placer.PlacerState.PLACE_FIRST;
+                    is_scored_first = true;
                 } else if (is_place_second_pixel_command) {
                     new_placer_state = Placer.PlacerState.PLACE_SECOND;
                 } else if (is_score_done_command) {
                     new_placer_state = Placer.PlacerState.READY_TO_INTAKE;
                     robot_state = RobotState.READY_TO_INTAKE;
                 } else {
-                    /* TODO
-                     * May need to hold placer in scored state current logic
-                     * will have gripper return to transfer state intermittently when
-                     * score command is let go. This was easier to implement for now.
-                     */
-                    new_placer_state = Placer.PlacerState.DEPLOY;
+                    if(is_scored_first) {
+                        new_placer_state = Placer.PlacerState.PLACE_FIRST;
+                    } else {
+                        new_placer_state = Placer.PlacerState.DEPLOY;
+                    }
                 }
                 break;
             case READY_TO_CLIMB:
