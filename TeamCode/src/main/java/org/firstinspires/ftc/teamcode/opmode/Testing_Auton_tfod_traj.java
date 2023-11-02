@@ -11,6 +11,8 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.Picker;
+import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu;
+import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu.*;
 import org.firstinspires.ftc.teamcode.subsystems.vision.SpikeMark;
 import org.firstinspires.ftc.teamcode.subsystems.vision.TFObjectPropDetect;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
@@ -42,11 +44,8 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
     public VisionPortal visionPortal;
     public boolean propDetected = false;
 
-    // TODO: This variable should be dynamically set by the user interface selection,
-    // or we need to make 4x classes for each starting position
-    String startingGrid = "A2";
-    boolean parkOnWall = false;
-    boolean invertedDetection = false; // invert detections based on starting position
+    // Menu variables
+    SelectionMenu selectionMenu = new SelectionMenu(this,telemetry);
 
     // A4 Starting Parameters
     int A4_starting_x = 16;
@@ -73,15 +72,34 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
     Picker picker = new Picker(hardwareMap);
 
     public void runOpMode() throws InterruptedException{
+
+        /**
+         * Setup the selection menu
+         */
+        telemetry.setAutoClear(false);
+        while(!isStarted()) {
+            selectionMenu.displayMenu();
+
+            // Check for user input
+            if (gamepad1.dpad_up) {
+                selectionMenu.navigateUp();
+            } else if (gamepad1.dpad_down) {
+                selectionMenu.navigateDown();
+            } else if (gamepad1.a) {
+                selectionMenu.selectOption();
+            } else if (gamepad1.b) {
+                selectionMenu.navigateBack();
+            }
+
+            idle();
+        }
+        selectionMenu.setMenuState(SelectionMenu.MenuState.READY);
+        selectionMenu.displayMenu();
+
         // Just init to A4, but will set later
         int startingX = A4_starting_x;
         int startingY = A4_starting_y;
         int startingHeading = starting_heading_A;
-
-        int parking_offset = 0; // how much to move towards center for parking offset
-        if( parkOnWall == false ) {
-            parking_offset = 40;
-        }
 
         // Init TFOD
         initTfod();
@@ -90,32 +108,63 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
         // Setup hardware mapping and drive style
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-        // Determine the starting position based on menu config
-        switch (startingGrid) {
-            case "A4":
-                invertedDetection = false;
-                startingX = A4_starting_x;
-                startingY = A4_starting_y;
-                startingHeading = starting_heading_A;
+        /**
+         * Determine the starting position based on menu config
+         */
+        AllianceColor allianceColor = selectionMenu.getAllianceColor();
+        FieldStartPosition fieldStartPosition = selectionMenu.getFieldStartPosition();
+        FieldParkPosition fieldParkPosition = selectionMenu.getFieldParkPosition();
+
+        // Determine parking offset amount
+        int parking_offset = 0; // how much to move towards center for parking offset
+        if( fieldParkPosition.equals(FieldParkPosition.NEAR_CENTER) ) {
+            parking_offset = 40;
+        } else if (fieldParkPosition.equals(FieldParkPosition.ON_BACKDROP)) {
+            parking_offset = 20;
+        }
+
+        String startingGrid = "A4";
+        boolean invertedDetection = false; // invert detections based on starting position
+
+        /**
+         * Configure starting X, Y, and heading for starting pose
+         * Invert detection based on starting position if needed
+         */
+        switch (allianceColor) {
+            case RED:
+                if(FieldStartPosition.RIGHT == fieldStartPosition) {
+                    // F2
+                    startingGrid = "F4";
+                    invertedDetection = true; // F4 has inverted detections compared to A4
+                    startingX = F4_starting_x;
+                    startingY = F4_starting_y;
+                    startingHeading = starting_heading_F;
+                } else {
+                    // F4
+                    startingGrid = "F2";
+                    invertedDetection = false; // F2 has looks the same as A4, so don't invert
+                    startingX = F2_starting_x;
+                    startingY = F2_starting_y;
+                    startingHeading = starting_heading_F;
+                }
                 break;
-            case "A2":
-                invertedDetection = true; // A2 has inverted detections compared to A4
-                startingX = A2_starting_x;
-                startingY = A2_starting_y;
-                startingHeading = starting_heading_A;
-                break;
-            case "F4":
-                invertedDetection = true; // F4 has inverted detections compared to A4
-                startingX = F4_starting_x;
-                startingY = F4_starting_y;
-                startingHeading = starting_heading_F;
-                break;
-            case "F2":
-            default: // F2
-                invertedDetection = false; // F2 has looks the same as A4, so don't invert
-                startingX = F2_starting_x;
-                startingY = F2_starting_y;
-                startingHeading = starting_heading_F;
+            case BLUE:
+            default:
+                if(FieldStartPosition.RIGHT == fieldStartPosition) {
+                    // A2
+                    startingGrid = "A2";
+                    invertedDetection = true; // A2 has inverted detections compared to A4
+                    startingX = A2_starting_x;
+                    startingY = A2_starting_y;
+                    startingHeading = starting_heading_A;
+                } else {
+                    // A4
+                    startingGrid = "A4";
+                    invertedDetection = false;
+                    startingX = A4_starting_x;
+                    startingY = A4_starting_y;
+                    startingHeading = starting_heading_A;
+                }
                 break;
         }
 
@@ -129,7 +178,8 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
          * as either center or spike mark furthest from the truss. If no prop is
          * detected, we assume the prop is on the spike mark closest to the truss.
          */
-        TrajectorySequence initialMove; //= setInitalMove(startingGrid);
+        TrajectorySequence initialMove;
+
         /*****************************
          * Set Left Trajectories
          * *****************************/
@@ -172,7 +222,7 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
                         })
                         .waitSeconds(1)
                         .addDisplacementMarker(() -> { //stop placing purple pixel
-                            picker.update(Picker.PickerState.HOLD);
+                           picker.update(Picker.PickerState.HOLD);
                         })
                         .back(6)
                         .strafeLeft(24)
@@ -530,7 +580,23 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
         }   // end for() loop
     }
 
+    /**
+     * TODO: Function to abstract setting initial move for TFOD
+     * @param startingGrid
+     * @return
+     */
     public TrajectorySequence setInitialMove(String startingGrid) {
         return null;
+    }
+
+    /**
+     * Print the menu selection
+     */
+    private void printMenuSelections() {
+        telemetry.clear();
+        telemetry.addLine("Alliance Color: " + selectionMenu.getAllianceColor());
+        telemetry.addLine("Start Position: " + selectionMenu.getFieldStartPosition());
+        telemetry.addLine("Park Position: " + selectionMenu.getFieldParkPosition());
+        telemetry.update();
     }
 }

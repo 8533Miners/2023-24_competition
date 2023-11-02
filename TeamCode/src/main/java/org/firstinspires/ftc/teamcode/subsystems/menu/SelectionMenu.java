@@ -25,17 +25,17 @@ public class SelectionMenu {
     private int currentOptionIndex = 0; // Index of the currently selected option
     private ElapsedTime debounceTimer = new ElapsedTime();
 
-    private enum AllianceColor {
+    public enum AllianceColor {
         RED,
         BLUE
     }
 
-    private enum FieldStartPosition {
+    public enum FieldStartPosition {
         LEFT,
         RIGHT
     }
 
-    private enum FieldParkPosition {
+    public enum FieldParkPosition {
         NEAR_WALL,
         ON_BACKDROP,
         NEAR_CENTER
