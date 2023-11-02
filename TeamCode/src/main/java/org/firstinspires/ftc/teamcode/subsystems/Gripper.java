@@ -37,7 +37,7 @@ public class Gripper {
                 EjectorPosition.CRADLE),
         SCORE_FIRST(ClawPosition.SCORE,
                 EjectorPosition.PUSH_FIRST),
-        SCORE_SECOND(ClawPosition.SCORE,
+        SCORE_SECOND(ClawPosition.OPEN,
                 EjectorPosition.PUSH_BOTH),
         RETURN(ClawPosition.OPEN,
                 EjectorPosition.RETRACT);
