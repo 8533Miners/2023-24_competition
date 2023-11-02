@@ -3,11 +3,10 @@ package org.firstinspires.ftc.teamcode.opmode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.subsystems.menu.AutonSelectionMenu;
 import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu;
 @Autonomous(name="Testing_AutonSelectionMenu", group="menu")
 public class Testing_AutonSelectionMenu extends LinearOpMode {
-    SelectionMenu selectionMenu = new SelectionMenu(telemetry);
+    SelectionMenu selectionMenu = new SelectionMenu(this,telemetry);
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry.setAutoClear(false);
@@ -28,10 +27,9 @@ public class Testing_AutonSelectionMenu extends LinearOpMode {
 
             idle();
         }
-//        selectionMenu.setMenuState(SelectionMenu.MenuState.READY);
-//        selectionMenu.displayMenu();
-        telemetry.addData("Status", "Ready for start");
-        telemetry.update();
+        selectionMenu.setMenuState(SelectionMenu.MenuState.READY);
+        selectionMenu.displayMenu();
+
         waitForStart();
 
         while (opModeIsActive()) {

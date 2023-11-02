@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems.menu;
 
-import android.text.Selection;
-
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -18,7 +17,8 @@ public class SelectionMenu {
         READY
     }
     Telemetry telemetry;
-    private MenuState currentMenu = MenuState.MAIN_MENU;
+    private LinearOpMode opMode;
+    public MenuState currentMenu = MenuState.MAIN_MENU;
     private AllianceColor allianceColor = AllianceColor.RED;
     private FieldStartPosition fieldStartPosition = FieldStartPosition.LEFT;
     private FieldParkPosition fieldParkPosition = FieldParkPosition.ON_BACKDROP;
@@ -45,11 +45,13 @@ public class SelectionMenu {
      * constructor
      * @param telemetry
      */
-    public SelectionMenu(Telemetry telemetry) {
+    public SelectionMenu(LinearOpMode opmode, Telemetry telemetry) {
+        this.opMode = opmode;
         this.telemetry = telemetry;
     }
     public void setMenuState(MenuState newState) {
         currentMenu = newState;
+        telemetry.addLine("setting currentmenu to: " + newState);
     }
 
     public void displayMenu() {
@@ -96,8 +98,10 @@ public class SelectionMenu {
 
             case READY:
                 // Display "Ready for start" message
-//                telemetry.addData("Status", "Ready for start");
-                telemetry.addLine("actually this is broken");
+                telemetry.addData("Status", "Ready for start");
+                break;
+            default:
+                telemetry.addLine("" + currentMenu);
                 break;
         }
 
@@ -106,97 +110,71 @@ public class SelectionMenu {
 
     private void displayOption(String optionText, int optionIndex) {
         if (optionIndex == currentOptionIndex) {
-            telemetry.addLine("> " + optionText); // Highlight the current option
+            telemetry.addLine(">> " + optionText); // Highlight the current option
         } else {
             telemetry.addLine("  " + optionText);
         }
     }
 
-    public void navigateUp() {
-        if (debounceTimer.milliseconds() > 300){
-            currentOptionIndex = Range.clip(currentOptionIndex -1, 0, getMenuOptionCount() -1);
-            debounceTimer.reset();
-        }
-//        currentOptionIndex = Math.max(0, currentOptionIndex - 1);
+    public void navigateUp()
+    {
+        currentOptionIndex--;
+        opMode.sleep(300);
     }
 
-    public void navigateDown() {
-        if (debounceTimer.milliseconds() > 300){
-            currentOptionIndex = Range.clip(currentOptionIndex +1, 0, getMenuOptionCount() -1);
-//            switch (currentMenu) {
-//                case MAIN_MENU:
-//                case FIELD_PARK_POSITION:
-//                    currentOptionIndex = Math.min(2, currentOptionIndex + 1);
-//                    break;
-//                case ALLIANCE_COLOR:
-//                case FIELD_START_POSITION:
-//                    currentOptionIndex = Math.min(1, currentOptionIndex + 1);
-//                    break;
-////            case FIELD_PARK_POSITION:
-////                currentOptionIndex = Math.min(2, currentOptionIndex + 1);
-////                break;
-//            }
-            debounceTimer.reset();
-        }
-
+    public void navigateDown()
+    {
+        currentOptionIndex++;
+        opMode.sleep(300);
     }
 
-    public void selectOption() {
+    public void selectOption()
+    {
         switch (currentMenu) {
             case MAIN_MENU:
                 if (currentOptionIndex == 0) {
-//                    currentMenu = MenuState.ALLIANCE_COLOR;
-                    currentMenu = (MenuState.ALLIANCE_COLOR);
+                    setMenuState(MenuState.ALLIANCE_COLOR);
                 } else if (currentOptionIndex == 1) {
-//                    currentMenu = MenuState.FIELD_START_POSITION;
                     setMenuState(MenuState.FIELD_START_POSITION);
                 } else if (currentOptionIndex == 2) {
-//                    currentMenu = MenuState.FIELD_PARK_POSITION;
                     setMenuState(MenuState.FIELD_PARK_POSITION);
                 }
                 break;
             case ALLIANCE_COLOR:
                 if (currentOptionIndex == 0) {
                     allianceColor = AllianceColor.RED;
-                    setMenuState(MenuState.FIELD_START_POSITION);
                 } else if (currentOptionIndex == 1) {
                     allianceColor = AllianceColor.BLUE;
-                    setMenuState(MenuState.FIELD_START_POSITION);
                 }
-//                currentMenu = MenuState.FIELD_START_POSITION;
+                setMenuState(MenuState.FIELD_START_POSITION);
                 break;
             case FIELD_START_POSITION:
                 if (currentOptionIndex == 0) {
                     fieldStartPosition = FieldStartPosition.LEFT;
-                    setMenuState(MenuState.FIELD_PARK_POSITION);
                 } else if (currentOptionIndex == 1) {
                     fieldStartPosition = FieldStartPosition.RIGHT;
-                    setMenuState(MenuState.FIELD_PARK_POSITION);
                 }
-//                currentMenu = MenuState.FIELD_PARK_POSITION;
-
+                setMenuState(MenuState.FIELD_PARK_POSITION);
                 break;
             case FIELD_PARK_POSITION:
                 if (currentOptionIndex == 0){
                     fieldParkPosition = FieldParkPosition.NEAR_WALL;
-                    setMenuState(MenuState.CONFIRMATION);
                 } else if (currentOptionIndex == 1){
                     fieldParkPosition = FieldParkPosition.ON_BACKDROP;
-                    setMenuState(MenuState.CONFIRMATION);
                 } else if (currentOptionIndex == 2){
                     fieldParkPosition = FieldParkPosition.NEAR_CENTER;
-                    setMenuState(MenuState.CONFIRMATION);
                 }
-//                currentMenu = MenuState.CONFIRMATION;
-
+                setMenuState(MenuState.CONFIRMATION);
                 break;
             case CONFIRMATION:
                 setMenuState(MenuState.READY);
-//                currentMenu = MenuState.READY;
+                break;
+            default:
+                telemetry.addLine("" + currentMenu);
                 break;
         }
         currentOptionIndex = 0; // Reset the option index
-//        sleep(300); // Debounce
+        opMode.sleep(300); // Debounce
     }
 
     public void navigateBack() {
@@ -205,20 +183,16 @@ public class SelectionMenu {
                 // Do nothing, stay on the main menu
                 break;
             case ALLIANCE_COLOR:
-//                currentMenu = MenuState.MAIN_MENU;
                 setMenuState(MenuState.MAIN_MENU);
                 break;
             case FIELD_START_POSITION:
-//                currentMenu = MenuState.ALLIANCE_COLOR;
                 setMenuState(MenuState.ALLIANCE_COLOR);
                 break;
             case FIELD_PARK_POSITION:
-//                currentMenu = MenuState.FIELD_START_POSITION;
                 setMenuState(MenuState.FIELD_START_POSITION);
                 break;
             case CONFIRMATION:
                 if (currentOptionIndex == 0) {
-//                    currentMenu = MenuState.FIELD_PARK_POSITION; // Go back to previous menu
                     setMenuState(MenuState.FIELD_PARK_POSITION);
                 }
                 break;
@@ -240,9 +214,7 @@ public class SelectionMenu {
                 return 0;
         }
     }
-//    public boolean isReadyToStart(){
-//        return currentMenu == MenuState.READY;
-//    }
+
     public AllianceColor getAllianceColor() {
         return allianceColor;
     }
