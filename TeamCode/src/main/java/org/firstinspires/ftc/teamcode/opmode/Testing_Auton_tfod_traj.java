@@ -35,7 +35,7 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
 
     // TFOD Variables
     TFObjectPropDetect tfObjectPropDetect;
-    private static final String TFOD_MODEL_ASSET = "model_20231023_193833.tflite";
+    private static final String TFOD_MODEL_ASSET = "model_new_bird.tflite";
     private static final String[] LABELS = {
             "prop"
     };

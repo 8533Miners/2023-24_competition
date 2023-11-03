@@ -29,7 +29,7 @@ public class Testing_Auton_tfod extends LinearOpMode {
     float highestXDistance = 0;
     String highestXDistanceLabel = " ";
     public ElapsedTime runtime = new ElapsedTime();
-    private static final String TFOD_MODEL_ASSET = "model_20231023_193833.tflite";
+    private static final String TFOD_MODEL_ASSET = "model_new_bird.tflite";
     private static final String[] LABELS = {
             "prop"
     };
