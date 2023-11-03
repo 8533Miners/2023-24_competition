@@ -69,9 +69,10 @@ public class Testing_Auton_tfod_traj extends LinearOpMode {
     double trackWidth = 11.0;
     double robotLength = 16.0;
     double robotWidth = 13.5;
-    Picker picker = new Picker(hardwareMap);
+    Picker picker;
 
     public void runOpMode() throws InterruptedException{
+        picker = new Picker(hardwareMap);
 
         /**
          * Setup the selection menu
