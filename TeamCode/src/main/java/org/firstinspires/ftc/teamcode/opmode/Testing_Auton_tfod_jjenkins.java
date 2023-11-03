@@ -147,7 +147,7 @@ public class Testing_Auton_tfod_jjenkins extends LinearOpMode {
         switch (allianceColor) {
             case RED:
                 if(fieldStartPosition == FieldStartPosition.RIGHT) {
-                    // F2
+                    // F4
                     invertedDetection = true; // F4 has inverted detections compared to A4
                     startingX = F4_starting_x;
                     startingY = F4_starting_y;
@@ -199,9 +199,9 @@ public class Testing_Auton_tfod_jjenkins extends LinearOpMode {
                             .build();
 
                     rightTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                            .forward(28)
-                            .turn(Math.toRadians(-90))
-                            .forward(9)
+                            .strafeRight(2)
+                            .forward(26)
+                            .back(3.5)
                             .addDisplacementMarker(() -> { //start placing purple pixel
                                 picker.update(Picker.PickerState.OUTAKE);
                             })
@@ -209,16 +209,16 @@ public class Testing_Auton_tfod_jjenkins extends LinearOpMode {
                             .addDisplacementMarker(() -> { //stop placing purple pixel
                                 picker.update(Picker.PickerState.HOLD);
                             })
-                            .back(9)
-                            .strafeRight(24)
-                            .forward(70)
-                            .strafeLeft(parking_offset)
-                            .forward(16)
+                            .back(11.5)
+                            .turn(Math.toRadians(90))
+                            .forward(22)
+                            .strafeRight(parking_offset)
+//                            .forward(16)
                             .waitSeconds(1) // place yellow pixel
                             .waitSeconds(1) // park
                             .build();
                 } else {
-                    // F4
+                    // F2
                     invertedDetection = false; // F2 has looks the same as A4, so don't invert
                     startingX = F2_starting_x;
                     startingY = F2_starting_y;
@@ -271,8 +271,9 @@ public class Testing_Auton_tfod_jjenkins extends LinearOpMode {
                             .build();
 
                     rightTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                            //.strafeRight(2)
+                            .strafeRight(2)
                             .forward(26)
+                            .back(3.5)
                             .addDisplacementMarker(() -> { //start placing purple pixel
                                 picker.update(Picker.PickerState.OUTAKE);
                             })
@@ -280,11 +281,11 @@ public class Testing_Auton_tfod_jjenkins extends LinearOpMode {
                             .addDisplacementMarker(() -> { //stop placing purple pixel
                                 picker.update(Picker.PickerState.HOLD);
                             })
-                            .back(14)
-                            .turn(Math.toRadians(-90))
-                            .forward(6)
-                            .strafeLeft(parking_offset)
-                            .forward(16)
+                            .back(11.5)
+                            .turn(Math.toRadians(90))
+                            .forward(22)
+                            .strafeRight(parking_offset)
+//                            .forward(16)
                             .waitSeconds(1) // place yellow pixel
                             .waitSeconds(1) // park
                             .build();
@@ -292,7 +293,7 @@ public class Testing_Auton_tfod_jjenkins extends LinearOpMode {
                 break;
             case BLUE:
             default:
-                if(fieldStartPosition == FieldStartPosition.LEFT) {
+                if(fieldStartPosition == FieldStartPosition.RIGHT) {
                     // A2
 
                     invertedDetection = true; // A2 has inverted detections compared to A4
@@ -309,7 +310,8 @@ public class Testing_Auton_tfod_jjenkins extends LinearOpMode {
                     leftTraj = drive.trajectorySequenceBuilder(initialMove.end())
                             .forward(28)
                             .turn(Math.toRadians(90))
-                            .forward(6)
+                            .forward(18)
+                            .back(3.5)
                             .addDisplacementMarker(() -> { //start placing purple pixel
                                 picker.update(Picker.PickerState.OUTAKE);
                             })
@@ -317,8 +319,8 @@ public class Testing_Auton_tfod_jjenkins extends LinearOpMode {
                             .addDisplacementMarker(() -> { //stop placing purple pixel
                                 picker.update(Picker.PickerState.HOLD);
                             })
-                            .back(6)
-                            .strafeLeft(24)
+                            .back(8.5)
+                            .strafeLeft(21)
                             .forward(70)
                             .strafeRight(parking_offset)
                             .forward(16)
@@ -340,7 +342,7 @@ public class Testing_Auton_tfod_jjenkins extends LinearOpMode {
                             .turn(Math.toRadians(90))
                             .forward(68)
                             .strafeRight(parking_offset)
-                            .forward(16)
+                            .forward(20)
                             .waitSeconds(1) // place yellow pixel
                             .waitSeconds(1) // park
                             .build();
@@ -348,6 +350,7 @@ public class Testing_Auton_tfod_jjenkins extends LinearOpMode {
                     rightTraj = drive.trajectorySequenceBuilder(initialMove.end())
                             .strafeRight(2)
                             .forward(26)
+                            .back(3.5)
                             .addDisplacementMarker(() -> { //start placing purple pixel
                                 picker.update(Picker.PickerState.OUTAKE);
                             })
@@ -355,9 +358,9 @@ public class Testing_Auton_tfod_jjenkins extends LinearOpMode {
                             .addDisplacementMarker(() -> { //stop placing purple pixel
                                 picker.update(Picker.PickerState.HOLD);
                             })
-                            .back(14)
+                            .back(11.5)
                             .turn(Math.toRadians(90))
-                            .strafeLeft(10)
+                            .strafeLeft(7)
                             .forward(78)
                             .strafeRight(parking_offset)
                             .forward(16)
@@ -378,8 +381,9 @@ public class Testing_Auton_tfod_jjenkins extends LinearOpMode {
                             .strafeLeft(4)
                             .build();
                     leftTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                            .strafeLeft(8)
+                            .strafeLeft(2)
                             .forward(26)
+                            .back(3.5)
                             .addDisplacementMarker(() -> { //start placing purple pixel
                                 picker.update(Picker.PickerState.OUTAKE);
                             })
@@ -387,11 +391,11 @@ public class Testing_Auton_tfod_jjenkins extends LinearOpMode {
                             .addDisplacementMarker(() -> { //stop placing purple pixel
                                 picker.update(Picker.PickerState.HOLD);
                             })
-                            .back(12)
+                            .back(11.5)
                             .turn(Math.toRadians(90))
-                            .forward(6)
+                            .forward(22)
                             .strafeRight(parking_offset)
-                            .forward(16)
+//                            .forward(16)
                             .waitSeconds(1) // place yellow pixel
                             .waitSeconds(1) // park
                             .build();
@@ -418,7 +422,8 @@ public class Testing_Auton_tfod_jjenkins extends LinearOpMode {
                     rightTraj = drive.trajectorySequenceBuilder(initialMove.end())
                             .forward(28)
                             .turn(Math.toRadians(-90))
-                            .forward(6)
+                            .forward(18)
+                            .back(3.5)
                             .addDisplacementMarker(() -> { //start placing purple pixel
                                 picker.update(Picker.PickerState.OUTAKE);
                             })
@@ -426,13 +431,13 @@ public class Testing_Auton_tfod_jjenkins extends LinearOpMode {
                             .addDisplacementMarker(() -> { //stop placing purple pixel
                                 picker.update(Picker.PickerState.HOLD);
                             })
-                            .back(6)
+                            .back(8.5)
                             .turn(Math.toRadians(90))
                             .back(14)
                             .turn(Math.toRadians(90))
                             .forward(14)
                             .strafeRight(parking_offset)
-                            .forward(16)
+                            .forward(20)
                             .waitSeconds(1) // place yellow pixel
                             .waitSeconds(1) // park
                             .build();

@@ -41,7 +41,7 @@ public class Elevator {
 
         pidf_controller = new PIDFController(
                 new PIDCoefficients(
-                        0.001,
+                        0.01,
                         0.0,
                         0.0)
         );

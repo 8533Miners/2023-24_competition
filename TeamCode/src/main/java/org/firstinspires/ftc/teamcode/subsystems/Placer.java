@@ -9,8 +9,8 @@ public class Placer {
     private final int ELEVATOR_STOWED = 0;
     private final int PIXEL_HEIGHT = 240;//TODO
     private final int BACKDROP_HEIGHT = 1566;
-    private final int CLIMB_HEIGHT = 1964;
-    private final int HANGING = 1000;//1280;
+    private final int CLIMB_HEIGHT = 2300;
+    private final int HANGING = 700;//1280;
     private final int MAX_SAFE = 2800;
     private Gripper gripper;
     private Elevator elevator;

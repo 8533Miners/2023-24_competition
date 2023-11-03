@@ -40,8 +40,8 @@ public class SubSystemConstants {
         // Percent of ejector servo range
         RETRACT(0.0),
         CRADLE(0.70),
-        PUSH_FIRST(0.755),
-        PUSH_BOTH(0.76);
+        PUSH_FIRST(0.76),
+        PUSH_BOTH(0.77);
         private final double ejectorPosition;
         EjectorPosition(double ejectorPosition) {
             this.ejectorPosition = ejectorPosition;
