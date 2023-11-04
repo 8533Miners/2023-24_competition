@@ -334,9 +334,7 @@ public class Production_Auton extends LinearOpMode {
                             .back(11.5)
                             .turn(Math.toRadians(-90))
                             .strafeRight(7)
-                            .forward(78)
-                            .strafeLeft(parking_offset)
-                            .forward(16)
+                            .forward(94)
                             .build();
 
                     /**
@@ -352,17 +350,16 @@ public class Production_Auton extends LinearOpMode {
                             .addDisplacementMarker(() -> { //stop placing purple pixel
                                 picker.update(Picker.PickerState.HOLD);
                             })
-                            .back(30)
+                            .back(28)
                             .turn(Math.toRadians(-90))
-                            .forward(68)
-                            .strafeLeft(parking_offset)
-                            .forward(20)
+                            .forward(88)
                             .build();
 
                     /**
                      * F2 Right Trajectory
                      */
                     rightTraj = drive.trajectorySequenceBuilder(initialMove.end())
+                            .strafeLeft(4)//initialmove
                             .forward(28)
                             .turn(Math.toRadians(-90))
                             .forward(18)
@@ -375,10 +372,8 @@ public class Production_Auton extends LinearOpMode {
                                 picker.update(Picker.PickerState.HOLD);
                             })
                             .back(8.5)
-                            .strafeRight(21)
-                            .forward(70)
-                            .strafeLeft(parking_offset)
-                            .forward(20)
+                            .strafeRight(24)
+                            .forward(90)
                             .build();
                 }
                 break;
@@ -452,11 +447,7 @@ public class Production_Auton extends LinearOpMode {
                             .back(11.5)
                             .turn(Math.toRadians(90))
                             .strafeLeft(7)
-                            .forward(78)
-                            .strafeRight(parking_offset)
-                            .forward(16)
-                            .waitSeconds(1) // place yellow pixel
-                            .waitSeconds(1) // park
+                            .forward(94)
                             .build();
 
                 } else {
@@ -516,6 +507,7 @@ public class Production_Auton extends LinearOpMode {
                      * A4 Right Trajectory
                      */
                     rightTraj = drive.trajectorySequenceBuilder(initialMove.end())
+                            .strafeLeft(4)//initial move
                             .forward(28)
                             .turn(Math.toRadians(-90))
                             .forward(18)
@@ -527,15 +519,7 @@ public class Production_Auton extends LinearOpMode {
                             .addDisplacementMarker(() -> { //stop placing purple pixel
                                 picker.update(Picker.PickerState.HOLD);
                             })
-                            .back(8.5)
-                            .turn(Math.toRadians(90))
-                            .back(14)
-                            .turn(Math.toRadians(90))
-                            .forward(14)
-                            .strafeRight(parking_offset)
-                            .forward(20)
-                            .waitSeconds(1) // place yellow pixel
-                            .waitSeconds(1) // park
+                            .back(42.5)
                             .build();
                 }
                 break;
