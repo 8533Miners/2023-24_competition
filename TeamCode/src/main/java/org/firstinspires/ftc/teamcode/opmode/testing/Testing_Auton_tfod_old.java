@@ -19,7 +19,7 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 import java.util.List;
 
 //@Disabled
-@Autonomous(name = "Test Auton Camera Stream - old", group = "TestAuton")
+@Autonomous(name = "Test Auton Camera Stream - new bird", group = "TestAuton")
 public class Testing_Auton_tfod_old extends LinearOpMode {
     TFObjectPropDetect tfObjectPropDetect;
     public int CAMERA_WIDTH = 640;
@@ -30,7 +30,7 @@ public class Testing_Auton_tfod_old extends LinearOpMode {
     float highestXDistance = 0;
     String highestXDistanceLabel = " ";
     public ElapsedTime runtime = new ElapsedTime();
-    private static final String TFOD_MODEL_ASSET = "model_20231104_000607.tflite";
+    private static final String TFOD_MODEL_ASSET = "model_20231104_103203.tflite";
     private static final String[] LABELS = {
             "prop"
     };
