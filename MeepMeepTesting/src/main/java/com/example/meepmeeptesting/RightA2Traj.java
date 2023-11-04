@@ -5,7 +5,7 @@ import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
-public class LeftA2Traj {
+public class RightA2Traj {
     public static void main(String[] args) {
         int A2_starting_x = -40;
         int A2_starting_y = 62;
@@ -23,9 +23,8 @@ public class LeftA2Traj {
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(new Pose2d(A2_starting_x, A2_starting_y, Math.toRadians(start_heading_A)))
                                 .strafeRight(4)//initial move
-                                .forward(28)
-                                .turn(Math.toRadians(90))
-                                .forward(18)
+                                .strafeRight(2)
+                                .forward(26)
                                 .back(3.5)
 //                                .addDisplacementMarker(() -> { //start placing purple pixel
 //                                    picker.update(Picker.PickerState.OUTAKE);
@@ -34,9 +33,10 @@ public class LeftA2Traj {
 //                                .addDisplacementMarker(() -> { //stop placing purple pixel
 //                                    picker.update(Picker.PickerState.HOLD);
 //                                })
-                                .back(8.5)
-                                .strafeLeft(24)
-                                .forward(90)
+                                .back(11.5)
+                                .turn(Math.toRadians(90))
+                                .strafeLeft(7)
+                                .forward(94)
                                 .build()
                 );
 
