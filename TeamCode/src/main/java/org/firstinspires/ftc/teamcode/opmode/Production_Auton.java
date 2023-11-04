@@ -413,12 +413,8 @@ public class Production_Auton extends LinearOpMode {
                                 picker.update(Picker.PickerState.HOLD);
                             })
                             .back(8.5)
-                            .strafeLeft(21)
-                            .forward(70)
-                            .strafeRight(parking_offset)
-                            .forward(16)
-                            .waitSeconds(1) // place yellow pixel
-                            .waitSeconds(1) // park
+                            .strafeLeft(24)
+                            .forward(90)
                             .build();
 
                     /**

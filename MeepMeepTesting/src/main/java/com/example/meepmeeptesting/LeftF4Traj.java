@@ -35,12 +35,6 @@ public class LeftF4Traj {
 //                                    picker.update(Picker.PickerState.HOLD);
 //                                })
                                 .back(42.5)
-//                                .turn(Math.toRadians(-90))
-//                                .back(24)
-//                                .turn(Math.toRadians(-90))
-//                                .forward(14)
-//                                .strafeLeft(parking_offset)
-//                                .forward(20)
                                 .build()
                 );
 
