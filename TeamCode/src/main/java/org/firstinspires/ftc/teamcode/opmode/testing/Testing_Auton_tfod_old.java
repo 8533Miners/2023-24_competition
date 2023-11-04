@@ -4,7 +4,6 @@ import android.util.Size;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -12,15 +11,16 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.vision.SpikeMark;
+import org.firstinspires.ftc.teamcode.subsystems.vision.TFObjectPropDetect;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
-import org.firstinspires.ftc.teamcode.subsystems.vision.TFObjectPropDetect;
 
 import java.util.List;
+
 //@Disabled
-@Autonomous(name = "Test Auton Camera Stream", group = "TestAuton")
-public class Testing_Auton_tfod extends LinearOpMode {
+@Autonomous(name = "Test Auton Camera Stream - old", group = "TestAuton")
+public class Testing_Auton_tfod_old extends LinearOpMode {
     TFObjectPropDetect tfObjectPropDetect;
     public int CAMERA_WIDTH = 640;
     int CAMERA_HEIGHT = 480;
@@ -145,7 +145,7 @@ public class Testing_Auton_tfod extends LinearOpMode {
 
         visionPortal = builder.build();
 
-        tfod.setMinResultConfidence(0.35f);
+        tfod.setMinResultConfidence(0.45f);
     }
 
     private void telemetryTfod() {
