@@ -35,7 +35,7 @@ public class RightF2Traj {
 //                                    picker.update(Picker.PickerState.HOLD);
 //                                })
                                 .back(8.5)
-                                .strafeRight(21)
+                                .strafeRight(24)
                                 .forward(70)
                                 .strafeLeft(parking_offset)
                                 .forward(20)
