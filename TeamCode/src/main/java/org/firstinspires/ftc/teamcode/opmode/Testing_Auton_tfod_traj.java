@@ -4,6 +4,7 @@ import android.util.Size;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -21,7 +22,9 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
 
+
 @Autonomous(name = "Auton w/ TFOD", group = "TestAuton")
+@Disabled
 public class Testing_Auton_tfod_traj extends LinearOpMode {
     // Random Robot Variables
     public ElapsedTime runtime = new ElapsedTime();

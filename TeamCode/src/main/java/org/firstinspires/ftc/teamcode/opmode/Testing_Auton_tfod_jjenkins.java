@@ -38,7 +38,8 @@ public class Testing_Auton_tfod_jjenkins extends LinearOpMode {
 
     // TFOD Variables
     TFObjectPropDetect tfObjectPropDetect;
-    private static final String TFOD_MODEL_ASSET = "model_new_bird.tflite";
+    private static final String TFOD_MODEL_ASSET = "model_20231104_000607.tflite";
+
     private static final String[] LABELS = {
             "prop"
     };
@@ -135,10 +136,7 @@ public class Testing_Auton_tfod_jjenkins extends LinearOpMode {
         TrajectorySequence rightTraj;
         Pose2d startPose;
 
-
         boolean invertedDetection; // invert detections based on starting position
-
-
 
         /**
          * Configure starting X, Y, and heading for starting pose

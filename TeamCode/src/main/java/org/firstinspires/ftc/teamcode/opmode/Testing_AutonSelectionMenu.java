@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.opmode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu;
 @Autonomous(name="Testing_AutonSelectionMenu", group="menu")
+@Disabled
 public class Testing_AutonSelectionMenu extends LinearOpMode {
     SelectionMenu selectionMenu = new SelectionMenu(this,telemetry);
     @Override
