@@ -172,13 +172,7 @@ public class Production_Auton extends LinearOpMode {
                             .addDisplacementMarker(() -> { //stop placing purple pixel
                                 picker.update(Picker.PickerState.HOLD);
                             })
-                            .back(8.5)
-                            .turn(Math.toRadians(-90))
-                            .back(24)
-                            .turn(Math.toRadians(-90))
-                            .forward(14)
-                            .strafeLeft(parking_offset)
-                            .forward(20)
+                            .back(42.5)
                             .build();
 
                     /**
@@ -194,11 +188,8 @@ public class Production_Auton extends LinearOpMode {
                             .addDisplacementMarker(() -> { //stop placing purple pixel
                                 picker.update(Picker.PickerState.HOLD);
                             })
-                            .back(28)
-                            .turn(Math.toRadians(-90))
-                            .forward(14)
-                            .strafeLeft(parking_offset)
-                            .forward(20)
+                            .back(3.5)
+                            .strafeRight(34)
                             .build();
 
                     /**
@@ -215,11 +206,7 @@ public class Production_Auton extends LinearOpMode {
                             .addDisplacementMarker(() -> { //stop placing purple pixel
                                 picker.update(Picker.PickerState.HOLD);
                             })
-                            .back(18.5)
-                            .turn(Math.toRadians(-90))
-                            .forward(22)
-                            .strafeLeft(parking_offset)
-                            .forward(7)
+                            .strafeRight(24)
                             .build();
                 } else {
                     // F2
