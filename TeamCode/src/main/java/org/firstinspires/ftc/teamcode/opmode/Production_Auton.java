@@ -477,13 +477,7 @@ public class Production_Auton extends LinearOpMode {
                             .addDisplacementMarker(() -> { //stop placing purple pixel
                                 picker.update(Picker.PickerState.HOLD);
                             })
-                            .back(11.5)
-                            .turn(Math.toRadians(90))
-                            .forward(22)
-                            .strafeRight(parking_offset)
-//                            .forward(16)
-                            .waitSeconds(1) // place yellow pixel
-                            .waitSeconds(1) // park
+                            .strafeLeft(24)
                             .build();
 
                     /**
