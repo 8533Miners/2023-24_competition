@@ -22,6 +22,7 @@ public class RightF4Traj {
                 .setConstraints(15, 30, Math.toRadians(280), Math.toRadians(60), 10.56)
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(new Pose2d(F4_starting_x, F4_starting_y, Math.toRadians(start_heading_F)))
+                                .strafeRight(4)//initial move
                                 .strafeRight(2)
                                 .forward(26)
                                 .back(3.5)
@@ -32,11 +33,7 @@ public class RightF4Traj {
 //                                .addDisplacementMarker(() -> { //stop placing purple pixel
 //                                    picker.update(Picker.PickerState.HOLD);
 //                                })
-                                .back(18.5)
-                                .turn(Math.toRadians(-90))
-                                .forward(22)
-                                .strafeLeft(parking_offset)
-                                .forward(7)
+                                .strafeRight(24)
                                 .build()
                 );
 

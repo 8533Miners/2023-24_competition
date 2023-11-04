@@ -5,11 +5,11 @@ import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
-public class LeftF4Traj {
+public class CenterA4Traj {
     public static void main(String[] args) {
-        int F4_starting_x = 16;
-        int F4_starting_y = -62;
-        int start_heading_F = 90;
+        int A4_starting_x = 16;
+        int A4_starting_y = 62;
+        int start_heading_A = 270;
 //        int parking_offset = 2;
 //        int parking_offset = 24;
         int parking_offset = 48;
@@ -21,12 +21,10 @@ public class LeftF4Traj {
                 .setDimensions(13.5, 16)
                 .setConstraints(15, 30, Math.toRadians(280), Math.toRadians(60), 10.56)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(F4_starting_x, F4_starting_y, Math.toRadians(start_heading_F)))
-                                .strafeRight(4)//initial move
-                                .forward(28)
-                                .turn(Math.toRadians(90))
-                                .forward(18)
-                                .back(3.5)
+                        drive.trajectorySequenceBuilder(new Pose2d(A4_starting_x, A4_starting_y, Math.toRadians(start_heading_A)))
+                                .strafeLeft(4)//initial move
+                                .strafeRight(3)
+                                .forward(32)
 //                                .addDisplacementMarker(() -> { //start placing purple pixel
 //                                    picker.update(Picker.PickerState.OUTAKE);
 //                                })
@@ -34,13 +32,8 @@ public class LeftF4Traj {
 //                                .addDisplacementMarker(() -> { //stop placing purple pixel
 //                                    picker.update(Picker.PickerState.HOLD);
 //                                })
-                                .back(42.5)
-//                                .turn(Math.toRadians(-90))
-//                                .back(24)
-//                                .turn(Math.toRadians(-90))
-//                                .forward(14)
-//                                .strafeLeft(parking_offset)
-//                                .forward(20)
+                                .back(3.5)
+                                .strafeLeft(34)
                                 .build()
                 );
 

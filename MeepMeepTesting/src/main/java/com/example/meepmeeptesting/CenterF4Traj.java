@@ -25,11 +25,15 @@ public class CenterF4Traj {
                                 .strafeRight(4)//initial move
                                 .strafeLeft(3)
                                 .forward(32)
-                                .back(28)
-                                .turn(Math.toRadians(-90))
-                                .forward(14)
-                                .strafeLeft(parking_offset)
-                                .forward(20)
+//                                .addDisplacementMarker(() -> { //start placing purple pixel
+//                                    picker.update(Picker.PickerState.OUTAKE);
+//                                })
+//                                .waitSeconds(1)
+//                                .addDisplacementMarker(() -> { //stop placing purple pixel
+//                                    picker.update(Picker.PickerState.HOLD);
+//                                })
+                                .back(3.5)
+                                .strafeRight(34)
                                 .build()
                 );
 
