@@ -4,7 +4,6 @@ import android.util.Size;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -12,27 +11,117 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.vision.SpikeMark;
+import org.firstinspires.ftc.teamcode.subsystems.vision.TFObjectPropDetect;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
-import org.firstinspires.ftc.teamcode.subsystems.vision.TFObjectPropDetect;
 
 import java.util.List;
+
 //@Disabled
-@Autonomous(name = "Test Auton Camera Stream", group = "TestAuton")
-public class Testing_Auton_tfod extends LinearOpMode {
+@Autonomous(name = "Test Auton Camera Stream - cup", group = "TestAuton")
+public class Testing_Auton_tfod_cup extends LinearOpMode {
     TFObjectPropDetect tfObjectPropDetect;
     public int CAMERA_WIDTH = 640;
     int CAMERA_HEIGHT = 480;
-    public String labelToDetect = "prop";
+    public String labelToDetect = "cup";
     public boolean propDetected = false;
     float highestConf = 0;
     float highestXDistance = 0;
     String highestXDistanceLabel = " ";
     public ElapsedTime runtime = new ElapsedTime();
-    private static final String TFOD_MODEL_ASSET = "model_20231104_000607.tflite";
+    private static final String TFOD_MODEL_ASSET = "ssd_mobilenet_v2_320x320_coco17_tpu_8.tflite";
     private static final String[] LABELS = {
-            "prop"
+            "person",
+            "bicycle",
+            "car",
+            "motorcycle",
+            "airplane",
+            "bus",
+            "train",
+            "truck",
+            "boat",
+            "traffic light",
+            "fire hydrant",
+            "???",
+            "stop sign",
+            "parking meter",
+            "bench",
+            "bird",
+            "cat",
+            "dog",
+            "horse",
+            "sheep",
+            "cow",
+            "elephant",
+            "bear",
+            "zebra",
+            "giraffe",
+            "???",
+            "backpack",
+            "umbrella",
+            "???",
+            "???",
+            "handbag",
+            "tie",
+            "suitcase",
+            "frisbee",
+            "skis",
+            "snowboard",
+            "sports ball",
+            "kite",
+            "baseball bat",
+            "baseball glove",
+            "skateboard",
+            "surfboard",
+            "tennis racket",
+            "bottle",
+            "???",
+            "wine glass",
+            "cup",
+            "fork",
+            "knife",
+            "spoon",
+            "bowl",
+            "banana",
+            "apple",
+            "sandwich",
+            "orange",
+            "broccoli",
+            "carrot",
+            "hot dog",
+            "pizza",
+            "donut",
+            "cake",
+            "chair",
+            "couch",
+            "potted plant",
+            "bed",
+            "???",
+            "dining table",
+            "???",
+            "???",
+            "toilet",
+            "???",
+            "tv",
+            "laptop",
+            "mouse",
+            "remote",
+            "keyboard",
+            "cell phone",
+            "microwave",
+            "oven",
+            "toaster",
+            "sink",
+            "refrigerator",
+            "???",
+            "book",
+            "clock",
+            "vase",
+            "scissors",
+            "teddy bear",
+            "hair drier",
+            "toothbrush",
     };
     private TfodProcessor tfod;
     public VisionPortal visionPortal;
@@ -145,7 +234,7 @@ public class Testing_Auton_tfod extends LinearOpMode {
 
         visionPortal = builder.build();
 
-        tfod.setMinResultConfidence(0.35f);
+        tfod.setMinResultConfidence(0.45f);
     }
 
     private void telemetryTfod() {
