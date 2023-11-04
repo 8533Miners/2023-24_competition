@@ -1,9 +1,10 @@
-package org.firstinspires.ftc.teamcode.opmode;
+package org.firstinspires.ftc.teamcode.opmode.testing;
 
 import android.util.Size;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -23,7 +24,7 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
-
+@Disabled
 @Autonomous(name = "jjenkins-auton", group = "TestAuton")
 public class Testing_Auton_tfod_jjenkins extends LinearOpMode {
     // Random Robot Variables
@@ -154,11 +155,11 @@ public class Testing_Auton_tfod_jjenkins extends LinearOpMode {
                     startPose = new Pose2d(startingX, startingY, Math.toRadians(startingHeading));
 
                     initialMove = drive.trajectorySequenceBuilder(startPose)
-                            .strafeLeft(4)
+                            .strafeRight(4)
                             .build();
 
                     /**
-                     * F2 Left Trajectory
+                     * F4 Left Trajectory
                      */
                     leftTraj = drive.trajectorySequenceBuilder(initialMove.end())
                             .strafeLeft(3)
@@ -181,7 +182,7 @@ public class Testing_Auton_tfod_jjenkins extends LinearOpMode {
                             .build();
 
                     /**
-                     * F2 Center Trajectory
+                     * F4 Center Trajectory
                      */
                     centerTraj = drive.trajectorySequenceBuilder(initialMove.end())
                             .strafeRight(3)
@@ -203,7 +204,7 @@ public class Testing_Auton_tfod_jjenkins extends LinearOpMode {
                             .build();
 
                     /**
-                     * F2 Right Trajectory
+                     * F4 Right Trajectory
                      */
                     rightTraj = drive.trajectorySequenceBuilder(initialMove.end())
                             .strafeRight(2)
@@ -238,7 +239,7 @@ public class Testing_Auton_tfod_jjenkins extends LinearOpMode {
                             .build();
 
                     /**
-                     * F4 Left Trajectory
+                     * F2 Left Trajectory
                      */
                     leftTraj = drive.trajectorySequenceBuilder(initialMove.end())
                             .forward(28)
@@ -263,7 +264,7 @@ public class Testing_Auton_tfod_jjenkins extends LinearOpMode {
                             .build();
 
                     /**
-                     * F4 Center Trajectory
+                     * F2 Center Trajectory
                      */
                     centerTraj = drive.trajectorySequenceBuilder(initialMove.end())
                             .strafeLeft(3)
@@ -285,7 +286,7 @@ public class Testing_Auton_tfod_jjenkins extends LinearOpMode {
                             .build();
 
                     /**
-                     * F4 Right Trajectory
+                     * F2 Right Trajectory
                      */
                     rightTraj = drive.trajectorySequenceBuilder(initialMove.end())
                             .strafeRight(2)

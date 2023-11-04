@@ -1,6 +1,6 @@
-package org.firstinspires.ftc.teamcode.opmode;
+package org.firstinspires.ftc.teamcode.opmode.testing;
 
-import static org.firstinspires.ftc.teamcode.opmode.Testing_BlueAuton.SpikeMark.CENTER;
+import static org.firstinspires.ftc.teamcode.opmode.testing.Testing_BlueAuton.SpikeMark.CENTER;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -9,9 +9,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
-
-@Autonomous(name = "Blue Backstage", group = "TestAuton")
 @Disabled
+@Autonomous(name = "Blue Backstage", group = "TestAuton")
 /*
 Starting tile A4 (Blue alliance, backstage)
  */

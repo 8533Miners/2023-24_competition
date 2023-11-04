@@ -1,9 +1,10 @@
-package org.firstinspires.ftc.teamcode.opmode;
+package org.firstinspires.ftc.teamcode.opmode.testing;
 
 import android.util.Size;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -17,7 +18,7 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 import org.firstinspires.ftc.teamcode.subsystems.vision.TFObjectPropDetect;
 
 import java.util.List;
-
+@Disabled
 @Autonomous(name = "Test Auton Camera Stream", group = "TestAuton")
 public class Testing_Auton_tfod extends LinearOpMode {
     TFObjectPropDetect tfObjectPropDetect;

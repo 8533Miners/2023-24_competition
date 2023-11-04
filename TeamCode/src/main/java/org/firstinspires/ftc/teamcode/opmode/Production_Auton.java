@@ -24,7 +24,7 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
 
-@Autonomous(name = "Production Auton", group = "TestAuton")
+@Autonomous(name = "Competition Auton", group = "TestAuton")
 public class Production_Auton extends LinearOpMode {
     // Random Robot Variables
     public ElapsedTime runtime = new ElapsedTime();
@@ -120,13 +120,13 @@ public class Production_Auton extends LinearOpMode {
         switch(fieldParkPosition){
             default:
             case NEAR_WALL:
-                parking_offset = 0;
+                parking_offset = 2;
                 break;
             case ON_BACKDROP:
-                parking_offset = 20;
+                parking_offset = 24;
                 break;
             case NEAR_CENTER:
-                parking_offset = 40;
+                parking_offset = 48;
                 break;
         }
 
@@ -154,86 +154,6 @@ public class Production_Auton extends LinearOpMode {
                     startPose = new Pose2d(startingX, startingY, Math.toRadians(startingHeading));
 
                     initialMove = drive.trajectorySequenceBuilder(startPose)
-                            .strafeLeft(4)
-                            .build();
-
-                    /**
-                     * F2 Left Trajectory
-                     */
-                    leftTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                            .strafeLeft(3)
-                            .forward(26)
-                            .addDisplacementMarker(() -> { //start placing purple pixel
-                                picker.update(Picker.PickerState.OUTAKE);
-                            })
-                            .waitSeconds(1)
-                            .addDisplacementMarker(() -> { //stop placing purple pixel
-                                picker.update(Picker.PickerState.HOLD);
-                            })
-                            .back(14)
-                            .turn(Math.toRadians(-90))
-                            .strafeRight(7)
-                            .forward(78)
-                            .strafeLeft(parking_offset)
-                            .forward(16)
-                            .waitSeconds(1) // place yellow pixel
-                            .waitSeconds(1) // park
-                            .build();
-
-                    /**
-                     * F2 Center Trajectory
-                     */
-                    centerTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                            .strafeRight(3)
-                            .forward(32)
-                            .addDisplacementMarker(() -> { //start placing purple pixel
-                                picker.update(Picker.PickerState.OUTAKE);
-                            })
-                            .waitSeconds(1)
-                            .addDisplacementMarker(() -> { //stop placing purple pixel
-                                picker.update(Picker.PickerState.HOLD);
-                            })
-                            .back(27)
-                            .turn(Math.toRadians(-90))
-                            .forward(70)
-                            .strafeLeft(parking_offset)
-                            .forward(16)
-                            .waitSeconds(1) // place yellow pixel
-                            .waitSeconds(1) // park
-                            .build();
-
-                    /**
-                     * F2 Right Trajectory
-                     */
-                    rightTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                            .strafeRight(2)
-                            .forward(26)
-                            .back(3.5)
-                            .addDisplacementMarker(() -> { //start placing purple pixel
-                                picker.update(Picker.PickerState.OUTAKE);
-                            })
-                            .waitSeconds(1)
-                            .addDisplacementMarker(() -> { //stop placing purple pixel
-                                picker.update(Picker.PickerState.HOLD);
-                            })
-                            .back(11.5)
-                            .turn(Math.toRadians(90))
-                            .forward(22)
-                            .strafeRight(parking_offset)
-//                            .forward(16)
-                            .waitSeconds(1) // place yellow pixel
-                            .waitSeconds(1) // park
-                            .build();
-                } else {
-                    // F2
-                    invertedDetection = false; // F2 has looks the same as A4, so don't invert
-                    startingX = F2_starting_x;
-                    startingY = F2_starting_y;
-                    startingHeading = starting_heading_F;
-
-                    startPose = new Pose2d(startingX,startingY, Math.toRadians(startingHeading));
-
-                    initialMove = drive.trajectorySequenceBuilder(startPose)
                             .strafeRight(4)
                             .build();
 
@@ -243,7 +163,8 @@ public class Production_Auton extends LinearOpMode {
                     leftTraj = drive.trajectorySequenceBuilder(initialMove.end())
                             .forward(28)
                             .turn(Math.toRadians(90))
-                            .forward(6)
+                            .forward(18)
+                            .back(3.5)
                             .addDisplacementMarker(() -> { //start placing purple pixel
                                 picker.update(Picker.PickerState.OUTAKE);
                             })
@@ -251,15 +172,13 @@ public class Production_Auton extends LinearOpMode {
                             .addDisplacementMarker(() -> { //stop placing purple pixel
                                 picker.update(Picker.PickerState.HOLD);
                             })
-                            .back(6)
+                            .back(8.5)
                             .turn(Math.toRadians(-90))
-                            .back(14)
+                            .back(24)
                             .turn(Math.toRadians(-90))
                             .forward(14)
                             .strafeLeft(parking_offset)
-                            .forward(16)
-                            .waitSeconds(1) // place yellow pixel
-                            .waitSeconds(1) // park
+                            .forward(20)
                             .build();
 
                     /**
@@ -275,13 +194,11 @@ public class Production_Auton extends LinearOpMode {
                             .addDisplacementMarker(() -> { //stop placing purple pixel
                                 picker.update(Picker.PickerState.HOLD);
                             })
-                            .back(14)
+                            .back(28)
                             .turn(Math.toRadians(-90))
                             .forward(14)
                             .strafeLeft(parking_offset)
-                            .forward(16)
-                            .waitSeconds(1) // place yellow pixel
-                            .waitSeconds(1) // park
+                            .forward(20)
                             .build();
 
                     /**
@@ -298,13 +215,89 @@ public class Production_Auton extends LinearOpMode {
                             .addDisplacementMarker(() -> { //stop placing purple pixel
                                 picker.update(Picker.PickerState.HOLD);
                             })
-                            .back(11.5)
-                            .turn(Math.toRadians(90))
+                            .back(18.5)
+                            .turn(Math.toRadians(-90))
                             .forward(22)
-                            .strafeRight(parking_offset)
-//                            .forward(16)
+                            .strafeLeft(parking_offset)
+                            .forward(7)
+                            .build();
+                } else {
+                    // F2
+                    invertedDetection = false; // F2 has looks the same as A4, so don't invert
+                    startingX = F2_starting_x;
+                    startingY = F2_starting_y;
+                    startingHeading = starting_heading_F;
+
+                    startPose = new Pose2d(startingX,startingY, Math.toRadians(startingHeading));
+
+                    initialMove = drive.trajectorySequenceBuilder(startPose)
+                            .strafeLeft(4)
+                            .build();
+
+                    /**
+                     * F2 Left Trajectory
+                     */
+                    leftTraj = drive.trajectorySequenceBuilder(initialMove.end())
+                            .strafeLeft(2)
+                            .forward(26)
+                            .back(3.5)
+                            .addDisplacementMarker(() -> { //start placing purple pixel
+                                picker.update(Picker.PickerState.OUTAKE);
+                            })
+                            .waitSeconds(1)
+                            .addDisplacementMarker(() -> { //stop placing purple pixel
+                                picker.update(Picker.PickerState.HOLD);
+                            })
+                            .back(11.5)
+                            .turn(Math.toRadians(-90))
+                            .strafeRight(7)
+                            .forward(78)
+                            .strafeLeft(parking_offset)
+                            .forward(16)
+                            .build();
+
+                    /**
+                     * F2 Center Trajectory
+                     */
+                    centerTraj = drive.trajectorySequenceBuilder(initialMove.end())
+                            .strafeLeft(3)
+                            .forward(32)
+                            .addDisplacementMarker(() -> { //start placing purple pixel
+                                picker.update(Picker.PickerState.OUTAKE);
+                            })
+                            .waitSeconds(1)
+                            .addDisplacementMarker(() -> { //stop placing purple pixel
+                                picker.update(Picker.PickerState.HOLD);
+                            })
+                            .back(14)
+                            .turn(Math.toRadians(-90))
+                            .forward(14)
+                            .strafeLeft(parking_offset)
+                            .forward(16)
                             .waitSeconds(1) // place yellow pixel
                             .waitSeconds(1) // park
+                            .build();
+
+                    /**
+                     * F2 Right Trajectory
+                     */
+                    rightTraj = drive.trajectorySequenceBuilder(initialMove.end())
+                            .forward(28)
+                            .turn(Math.toRadians(-90))
+                            .forward(18)
+                            .back(3.5)
+                            .addDisplacementMarker(() -> { //start placing purple pixel
+                                picker.update(Picker.PickerState.OUTAKE);
+                            })
+                            .waitSeconds(1)
+                            .addDisplacementMarker(() -> { //stop placing purple pixel
+                                picker.update(Picker.PickerState.HOLD);
+                            })
+                            .back(8.5)
+                            .strafeRight(21)
+                            .forward(70)
+                            .strafeLeft(parking_offset)
+                            .forward(20)
                             .build();
                 }
                 break;

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmode;
+package org.firstinspires.ftc.teamcode.opmode.testing;
 
 import android.util.Size;
 
@@ -22,9 +22,8 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
 
-
-@Autonomous(name = "Auton w/ TFOD", group = "TestAuton")
 @Disabled
+@Autonomous(name = "Auton w/ TFOD", group = "TestAuton")
 public class Testing_Auton_tfod_traj extends LinearOpMode {
     // Random Robot Variables
     public ElapsedTime runtime = new ElapsedTime();
