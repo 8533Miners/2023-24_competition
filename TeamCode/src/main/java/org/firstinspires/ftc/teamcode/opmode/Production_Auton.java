@@ -434,13 +434,9 @@ public class Production_Auton extends LinearOpMode {
                             .addDisplacementMarker(() -> { //stop placing purple pixel
                                 picker.update(Picker.PickerState.HOLD);
                             })
-                            .back(30)
+                            .back(28)
                             .turn(Math.toRadians(90))
-                            .forward(68)
-                            .strafeRight(parking_offset)
-                            .forward(20)
-                            .waitSeconds(1) // place yellow pixel
-                            .waitSeconds(1) // park
+                            .forward(88)
                             .build();
 
                     /**
@@ -509,20 +505,15 @@ public class Production_Auton extends LinearOpMode {
                     centerTraj = drive.trajectorySequenceBuilder(initialMove.end())
                             .strafeRight(3)
                             .forward(32)
-                            .addDisplacementMarker(() -> { //start placing purple pixel
-                                picker.update(Picker.PickerState.OUTAKE);
-                            })
-                            .waitSeconds(1)
-                            .addDisplacementMarker(() -> { //stop placing purple pixel
-                                picker.update(Picker.PickerState.HOLD);
-                            })
-                            .back(14)
-                            .turn(Math.toRadians(90))
-                            .forward(14)
-                            .strafeRight(parking_offset)
-                            .forward(16)
-                            .waitSeconds(1) // place yellow pixel
-                            .waitSeconds(1) // park
+                             .addDisplacementMarker(() -> { //start placing purple pixel
+                                 picker.update(Picker.PickerState.OUTAKE);
+                             })
+                             .waitSeconds(1)
+                             .addDisplacementMarker(() -> { //stop placing purple pixel
+                                 picker.update(Picker.PickerState.HOLD);
+                             })
+                            .back(3.5)
+                            .strafeLeft(34)
                             .build();
 
                     /**
