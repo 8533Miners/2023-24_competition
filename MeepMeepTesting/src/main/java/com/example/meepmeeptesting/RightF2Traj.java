@@ -36,9 +36,7 @@ public class RightF2Traj {
 //                                })
                                 .back(8.5)
                                 .strafeRight(24)
-                                .forward(70)
-                                .strafeLeft(parking_offset)
-                                .forward(20)
+                                .forward(90)
                                 .build()
                 );
 

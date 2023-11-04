@@ -32,11 +32,9 @@ public class CenterF2Traj {
 //                                .addDisplacementMarker(() -> { //stop placing purple pixel
 //                                    picker.update(Picker.PickerState.HOLD);
 //                                })
-                                .back(30)
+                                .back(28)
                                 .turn(Math.toRadians(-90))
-                                .forward(68)
-                                .strafeLeft(parking_offset)
-                                .forward(20)
+                                .forward(88)
                                 .build()
                 );
 
