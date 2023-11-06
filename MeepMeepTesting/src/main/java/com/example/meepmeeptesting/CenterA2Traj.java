@@ -34,7 +34,9 @@ public class CenterA2Traj {
 //                                })
                                 .back(28)
                                 .turn(Math.toRadians(90))
-                                .forward(88)
+                                .forward(75)
+                                .strafeRight(40)
+                                .forward(15)
                                 .build()
                 );
 

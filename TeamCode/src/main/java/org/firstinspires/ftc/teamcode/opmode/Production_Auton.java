@@ -260,7 +260,7 @@ public class Production_Auton extends LinearOpMode {
                             .forward(28)
                             .turn(Math.toRadians(90))
                             .forward(18)
-                            .back(3.5)
+                            .back(18)
                             .addDisplacementMarker(() -> { //start placing purple pixel
                                 picker.update(Picker.PickerState.OUTAKE);
                             })
@@ -268,7 +268,8 @@ public class Production_Auton extends LinearOpMode {
                             .addDisplacementMarker(() -> { //stop placing purple pixel
                                 picker.update(Picker.PickerState.HOLD);
                             })
-                            .back(42.5)
+                            .strafeLeft(24)
+                            .back(24)
                             .build();
 
                     /**
@@ -284,7 +285,7 @@ public class Production_Auton extends LinearOpMode {
                             .addDisplacementMarker(() -> { //stop placing purple pixel
                                 picker.update(Picker.PickerState.HOLD);
                             })
-                            .back(3.5)
+                            .back(28)
                             .strafeRight(34)
                             .build();
 
@@ -294,7 +295,7 @@ public class Production_Auton extends LinearOpMode {
                     rightTraj = drive.trajectorySequenceBuilder(initialMove.end())
                             .strafeRight(2)
                             .forward(26)
-                            .back(3.5)
+                            .back(22)
                             .addDisplacementMarker(() -> { //start placing purple pixel
                                 picker.update(Picker.PickerState.OUTAKE);
                             })
@@ -409,7 +410,9 @@ public class Production_Auton extends LinearOpMode {
                             })
                             .back(8.5)
                             .strafeLeft(24)
-                            .forward(90)
+                            .forward(75)
+                            .strafeRight(40)
+                            .forward(15)
                             .build();
 
                     /**
@@ -427,7 +430,9 @@ public class Production_Auton extends LinearOpMode {
                             })
                             .back(28)
                             .turn(Math.toRadians(90))
-                            .forward(88)
+                            .forward(75)
+                            .strafeRight(40)
+                            .forward(15)
                             .build();
 
                     /**
@@ -447,7 +452,9 @@ public class Production_Auton extends LinearOpMode {
                             .back(11.5)
                             .turn(Math.toRadians(90))
                             .strafeLeft(7)
-                            .forward(94)
+                            .forward(80)
+                            .strafeRight(40)
+                            .forward(15)
                             .build();
 
                 } else {

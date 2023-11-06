@@ -25,7 +25,7 @@ public class RightF4Traj {
                                 .strafeRight(4)//initial move
                                 .strafeRight(2)
                                 .forward(26)
-                                .back(3.5)
+                                .back(22)
 //                                .addDisplacementMarker(() -> { //start placing purple pixel
 //                                    picker.update(Picker.PickerState.OUTAKE);
 //                                })

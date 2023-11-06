@@ -36,7 +36,9 @@ public class RightA2Traj {
                                 .back(11.5)
                                 .turn(Math.toRadians(90))
                                 .strafeLeft(7)
-                                .forward(94)
+                                .forward(80)
+                                .strafeRight(40)
+                                .forward(15)
                                 .build()
                 );
 

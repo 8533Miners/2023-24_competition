@@ -26,7 +26,7 @@ public class LeftF4Traj {
                                 .forward(28)
                                 .turn(Math.toRadians(90))
                                 .forward(18)
-                                .back(3.5)
+                                .back(18)
 //                                .addDisplacementMarker(() -> { //start placing purple pixel
 //                                    picker.update(Picker.PickerState.OUTAKE);
 //                                })
@@ -34,7 +34,8 @@ public class LeftF4Traj {
 //                                .addDisplacementMarker(() -> { //stop placing purple pixel
 //                                    picker.update(Picker.PickerState.HOLD);
 //                                })
-                                .back(42.5)
+                                .strafeLeft(24)
+                                .back(24)
                                 .build()
                 );
 

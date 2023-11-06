@@ -32,7 +32,7 @@ public class CenterF4Traj {
 //                                .addDisplacementMarker(() -> { //stop placing purple pixel
 //                                    picker.update(Picker.PickerState.HOLD);
 //                                })
-                                .back(3.5)
+                                .back(28)
                                 .strafeRight(34)
                                 .build()
                 );

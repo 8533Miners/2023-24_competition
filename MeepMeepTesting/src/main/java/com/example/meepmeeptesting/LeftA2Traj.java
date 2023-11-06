@@ -36,7 +36,9 @@ public class LeftA2Traj {
 //                                })
                                 .back(8.5)
                                 .strafeLeft(24)
-                                .forward(90)
+                                .forward(75)
+                                .strafeRight(40)
+                                .forward(15)
                                 .build()
                 );
 
