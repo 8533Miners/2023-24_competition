@@ -85,7 +85,7 @@ public class FullTrajectory {
         FieldParkPosition fieldParkPosition = FieldParkPosition.NEAR_WALL;
 
         // From Detection, only set for MeepMeep
-        SpikeMark location = SpikeMark.RIGHT;
+        SpikeMark location = SpikeMark.LEFT;
 
 
         String starting_side = "backStage";
@@ -173,51 +173,49 @@ public class FullTrajectory {
             // Trajectory code to bring over to real auton
             trajectorySequence = driveShim.trajectorySequenceBuilder(startPose)
                     .lineTo(new Vector2d(starting_x + initialMove, invert * starting_y)) //initialMove
-                    .splineToLinearHeading(new Pose2d(spikeMark_X, spikeMark_Y, Math.toRadians(invert * STARTING_HEADING+90)), Math.toRadians(360))
+                    .splineToLinearHeading(new Pose2d(spikeMark_X, spikeMark_Y, Math.toRadians(invert * STARTING_HEADING+90*invert)), Math.toRadians(360))
                     .waitSeconds(1) // Drop Purple Pixel
                     .setTangent(Math.toRadians(180))
                     .splineToLinearHeading(new Pose2d(starting_x, invert * 60, Math.toRadians(180)), Math.toRadians(360))
                     .lineToLinearHeading(new Pose2d(14, invert * 60, Math.toRadians(180)))
+                    // ** Same code below (clean up?)
                     .splineToLinearHeading(new Pose2d(50, invert * 35 + board_offset, Math.toRadians(180)), Math.toRadians(0))
                     .waitSeconds(1) // Drop Yellow Pixel
                     .lineTo(new Vector2d(49, invert * 35 + board_offset))
                     .splineToLinearHeading(new Pose2d(BOARD_CENTER_X, invert * BOARD_CENTER_Y + invert * parking_offset, Math.toRadians(180)), Math.toRadians(0))
                     .build();
+                    // ** end same code
         } else {
             initialMove = 4;
             switch (location) {
                 case LEFT:
-                    spikeMark_X = -24+48;
+                    spikeMark_X = 32;
                     spikeMark_Y = invert * 34;
                     break;
                 case RIGHT:
-                    spikeMark_X = -46+48;
+                    spikeMark_X = 10;
                     spikeMark_Y = invert * 34;
                     break;
                 case CENTER:
                 default:
-                    spikeMark_X = -40+48;
-                    spikeMark_Y = invert * 31;
+                    spikeMark_X = 20;
+                    spikeMark_Y = invert * 24;
                     break;
             }
             // Trajectory code to bring over to real auton
             trajectorySequence = driveShim.trajectorySequenceBuilder(startPose)
                     .lineTo(new Vector2d(starting_x + initialMove, invert * starting_y)) //initialMove
-                    .splineToLinearHeading(new Pose2d(spikeMark_X, spikeMark_Y, Math.toRadians(invert * STARTING_HEADING-90)), Math.toRadians(360))
+                    .splineToLinearHeading(new Pose2d(spikeMark_X, spikeMark_Y, Math.toRadians(invert * STARTING_HEADING-90*invert)), Math.toRadians(180))
                     .waitSeconds(1) // Drop Purple Pixel
-                    .setTangent(Math.toRadians(-180))
-                    .splineToLinearHeading(new Pose2d(starting_x, invert * 60, Math.toRadians(180)), Math.toRadians(360))
-                    .lineToLinearHeading(new Pose2d(14, invert * 60, Math.toRadians(180)))
+                    .setTangent(Math.toRadians(0))
+                    // ** Same code below (clean up?)
                     .splineToLinearHeading(new Pose2d(50, invert * 35 + board_offset, Math.toRadians(180)), Math.toRadians(0))
                     .waitSeconds(1) // Drop Yellow Pixel
                     .lineTo(new Vector2d(49, invert * 35 + board_offset))
                     .splineToLinearHeading(new Pose2d(BOARD_CENTER_X, invert * BOARD_CENTER_Y + invert * parking_offset, Math.toRadians(180)), Math.toRadians(0))
                     .build();
+                    // ** end same code
         }
-
-
-
-
 
         myBot = new DefaultBotBuilder(meepMeep)
                 .setDimensions(13.5, 16)
