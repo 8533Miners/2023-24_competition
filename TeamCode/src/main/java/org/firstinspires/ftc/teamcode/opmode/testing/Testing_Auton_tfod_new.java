@@ -19,9 +19,9 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
 
-@Disabled
+//@Disabled
 @Autonomous(name = "Test Auton Camera Stream - new bird", group = "TestAuton")
-public class Testing_Auton_tfod_old extends LinearOpMode {
+public class Testing_Auton_tfod_new extends LinearOpMode {
     TFObjectPropDetect tfObjectPropDetect;
     public int CAMERA_WIDTH = 640;
     int CAMERA_HEIGHT = 480;
