@@ -26,7 +26,7 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 import java.util.List;
 
 @Autonomous(name = "New Trajectory Test", group = "TestAuton")
-public class Production_Auton_Test extends LinearOpMode {
+public class Testing_Auton extends LinearOpMode {
     // Random Robot Variables
     public ElapsedTime runtime = new ElapsedTime();
 
@@ -188,7 +188,14 @@ public class Production_Auton_Test extends LinearOpMode {
                 break;
         }
 
+        //telemetry.addData("starting X", starting_x);
+        //telemetry.addData("starting y", STARTING_Y);
+        //telemetry.update();
+
         Pose2d startPose = new Pose2d(starting_x, invert*STARTING_Y, Math.toRadians(invert*STARTING_HEADING));
+
+        // Set starting pose
+        drive.setPoseEstimate(startPose);
 
         TrajectorySequence initialMove = drive.trajectorySequenceBuilder(startPose)
                 .lineTo(new Vector2d(starting_x + initialMovePos, invert * STARTING_Y)) //initialMove
@@ -441,7 +448,7 @@ public class Production_Auton_Test extends LinearOpMode {
 
         visionPortal = builder.build();
 
-        tfod.setMinResultConfidence(0.60f);
+        tfod.setMinResultConfidence(0.45f);
     }
 
     private void telemetryTfod() {
@@ -449,6 +456,8 @@ public class Production_Auton_Test extends LinearOpMode {
         double y = 0;
 
         List<Recognition> currentRecognitions = tfod.getRecognitions();
+
+        telemetry.clearAll();
         telemetry.addData("# Objects Detected", currentRecognitions.size());
 
         for (Recognition recognition : currentRecognitions) {
