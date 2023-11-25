@@ -12,6 +12,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.Picker;
+import org.firstinspires.ftc.teamcode.subsystems.Placer;
 import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu;
 import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu.AllianceColor;
 import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu.FieldParkPosition;
@@ -101,9 +102,11 @@ public class Testing_Auton extends LinearOpMode {
     StartingSide startingSide = StartingSide.BACKSTAGE;
 
     Picker picker;
+    Placer placer;
 
     public void runOpMode() throws InterruptedException{
         picker = new Picker(hardwareMap);
+        placer = new Placer(hardwareMap);
 
         /**
          * Setup the selection menu
@@ -286,7 +289,17 @@ public class Testing_Auton extends LinearOpMode {
                         .lineToLinearHeading(new Pose2d(14, invert * 60, Math.toRadians(180)))
                         // ** Same code below (clean up?)
                         .splineToLinearHeading(new Pose2d(50, invert * 35 + board_offset, Math.toRadians(180)), Math.toRadians(0))
-                        .waitSeconds(1) // Drop Yellow Pixel
+                        .addDisplacementMarker(() -> {
+                            placer.update(Placer.PlacerState.DEPLOY);
+                        })
+                        .waitSeconds(1) // Wait for elevator/placer to get to position
+                        .addDisplacementMarker(() -> {
+                            placer.update(Placer.PlacerState.PLACE_SECOND);
+                        })
+                        .waitSeconds(0.5) // Wait for gripper to release
+                        .addDisplacementMarker(() -> {
+                            placer.update(Placer.PlacerState.READY_TO_INTAKE);
+                        })
                         .lineTo(new Vector2d(49, invert * 35 + board_offset))
                         .splineToLinearHeading(new Pose2d(BOARD_CENTER_X, invert * BOARD_CENTER_Y + invert * parking_offset, Math.toRadians(180)), Math.toRadians(0))
                         .build();
@@ -321,7 +334,17 @@ public class Testing_Auton extends LinearOpMode {
                         .setTangent(Math.toRadians(0))
                         // ** Same code below (clean up?)
                         .splineToLinearHeading(new Pose2d(50, invert * 35 + board_offset, Math.toRadians(180)), Math.toRadians(0))
-                        .waitSeconds(1) // Drop Yellow Pixel
+                        .addDisplacementMarker(() -> {
+                            placer.update(Placer.PlacerState.DEPLOY);
+                        })
+                        .waitSeconds(1) // Wait for elevator/placer to get to position
+                        .addDisplacementMarker(() -> {
+                            placer.update(Placer.PlacerState.PLACE_SECOND);
+                        })
+                        .waitSeconds(0.5) // Wait for gripper to release
+                        .addDisplacementMarker(() -> {
+                            placer.update(Placer.PlacerState.READY_TO_INTAKE);
+                        })
                         .lineTo(new Vector2d(49, invert * 35 + board_offset))
                         .splineToLinearHeading(new Pose2d(BOARD_CENTER_X, invert * BOARD_CENTER_Y + invert * parking_offset, Math.toRadians(180)), Math.toRadians(0))
                         .build();
@@ -380,7 +403,17 @@ public class Testing_Auton extends LinearOpMode {
                     .lineToLinearHeading(new Pose2d(14, invert * 60, Math.toRadians(180)))
                     // ** Same code below (clean up?)
                     .splineToLinearHeading(new Pose2d(50, invert * 35 + board_offset, Math.toRadians(180)), Math.toRadians(0))
-                    .waitSeconds(1) // Drop Yellow Pixel
+                    .addDisplacementMarker(() -> {
+                        placer.update(Placer.PlacerState.DEPLOY);
+                    })
+                    .waitSeconds(1) // Wait for elevator/placer to get to position
+                    .addDisplacementMarker(() -> {
+                        placer.update(Placer.PlacerState.PLACE_SECOND);
+                    })
+                    .waitSeconds(0.5) // Wait for gripper to release
+                    .addDisplacementMarker(() -> {
+                        placer.update(Placer.PlacerState.READY_TO_INTAKE);
+                    })
                     .lineTo(new Vector2d(49, invert * 35 + board_offset))
                     .splineToLinearHeading(new Pose2d(BOARD_CENTER_X, invert * BOARD_CENTER_Y + invert * parking_offset, Math.toRadians(180)), Math.toRadians(0))
                     .build();
@@ -414,7 +447,17 @@ public class Testing_Auton extends LinearOpMode {
                     .setTangent(Math.toRadians(0))
                     // ** Same code below (clean up?)
                     .splineToLinearHeading(new Pose2d(50, invert * 35 + board_offset, Math.toRadians(180)), Math.toRadians(0))
-                    .waitSeconds(1) // Drop Yellow Pixel
+                    .addDisplacementMarker(() -> {
+                        placer.update(Placer.PlacerState.DEPLOY);
+                    })
+                    .waitSeconds(1) // Wait for elevator/placer to get to position
+                    .addDisplacementMarker(() -> {
+                        placer.update(Placer.PlacerState.PLACE_SECOND);
+                    })
+                    .waitSeconds(0.5) // Wait for gripper to release
+                    .addDisplacementMarker(() -> {
+                        placer.update(Placer.PlacerState.READY_TO_INTAKE);
+                    })
                     .lineTo(new Vector2d(49, invert * 35 + board_offset))
                     .splineToLinearHeading(new Pose2d(BOARD_CENTER_X, invert * BOARD_CENTER_Y + invert * parking_offset, Math.toRadians(180)), Math.toRadians(0))
                     .build();
