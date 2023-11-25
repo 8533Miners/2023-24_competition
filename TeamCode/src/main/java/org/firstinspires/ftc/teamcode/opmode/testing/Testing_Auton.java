@@ -32,8 +32,8 @@ public class Testing_Auton extends LinearOpMode {
     public ElapsedTime runtime = new ElapsedTime();
 
     enum StartingSide {
-        BACKSTAGE,
-        CURTAIN
+        CURTAIN,
+        BACKSTAGE
     }
 
     // Camera Property Variables
@@ -46,9 +46,105 @@ public class Testing_Auton extends LinearOpMode {
     // TFOD Variables
     TFObjectPropDetect tfObjectPropDetect;
 
-    private static final String TFOD_MODEL_ASSET = "model_20231104_103203.tflite";
+    // BIRD MODEL
+    //private static final String TFOD_MODEL_ASSET = "model_20231104_103203.tflite";
+    //private static final String[] LABELS = {
+    //        "prop"
+    //};
+
+    // CUP MODEL
+    private static final String TFOD_MODEL_ASSET = "ssd_mobilenet_v2_320x320_coco17_tpu_8.tflite";
     private static final String[] LABELS = {
-            "prop"
+            "person",
+            "bicycle",
+            "car",
+            "motorcycle",
+            "airplane",
+            "bus",
+            "train",
+            "truck",
+            "boat",
+            "traffic light",
+            "fire hydrant",
+            "???",
+            "stop sign",
+            "parking meter",
+            "bench",
+            "bird",
+            "cat",
+            "dog",
+            "horse",
+            "sheep",
+            "cow",
+            "elephant",
+            "bear",
+            "zebra",
+            "giraffe",
+            "???",
+            "backpack",
+            "umbrella",
+            "???",
+            "???",
+            "handbag",
+            "tie",
+            "suitcase",
+            "frisbee",
+            "skis",
+            "snowboard",
+            "sports ball",
+            "kite",
+            "baseball bat",
+            "baseball glove",
+            "skateboard",
+            "surfboard",
+            "tennis racket",
+            "bottle",
+            "???",
+            "wine glass",
+            "cup",
+            "fork",
+            "knife",
+            "spoon",
+            "bowl",
+            "banana",
+            "apple",
+            "sandwich",
+            "orange",
+            "broccoli",
+            "carrot",
+            "hot dog",
+            "pizza",
+            "donut",
+            "cake",
+            "chair",
+            "couch",
+            "potted plant",
+            "bed",
+            "???",
+            "dining table",
+            "???",
+            "???",
+            "toilet",
+            "???",
+            "tv",
+            "laptop",
+            "mouse",
+            "remote",
+            "keyboard",
+            "cell phone",
+            "microwave",
+            "oven",
+            "toaster",
+            "sink",
+            "refrigerator",
+            "???",
+            "book",
+            "clock",
+            "vase",
+            "scissors",
+            "teddy bear",
+            "hair drier",
+            "toothbrush",
     };
 
     public String labelToDetect = "prop";
@@ -99,7 +195,7 @@ public class Testing_Auton extends LinearOpMode {
 
     boolean invertedDetection = false; // invert detections based on starting position
 
-    StartingSide startingSide = StartingSide.BACKSTAGE;
+    StartingSide startingSide = StartingSide.CURTAIN;
 
     Picker picker;
     Placer placer;
@@ -170,7 +266,7 @@ public class Testing_Auton extends LinearOpMode {
                 invert = INVERT;
                 if(FieldStartPosition.RIGHT == fieldStartPosition) {
                     starting_x = CURTAIN_STARTING_X_POSITION;
-                    startingSide = StartingSide.CURTAIN;
+                    startingSide = StartingSide.BACKSTAGE;
                     invertedDetection = true; // F4 has inverted detections compared to A4
                 } else {
                     starting_x = BACKSTAGE_STARTING_X_POSITION;
@@ -186,7 +282,7 @@ public class Testing_Auton extends LinearOpMode {
                     invertedDetection = true; // A2 has inverted detections compared to A4
                 } else {
                     starting_x = CURTAIN_STARTING_X_POSITION;
-                    startingSide = StartingSide.CURTAIN;
+                    startingSide = StartingSide.BACKSTAGE;
                 }
                 break;
         }
@@ -257,7 +353,16 @@ public class Testing_Auton extends LinearOpMode {
             double spikeMark_X;
             double spikeMark_Y;
 
-            if(startingSide.equals(StartingSide.BACKSTAGE)) {
+            // Flip the coordinates if our spike marks detection was inverted
+            if(invertedDetection==true) {
+                if(location.equals(SpikeMark.LEFT)){
+                    location = SpikeMark.RIGHT;
+                } else if(location.equals(SpikeMark.RIGHT)) {
+                    location = SpikeMark.LEFT;
+                }
+            }
+
+            if(startingSide.equals(StartingSide.CURTAIN)) {
                 switch (location) {
                     case LEFT:
                         spikeMark_X = -32;
@@ -371,7 +476,7 @@ public class Testing_Auton extends LinearOpMode {
                 .lineTo(new Vector2d(starting_x + initialMovePos, invert * STARTING_Y)) //initialMove
                 .build();
 
-        if(startingSide.equals(StartingSide.BACKSTAGE)) {
+        if(startingSide.equals(StartingSide.CURTAIN)) {
             switch (location) {
                 case LEFT:
                     spikeMark_X = -32;

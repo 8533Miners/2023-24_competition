@@ -19,7 +19,7 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
 
-@Disabled
+//@Disabled
 @Autonomous(name = "Test Auton Camera Stream - cup", group = "TestAuton")
 public class Testing_Auton_tfod_cup extends LinearOpMode {
     TFObjectPropDetect tfObjectPropDetect;
@@ -132,78 +132,9 @@ public class Testing_Auton_tfod_cup extends LinearOpMode {
 
         tfObjectPropDetect = new TFObjectPropDetect(tfod, CAMERA_WIDTH, labelToDetect);
 
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-
-        Pose2d startPose = new Pose2d(12,56, Math.toRadians(270));
-
-        drive.setPoseEstimate(startPose);
-
-        TrajectorySequence initialMove = drive.trajectorySequenceBuilder(startPose)
-                .strafeLeft(4)
-                .build();
-
-        TrajectorySequence leftTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                .strafeLeft(5)
-//                .turn(Math.toRadians(0)) // rotate robot towards center
-//                .forward(12)
-//                .waitSeconds(3) // place purple pixel
-//                .turn(Math.toRadians(90)) // rotate towards backdrop
-//                .forward(39)
-//                .waitSeconds(3) // place yellow pixel
-                .build();
-
-        TrajectorySequence centerTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                .forward(5)
-//                .turn(Math.toRadians(30)) // rotate robot towards center
-//                .forward(12)
-//                .waitSeconds(3) // place purple pixel
-//                .turn(Math.toRadians(90)) // rotate towards backdrop
-//                .forward(39)
-//                .waitSeconds(3) // place yellow pixel
-                .build();
-
-        TrajectorySequence rightTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                .strafeRight(10)
-//                .turn(Math.toRadians(60)) // rotate robot towards center
-//                .forward(12)
-//                .waitSeconds(3) // place purple pixel
-//                .turn(Math.toRadians(90)) // rotate towards backdrop
-//                .forward(39)
-//                .waitSeconds(3) // place yellow pixel
-                .build();
-
-        TrajectorySequence propPositionTrajectory = rightTraj;
-
-        boolean invertedDetection = false;
-
         waitForStart();
         if (opModeIsActive()){
-            drive.followTrajectorySequence(initialMove);
-
             runtime.reset();
-            while (opModeIsActive() & !propDetected & runtime.seconds() < 5) { // move on if detection taking longer than 5 seconds.
-                telemetryTfod();
-                SpikeMark location = tfObjectPropDetect.getSpikeMark(invertedDetection);
-                telemetry.addData("Spike Mark Location", location.toString());
-                telemetry.update();
-                switch (location){
-                    case NONE:
-                        propDetected = false;
-                        break;
-                    case LEFT:
-                        propPositionTrajectory = leftTraj;
-                        propDetected = true;
-                        break;
-                    case CENTER:
-                        propPositionTrajectory = centerTraj;
-                        propDetected = true;
-                        break;
-                    default:
-                        propPositionTrajectory = centerTraj;
-                }
-            }
-
-            drive.followTrajectorySequence(propPositionTrajectory);
         }
         visionPortal.close();
     }
