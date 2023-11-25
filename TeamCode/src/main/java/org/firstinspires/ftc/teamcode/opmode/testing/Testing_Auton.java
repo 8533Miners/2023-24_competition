@@ -393,7 +393,7 @@ public class Testing_Auton extends LinearOpMode {
                         .splineToLinearHeading(new Pose2d(starting_x, invert * 60, Math.toRadians(180)), Math.toRadians(360))
                         .lineToLinearHeading(new Pose2d(14, invert * 60, Math.toRadians(180)))
                         // ** Same code below (clean up?)
-                        .splineToLinearHeading(new Pose2d(50, invert * 35 + board_offset, Math.toRadians(180)), Math.toRadians(0))
+                        .splineToLinearHeading(new Pose2d(53.5, invert * 35 + board_offset, Math.toRadians(180)), Math.toRadians(0))
                         .addDisplacementMarker(() -> {
                             placer.update(Placer.PlacerState.DEPLOY);
                         })
@@ -416,7 +416,7 @@ public class Testing_Auton extends LinearOpMode {
                         spikeMark_Y = invert * 34;
                         break;
                     case RIGHT:
-                        spikeMark_X = 10;
+                        spikeMark_X = 4;
                         spikeMark_Y = invert * 34;
                         break;
                     case CENTER:
@@ -438,7 +438,7 @@ public class Testing_Auton extends LinearOpMode {
                         })
                         .setTangent(Math.toRadians(0))
                         // ** Same code below (clean up?)
-                        .splineToLinearHeading(new Pose2d(50, invert * 35 + board_offset, Math.toRadians(180)), Math.toRadians(0))
+                        .splineToLinearHeading(new Pose2d(53.5, invert * 35 + board_offset, Math.toRadians(180)), Math.toRadians(0))
                         .addDisplacementMarker(() -> {
                             placer.update(Placer.PlacerState.DEPLOY);
                         })
