@@ -353,6 +353,7 @@ public class Testing_Auton extends LinearOpMode {
             double spikeMark_X;
             double spikeMark_Y;
 
+            /*
             // Flip the coordinates if our spike marks detection was inverted
             if(invertedDetection==true) {
                 if(location.equals(SpikeMark.LEFT)){
@@ -360,7 +361,7 @@ public class Testing_Auton extends LinearOpMode {
                 } else if(location.equals(SpikeMark.RIGHT)) {
                     location = SpikeMark.LEFT;
                 }
-            }
+            } */
 
             if(startingSide.equals(StartingSide.CURTAIN)) {
                 switch (location) {
@@ -464,110 +465,6 @@ public class Testing_Auton extends LinearOpMode {
         // Print out detected spike mark location for debugging
         telemetry.addData("Spike Mark Location", location.toString());
         telemetry.update();
-
-
-        /**
-         * Detect prop and then choose locations based on data from detection
-         */
-        double spikeMark_X;
-        double spikeMark_Y;
-        //double initialMove;
-        initialMove = drive.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(starting_x + initialMovePos, invert * STARTING_Y)) //initialMove
-                .build();
-
-        if(startingSide.equals(StartingSide.CURTAIN)) {
-            switch (location) {
-                case LEFT:
-                    spikeMark_X = -32;
-                    spikeMark_Y = invert * 34;
-                    break;
-                case RIGHT:
-                    spikeMark_X = -54;
-                    spikeMark_Y = invert * 34;
-                    break;
-                case CENTER:
-                default:
-                    spikeMark_X = -40;
-                    spikeMark_Y = invert * 24;
-                    break;
-            }
-            // Trajectory code to bring over to real auton
-            trajectorySequence = drive.trajectorySequenceBuilder(startPose)
-
-                    .splineToLinearHeading(new Pose2d(spikeMark_X, spikeMark_Y, Math.toRadians(invert * STARTING_HEADING+90*invert)), Math.toRadians(360))
-                    .addDisplacementMarker(() -> { //start placing purple pixel
-                        picker.update(Picker.PickerState.OUTAKE);
-                    })
-                    .waitSeconds(1)
-                    .addDisplacementMarker(() -> { //stop placing purple pixel
-                        picker.update(Picker.PickerState.HOLD);
-                    })
-                    .setTangent(Math.toRadians(180))
-                    .splineToLinearHeading(new Pose2d(starting_x, invert * 60, Math.toRadians(180)), Math.toRadians(360))
-                    .lineToLinearHeading(new Pose2d(14, invert * 60, Math.toRadians(180)))
-                    // ** Same code below (clean up?)
-                    .splineToLinearHeading(new Pose2d(50, invert * 35 + board_offset, Math.toRadians(180)), Math.toRadians(0))
-                    .addDisplacementMarker(() -> {
-                        placer.update(Placer.PlacerState.DEPLOY);
-                    })
-                    .waitSeconds(1) // Wait for elevator/placer to get to position
-                    .addDisplacementMarker(() -> {
-                        placer.update(Placer.PlacerState.PLACE_SECOND);
-                    })
-                    .waitSeconds(0.5) // Wait for gripper to release
-                    .addDisplacementMarker(() -> {
-                        placer.update(Placer.PlacerState.READY_TO_INTAKE);
-                    })
-                    .lineTo(new Vector2d(49, invert * 35 + board_offset))
-                    .splineToLinearHeading(new Pose2d(BOARD_CENTER_X, invert * BOARD_CENTER_Y + invert * parking_offset, Math.toRadians(180)), Math.toRadians(0))
-                    .build();
-            // ** end same code
-        } else {
-            switch (location) {
-                case LEFT:
-                    spikeMark_X = 32;
-                    spikeMark_Y = invert * 34;
-                    break;
-                case RIGHT:
-                    spikeMark_X = 10;
-                    spikeMark_Y = invert * 34;
-                    break;
-                case CENTER:
-                default:
-                    spikeMark_X = 20;
-                    spikeMark_Y = invert * 24;
-                    break;
-            }
-            // Trajectory code to bring over to real auton
-            trajectorySequence = drive.trajectorySequenceBuilder(startPose)
-                    .splineToLinearHeading(new Pose2d(spikeMark_X, spikeMark_Y, Math.toRadians(invert * STARTING_HEADING-90*invert)), Math.toRadians(180))
-                    .addDisplacementMarker(() -> { //start placing purple pixel
-                        picker.update(Picker.PickerState.OUTAKE);
-                    })
-                    .waitSeconds(1)
-                    .addDisplacementMarker(() -> { //stop placing purple pixel
-                        picker.update(Picker.PickerState.HOLD);
-                    })
-                    .setTangent(Math.toRadians(0))
-                    // ** Same code below (clean up?)
-                    .splineToLinearHeading(new Pose2d(50, invert * 35 + board_offset, Math.toRadians(180)), Math.toRadians(0))
-                    .addDisplacementMarker(() -> {
-                        placer.update(Placer.PlacerState.DEPLOY);
-                    })
-                    .waitSeconds(1) // Wait for elevator/placer to get to position
-                    .addDisplacementMarker(() -> {
-                        placer.update(Placer.PlacerState.PLACE_SECOND);
-                    })
-                    .waitSeconds(0.5) // Wait for gripper to release
-                    .addDisplacementMarker(() -> {
-                        placer.update(Placer.PlacerState.READY_TO_INTAKE);
-                    })
-                    .lineTo(new Vector2d(49, invert * 35 + board_offset))
-                    .splineToLinearHeading(new Pose2d(BOARD_CENTER_X, invert * BOARD_CENTER_Y + invert * parking_offset, Math.toRadians(180)), Math.toRadians(0))
-                    .build();
-            // ** end same code
-        }
     }
 
     private void initTfod() {
