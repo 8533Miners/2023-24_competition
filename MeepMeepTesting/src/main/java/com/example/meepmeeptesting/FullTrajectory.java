@@ -13,8 +13,8 @@ import com.noahbres.meepmeep.roadrunner.trajectorysequence.TrajectorySequence;
 public class FullTrajectory {
 
     enum StartingSide {
-        BACKSTAGE,
-        CURTAIN
+        CURTAIN,
+        BACKSTAGE
     }
     enum AllianceColor {
         RED,
@@ -80,12 +80,12 @@ public class FullTrajectory {
 
         boolean invertedDetection = false; // invert detections based on starting position
 
-        StartingSide startingSide = StartingSide.BACKSTAGE;
+        StartingSide startingSide = StartingSide.CURTAIN;
 
         // From Detection, only set for MeepMeep
         SpikeMark locationToSet = SpikeMark.LEFT;
 
-        AllianceColor allianceColor = AllianceColor.BLUE;
+        AllianceColor allianceColor = AllianceColor.RED;
         FieldStartPosition fieldStartPosition = FieldStartPosition.LEFT;
         FieldParkPosition fieldParkPosition = FieldParkPosition.NEAR_WALL;
 
@@ -114,7 +114,7 @@ public class FullTrajectory {
                 invert = INVERT;
                 if(FieldStartPosition.RIGHT == fieldStartPosition) {
                     starting_x = CURTAIN_STARTING_X_POSITION;
-                    startingSide = StartingSide.CURTAIN;
+                    startingSide = StartingSide.BACKSTAGE;
                     invertedDetection = true; // F4 has inverted detections compared to A4
                 } else {
                     starting_x = BACKSTAGE_STARTING_X_POSITION;
@@ -130,7 +130,7 @@ public class FullTrajectory {
                     invertedDetection = true; // A2 has inverted detections compared to A4
                 } else {
                     starting_x = CURTAIN_STARTING_X_POSITION;
-                    startingSide = StartingSide.CURTAIN;
+                    startingSide = StartingSide.BACKSTAGE;
                 }
                 break;
         }
@@ -151,40 +151,45 @@ public class FullTrajectory {
          */
         double spikeMark_X;
         double spikeMark_Y;
+        double spikeMarkApproachAngle = Math.toRadians(invert*STARTING_HEADING);
 
         // only needed for MeepMeep since we don't have real TFOD
         SpikeMark location = locationToSet;
 
 
-        if(startingSide.equals(StartingSide.BACKSTAGE)) {
+        if(startingSide.equals(StartingSide.CURTAIN)) {
             switch (location) {
                 case LEFT:
-                    spikeMark_X = -32;
+                    spikeMark_X = -29;
                     spikeMark_Y = invert * 34;
+                    spikeMarkApproachAngle = Math.toRadians(invert * STARTING_HEADING+35*invert);
                     break;
                 case RIGHT:
-                    spikeMark_X = -54;
+                    spikeMark_X = -45;
                     spikeMark_Y = invert * 34;
+                    //spikeMarkApproachAngle = Math.toRadians(invert * STARTING_HEADING+-35*invert);
                     break;
                 case CENTER:
                 default:
                     spikeMark_X = -40;
-                    spikeMark_Y = invert * 24;
+                    spikeMark_Y = invert * 32;
+                    //spikeMarkApproachAngle = Math.toRadians(invert*STARTING_HEADING);
                     break;
             }
 
             // Trajectory code
             trajectorySequence = driveShim.trajectorySequenceBuilder(startPose)
                     .lineTo(new Vector2d(starting_x + initialMovePos, invert * STARTING_Y)) //initialMove
-                    .splineToLinearHeading(new Pose2d(spikeMark_X, spikeMark_Y, Math.toRadians(invert * STARTING_HEADING+90*invert)), Math.toRadians(360))
+                    //.lineToLinearHeading(new Pose2d(-59, invert*62))
+                    .lineToLinearHeading(new Pose2d(spikeMark_X, spikeMark_Y, spikeMarkApproachAngle))
                     .waitSeconds(1) // Drop Purple Pixel
                     .setTangent(Math.toRadians(180))
-                    .splineToLinearHeading(new Pose2d(starting_x, invert * 60, Math.toRadians(180)), Math.toRadians(360))
+                    .lineToLinearHeading(new Pose2d(starting_x+initialMovePos, invert * 60, Math.toRadians(180)))
                     .lineToLinearHeading(new Pose2d(14, invert * 60, Math.toRadians(180)))
                     // ** Same code below (clean up?)
                     .splineToLinearHeading(new Pose2d(50, invert * 35 + board_offset, Math.toRadians(180)), Math.toRadians(0))
                     .waitSeconds(1) // Drop Yellow Pixel
-                    .lineTo(new Vector2d(49, invert * 35 + board_offset))
+                    .lineTo(new Vector2d(BOARD_CENTER_X, invert * BOARD_CENTER_Y + board_offset))
                     .splineToLinearHeading(new Pose2d(BOARD_CENTER_X, invert * BOARD_CENTER_Y + invert * parking_offset, Math.toRadians(180)), Math.toRadians(0))
                     .build();
             // ** end same code
@@ -213,7 +218,7 @@ public class FullTrajectory {
                     // ** Same code below (clean up?)
                     .splineToLinearHeading(new Pose2d(50, invert * 35 + board_offset, Math.toRadians(180)), Math.toRadians(0))
                     .waitSeconds(1) // Drop Yellow Pixel
-                    .lineTo(new Vector2d(49, invert * 35 + board_offset))
+                    .lineTo(new Vector2d(BOARD_CENTER_X, invert * BOARD_CENTER_Y + board_offset))
                     .splineToLinearHeading(new Pose2d(BOARD_CENTER_X, invert * BOARD_CENTER_Y + invert * parking_offset, Math.toRadians(180)), Math.toRadians(0))
                     .build();
             // ** end same code
