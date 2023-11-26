@@ -172,14 +172,14 @@ public class Testing_Auton extends LinearOpMode {
 
     // Coordinates for board center on middle AprilTag on blue side(A).
     // Mirror Y for red side (F).
-    final double BOARD_CENTER_X = 48;
+    final double BOARD_CENTER_X = 49;
     final double BOARD_CENTER_Y = 35;
 
     // Parking offset values. Determines where to park in the apron
     final double PARK_WALL = 24;
     final double PARK_BOARD = 0;
     final double PARK_CENTER = -24;
-    double parking_offset;// = PARK_CENTER; //default
+    double parking_offset;
 
     // Offset value from center of board for the left/right april tags
     // The code will automatically invert if we are red vs blue
@@ -331,8 +331,15 @@ public class Testing_Auton extends LinearOpMode {
                 // 3. Load the trajectory based on the detected spike mark
                 switch (location){
                     case LEFT:
+                        board_offset = LEFT_TAG;
+                        propDetected = true;
+                        break;
                     case CENTER:
+                        board_offset = CENTER_TAG;
+                        propDetected = true;
+                        break;
                     case RIGHT:
+                        board_offset = RIGHT_TAG;
                         propDetected = true;
                         break;
                     case NONE: // assume "right trajectory" or invert to left
@@ -352,37 +359,42 @@ public class Testing_Auton extends LinearOpMode {
              */
             double spikeMark_X;
             double spikeMark_Y;
-
-            /*
-            // Flip the coordinates if our spike marks detection was inverted
-            if(invertedDetection==true) {
-                if(location.equals(SpikeMark.LEFT)){
-                    location = SpikeMark.RIGHT;
-                } else if(location.equals(SpikeMark.RIGHT)) {
-                    location = SpikeMark.LEFT;
-                }
-            } */
+            double spikeMarkApproachAngle = Math.toRadians(invert*STARTING_HEADING);
 
             if(startingSide.equals(StartingSide.CURTAIN)) {
+
+                // TODO: This is a hack, need to fix inverted detection
+                // Flip the coordinates if our spike mark detection was inverted
+                if(invertedDetection==false) {
+                    if(location.equals(SpikeMark.LEFT)){
+                        location = SpikeMark.RIGHT;
+                        board_offset = RIGHT_TAG;
+                    } else if(location.equals(SpikeMark.RIGHT)) {
+                        location = SpikeMark.LEFT;
+                        board_offset = LEFT_TAG;
+                    }
+                }
+
                 switch (location) {
                     case LEFT:
-                        spikeMark_X = -32;
+                        spikeMark_X = -29;
                         spikeMark_Y = invert * 34;
+                        spikeMarkApproachAngle = Math.toRadians(invert * STARTING_HEADING+35*invert);
                         break;
                     case RIGHT:
-                        spikeMark_X = -54;
+                        spikeMark_X = -45;
                         spikeMark_Y = invert * 34;
                         break;
                     case CENTER:
                     default:
                         spikeMark_X = -40;
-                        spikeMark_Y = invert * 24;
+                        spikeMark_Y = invert * 29;
                         break;
                 }
 
                 // Trajectory code
-                trajectorySequence = drive.trajectorySequenceBuilder(startPose)
-                        .splineToLinearHeading(new Pose2d(spikeMark_X, spikeMark_Y, Math.toRadians(invert * STARTING_HEADING+90*invert)), Math.toRadians(360))
+                trajectorySequence = drive.trajectorySequenceBuilder(initialMove.end())
+                        .lineToLinearHeading(new Pose2d(spikeMark_X, spikeMark_Y, spikeMarkApproachAngle))
                         .addDisplacementMarker(() -> { //start placing purple pixel
                             picker.update(Picker.PickerState.OUTAKE);
                         })
@@ -391,8 +403,7 @@ public class Testing_Auton extends LinearOpMode {
                             picker.update(Picker.PickerState.HOLD);
                         })
                         .setTangent(Math.toRadians(180))
-                        .splineToLinearHeading(new Pose2d(starting_x, invert * 60, Math.toRadians(180)), Math.toRadians(360))
-                        .lineToLinearHeading(new Pose2d(14, invert * 60, Math.toRadians(180)))
+                        .lineToLinearHeading(new Pose2d(starting_x+initialMovePos, invert * 60, Math.toRadians(180))).lineToLinearHeading(new Pose2d(14, invert * 60, Math.toRadians(180)))
                         // ** Same code below (clean up?)
                         .splineToLinearHeading(new Pose2d(53.5, invert * 35 + board_offset, Math.toRadians(180)), Math.toRadians(0))
                         .addDisplacementMarker(() -> {
@@ -406,14 +417,25 @@ public class Testing_Auton extends LinearOpMode {
                         .addDisplacementMarker(() -> {
                             placer.update(Placer.PlacerState.READY_TO_INTAKE);
                         })
-                        .lineTo(new Vector2d(49, invert * 35 + board_offset))
+                        .lineTo(new Vector2d(BOARD_CENTER_X, invert * BOARD_CENTER_Y + board_offset))
                         .splineToLinearHeading(new Pose2d(BOARD_CENTER_X, invert * BOARD_CENTER_Y + invert * parking_offset, Math.toRadians(180)), Math.toRadians(0))
                         .build();
                 // ** end same code
             } else {
+                // TODO: This is a hack, need to fix inverted detection
+                // Flip the coordinates if our spike marks detection was inverted
+                if(invertedDetection==true) {
+                    if(location.equals(SpikeMark.LEFT)){
+                        location = SpikeMark.RIGHT;
+                        board_offset = RIGHT_TAG;
+                    } else if(location.equals(SpikeMark.RIGHT)) {
+                        location = SpikeMark.LEFT;
+                        board_offset = LEFT_TAG;
+                    }
+                }
                 switch (location) {
                     case LEFT:
-                        spikeMark_X = 32;
+                        spikeMark_X = 28;
                         spikeMark_Y = invert * 34;
                         break;
                     case RIGHT:
@@ -427,8 +449,7 @@ public class Testing_Auton extends LinearOpMode {
                         break;
                 }
                 // Actual trajectory code
-                trajectorySequence = drive.trajectorySequenceBuilder(startPose)
-                        .lineTo(new Vector2d(starting_x + initialMovePos, invert * STARTING_Y)) //initialMove
+                trajectorySequence = drive.trajectorySequenceBuilder(initialMove.end())
                         .splineToLinearHeading(new Pose2d(spikeMark_X, spikeMark_Y, Math.toRadians(invert * STARTING_HEADING-90*invert)), Math.toRadians(180))
                         .addDisplacementMarker(() -> { //start placing purple pixel
                             picker.update(Picker.PickerState.OUTAKE);
@@ -451,7 +472,7 @@ public class Testing_Auton extends LinearOpMode {
                         .addDisplacementMarker(() -> {
                             placer.update(Placer.PlacerState.READY_TO_INTAKE);
                         })
-                        .lineTo(new Vector2d(49, invert * 35 + board_offset))
+                        .lineTo(new Vector2d(BOARD_CENTER_X, invert * BOARD_CENTER_Y + board_offset))
                         .splineToLinearHeading(new Pose2d(BOARD_CENTER_X, invert * BOARD_CENTER_Y + invert * parking_offset, Math.toRadians(180)), Math.toRadians(0))
                         .build();
                 // ** end same code
