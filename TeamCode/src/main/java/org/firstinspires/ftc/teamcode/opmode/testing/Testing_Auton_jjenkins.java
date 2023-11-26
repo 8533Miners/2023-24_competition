@@ -30,13 +30,18 @@ import java.util.List;
 public class Testing_Auton_jjenkins extends LinearOpMode {
     // Random Robot Variables
     public ElapsedTime runtime = new ElapsedTime();
-
+    public ElapsedTime purpleTime = new ElapsedTime();
+    public ElapsedTime yellowTime = new ElapsedTime();
+    public int purpleWait = 1;
+    public int yellowWait = 1;
     enum State {
         INITIAL_MOVE,
         DETECTION_TRAJECTORY,
         SCORE_PURPLE_PIXEL,
+        SCORE_PURPLE_WAIT,
         MOVE_TO_COMMON_TRAJECTORY,
         SCORE_YELLOW_PIXEL,
+        SCORE_YELLOW_WAIT,
         PARK_TRAJECTORY,
         IDLE
     }
@@ -473,6 +478,7 @@ public class Testing_Auton_jjenkins extends LinearOpMode {
             }
 
             while(opModeIsActive() && !isStopRequested()){
+                purpleTime.reset();
                 switch (currentState) {
                     case INITIAL_MOVE:
                         if(!drive.isBusy()){
@@ -487,6 +493,10 @@ public class Testing_Auton_jjenkins extends LinearOpMode {
                     case SCORE_PURPLE_PIXEL:
                         if(!drive.isBusy()){
                             currentState = State.MOVE_TO_COMMON_TRAJECTORY;
+                            picker.update(Picker.PickerState.OUTAKE);
+                        }
+                    case SCORE_PURPLE_WAIT:
+                        if(purpleTime <= purpleWait){
                             picker.update(Picker.PickerState.OUTAKE);
                         }
                 }
