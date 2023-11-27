@@ -183,9 +183,9 @@ public class Testing_Auton extends LinearOpMode {
 
     // Offset value from center of board for the left/right april tags
     // The code will automatically invert if we are red vs blue
-    final double RIGHT_TAG = -6;
+    final double RIGHT_TAG = -5.5;
     final double CENTER_TAG = 0;
-    final double LEFT_TAG = 6;
+    final double LEFT_TAG = 5.5;
     double board_offset = CENTER_TAG; //default
 
     // invert = 1 for blue; invert = -1 for red
@@ -421,7 +421,7 @@ public class Testing_Auton extends LinearOpMode {
                         .splineToLinearHeading(new Pose2d(BOARD_CENTER_X, invert * BOARD_CENTER_Y + invert * parking_offset, Math.toRadians(180)), Math.toRadians(0))
                         .build();
                 // ** end same code
-            } else {
+            } else { // BACKSTAGE
                 // TODO: This is a hack, need to fix inverted detection
                 // Flip the coordinates if our spike marks detection was inverted
                 if(invertedDetection==true) {
@@ -439,13 +439,13 @@ public class Testing_Auton extends LinearOpMode {
                         spikeMark_Y = invert * 34;
                         break;
                     case RIGHT:
-                        spikeMark_X = 4;
+                        spikeMark_X = 6;
                         spikeMark_Y = invert * 34;
                         break;
                     case CENTER:
                     default:
                         spikeMark_X = 20;
-                        spikeMark_Y = invert * 24;
+                        spikeMark_Y = invert * 26;
                         break;
                 }
                 // Actual trajectory code
