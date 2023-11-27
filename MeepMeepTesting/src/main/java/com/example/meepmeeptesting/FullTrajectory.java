@@ -85,7 +85,7 @@ public class FullTrajectory {
         // From Detection, only set for MeepMeep
         SpikeMark locationToSet = SpikeMark.RIGHT;
 
-        AllianceColor allianceColor = AllianceColor.RED;
+        AllianceColor allianceColor = AllianceColor.BLUE;
         FieldStartPosition fieldStartPosition = FieldStartPosition.LEFT;
         FieldParkPosition fieldParkPosition = FieldParkPosition.NEAR_WALL;
 
@@ -189,9 +189,9 @@ public class FullTrajectory {
                     .lineToLinearHeading(new Pose2d(starting_x+initialMovePos, invert * 60, Math.toRadians(180)))
                     .lineToLinearHeading(new Pose2d(14, invert * 60, Math.toRadians(180)))
                     // ** Same code below (clean up?)
-                    .splineToLinearHeading(new Pose2d(50, invert * 35 + board_offset, Math.toRadians(180)), Math.toRadians(0))
+                    .splineToLinearHeading(new Pose2d(50, invert * 35 + board_offset*invert, Math.toRadians(180)), Math.toRadians(0))
                     .waitSeconds(1) // Drop Yellow Pixel
-                    .lineTo(new Vector2d(BOARD_CENTER_X, invert * BOARD_CENTER_Y + board_offset))
+                    .lineTo(new Vector2d(BOARD_CENTER_X, invert * BOARD_CENTER_Y + board_offset*invert))
                     .splineToLinearHeading(new Pose2d(BOARD_CENTER_X, invert * BOARD_CENTER_Y + invert * parking_offset, Math.toRadians(180)), Math.toRadians(0))
                     .build();
             // ** end same code
@@ -222,9 +222,9 @@ public class FullTrajectory {
                     .waitSeconds(1) // Drop Purple Pixel
                     .setTangent(Math.toRadians(0))
                     // ** Same code below (clean up?)
-                    .splineToLinearHeading(new Pose2d(50, invert * 35 + board_offset, Math.toRadians(180)), Math.toRadians(0))
+                    .splineToLinearHeading(new Pose2d(50, invert * 35 + board_offset*invert, Math.toRadians(180)), Math.toRadians(0))
                     .waitSeconds(1) // Drop Yellow Pixel
-                    .lineTo(new Vector2d(BOARD_CENTER_X, invert * BOARD_CENTER_Y + board_offset))
+                    .lineTo(new Vector2d(BOARD_CENTER_X, invert * BOARD_CENTER_Y + board_offset*invert))
                     .splineToLinearHeading(new Pose2d(BOARD_CENTER_X, invert * BOARD_CENTER_Y + invert * parking_offset, Math.toRadians(180)), Math.toRadians(0))
                     .build();
             // ** end same code

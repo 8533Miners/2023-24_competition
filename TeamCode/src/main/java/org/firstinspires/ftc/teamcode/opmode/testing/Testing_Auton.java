@@ -405,7 +405,7 @@ public class Testing_Auton extends LinearOpMode {
                         .setTangent(Math.toRadians(180))
                         .lineToLinearHeading(new Pose2d(starting_x+initialMovePos, invert * 60, Math.toRadians(180))).lineToLinearHeading(new Pose2d(14, invert * 60, Math.toRadians(180)))
                         // ** Same code below (clean up?)
-                        .splineToLinearHeading(new Pose2d(53.5, invert * 35 + board_offset, Math.toRadians(180)), Math.toRadians(0))
+                        .splineToLinearHeading(new Pose2d(53.5, invert * 35 + invert * board_offset, Math.toRadians(180)), Math.toRadians(0))
                         .addDisplacementMarker(() -> {
                             placer.update(Placer.PlacerState.DEPLOY);
                         })
@@ -417,7 +417,7 @@ public class Testing_Auton extends LinearOpMode {
                         .addDisplacementMarker(() -> {
                             placer.update(Placer.PlacerState.READY_TO_INTAKE);
                         })
-                        .lineTo(new Vector2d(BOARD_CENTER_X, invert * BOARD_CENTER_Y + board_offset))
+                        .lineTo(new Vector2d(BOARD_CENTER_X, invert * BOARD_CENTER_Y + invert * board_offset))
                         .splineToLinearHeading(new Pose2d(BOARD_CENTER_X, invert * BOARD_CENTER_Y + invert * parking_offset, Math.toRadians(180)), Math.toRadians(0))
                         .build();
                 // ** end same code
@@ -460,7 +460,7 @@ public class Testing_Auton extends LinearOpMode {
                         })
                         .setTangent(Math.toRadians(0))
                         // ** Same code below (clean up?)
-                        .splineToLinearHeading(new Pose2d(53.5, invert * 35 + board_offset, Math.toRadians(180)), Math.toRadians(0))
+                        .splineToLinearHeading(new Pose2d(53.5, invert * 35 + invert * board_offset, Math.toRadians(180)), Math.toRadians(0))
                         .addDisplacementMarker(() -> {
                             placer.update(Placer.PlacerState.DEPLOY);
                         })
@@ -472,7 +472,7 @@ public class Testing_Auton extends LinearOpMode {
                         .addDisplacementMarker(() -> {
                             placer.update(Placer.PlacerState.READY_TO_INTAKE);
                         })
-                        .lineTo(new Vector2d(BOARD_CENTER_X, invert * BOARD_CENTER_Y + board_offset))
+                        .lineTo(new Vector2d(BOARD_CENTER_X, invert * BOARD_CENTER_Y + invert * board_offset))
                         .splineToLinearHeading(new Pose2d(BOARD_CENTER_X, invert * BOARD_CENTER_Y + invert * parking_offset, Math.toRadians(180)), Math.toRadians(0))
                         .build();
                 // ** end same code
