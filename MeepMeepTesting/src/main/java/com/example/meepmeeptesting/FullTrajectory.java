@@ -83,7 +83,7 @@ public class FullTrajectory {
         StartingSide startingSide = StartingSide.CURTAIN;
 
         // From Detection, only set for MeepMeep
-        SpikeMark locationToSet = SpikeMark.LEFT;
+        SpikeMark locationToSet = SpikeMark.RIGHT;
 
         AllianceColor allianceColor = AllianceColor.RED;
         FieldStartPosition fieldStartPosition = FieldStartPosition.LEFT;
@@ -157,19 +157,23 @@ public class FullTrajectory {
         SpikeMark location = locationToSet;
 
 
+
         if(startingSide.equals(StartingSide.CURTAIN)) {
             switch (location) {
                 case LEFT:
+                    board_offset = LEFT_TAG;
                     spikeMark_X = -29;
                     spikeMark_Y = invert * 34;
                     spikeMarkApproachAngle = Math.toRadians(invert * STARTING_HEADING+35*invert);
                     break;
                 case RIGHT:
+                    board_offset = RIGHT_TAG;
                     spikeMark_X = -45;
                     spikeMark_Y = invert * 34;
                     break;
                 case CENTER:
                 default:
+                    board_offset = CENTER_TAG;
                     spikeMark_X = -40;
                     spikeMark_Y = invert * 29;
                     break;
@@ -196,15 +200,18 @@ public class FullTrajectory {
                 case LEFT:
                     spikeMark_X = 28;
                     spikeMark_Y = invert * 34;
+                    board_offset = LEFT_TAG;
                     break;
                 case RIGHT:
                     spikeMark_X = 6;
                     spikeMark_Y = invert * 34;
+                    board_offset = RIGHT_TAG;
                     break;
                 case CENTER:
                 default:
                     spikeMark_X = 20;
                     spikeMark_Y = invert * 26;
+                    board_offset = CENTER_TAG;
                     break;
             }
 
