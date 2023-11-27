@@ -32,25 +32,11 @@ public class TFObjectPropDetect {
             }
         }
 
-        if(invertDetect==false) {
-            if (currentRecognitions.size() >= 1) {
-                if (x < CAMERA_WIDTH / 2) {
-                    spikeMark = SpikeMark.LEFT;
-                } else {
-                    spikeMark = SpikeMark.CENTER;
-                }
+        if (currentRecognitions.size() >= 1) {
+            if (invertDetect) {
+                spikeMark = (x >= CAMERA_WIDTH / 2) ? SpikeMark.RIGHT : SpikeMark.CENTER;
             } else {
-                spikeMark = SpikeMark.NONE; //Defaults to RIGHT
-            }
-        } else {
-            if (currentRecognitions.size() >= 1) {
-                if (x >= CAMERA_WIDTH / 2) {
-                    spikeMark = SpikeMark.RIGHT;
-                } else {
-                    spikeMark = SpikeMark.CENTER;
-                }
-            } else {
-                spikeMark = SpikeMark.NONE; //Defaults to RIGHT
+                spikeMark = (x < CAMERA_WIDTH / 2) ? SpikeMark.LEFT : SpikeMark.CENTER;
             }
         }
         return spikeMark;
