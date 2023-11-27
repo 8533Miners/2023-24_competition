@@ -496,7 +496,7 @@ public class Testing_Auton_jjenkins extends LinearOpMode {
                             picker.update(Picker.PickerState.OUTAKE);
                         }
                     case SCORE_PURPLE_WAIT:
-                        if(purpleTime <= purpleWait){
+                        if(purpleTime.seconds() <= purpleWait){
                             picker.update(Picker.PickerState.OUTAKE);
                         }
                 }
