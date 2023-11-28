@@ -1,6 +1,7 @@
 package com.example.meepmeeptesting;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
@@ -13,6 +14,7 @@ public class RightA2Traj {
 //        int parking_offset = 2;
 //        int parking_offset = 24;
         int parking_offset = 48;
+        double target_heading_A = 90;
 
         MeepMeep meepMeep = new MeepMeep(800);
         RoadRunnerBotEntity myBot;
@@ -23,22 +25,11 @@ public class RightA2Traj {
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(new Pose2d(A2_starting_x, A2_starting_y, Math.toRadians(start_heading_A)))
                                 .strafeRight(4)//initial move
-                                .strafeRight(2)
-                                .forward(26)
-                                .back(3.5)
-//                                .addDisplacementMarker(() -> { //start placing purple pixel
-//                                    picker.update(Picker.PickerState.OUTAKE);
-//                                })
-//                                .waitSeconds(1)
-//                                .addDisplacementMarker(() -> { //stop placing purple pixel
-//                                    picker.update(Picker.PickerState.HOLD);
-//                                })
-                                .back(11.5)
-                                .turn(Math.toRadians(90))
-                                .strafeLeft(7)
-                                .forward(80)
-                                .strafeRight(40)
-                                .forward(15)
+                                .lineToLinearHeading(new Pose2d(-29, 34, 270))
+                                .lineToLinearHeading(new Pose2d(-52, 60, Math.toRadians(180)))
+                                .lineToConstantHeading(new Vector2d(14, 60))
+                                .splineToConstantHeading(new Vector2d(49, 35), Math.toRadians(90))
+                                .splineToConstantHeading(new Vector2d(47, 59), Math.toRadians(0))
                                 .build()
                 );
 
