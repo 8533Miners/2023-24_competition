@@ -41,6 +41,12 @@ public class TrajectoryConfig {
     double park_X;
     double park_Y;
     double park_H;
+    double apronSafe_X;
+    double apronSafe_Y;
+    double apronSafe_H;
+    double apronTruss_X;
+    double apronTruss_Y;
+    double apronTruss_H;
 
     public TrajectoryConfig(SampleMecanumDrive autonDrive){
         this.rrdrive = autonDrive;
@@ -88,17 +94,18 @@ public class TrajectoryConfig {
         switch(detectedSpikeMark){
             case LEFT:
                 if (stagePosition == StagePosition.APRON){
-                    spikeMark_X = -29;
-                    spikeMark_H = Math.toRadians(305);
+                    spikeMark_X = invert ? -45 : -29;
+                    spikeMark_H = invert ? 90 : 305;
                 } else {
-                    spikeMark_X = 28;
+                    spikeMark_X = invert ? 4 : 28;
                 }
                 break;
             case RIGHT:
                 if (stagePosition == StagePosition.APRON) {
-                    spikeMark_X = -45;
+                    spikeMark_X = invert ? -29 : -45;
+                    spikeMark_H = invert ? 55 : 270;
                 } else {
-                    spikeMark_X = 4;
+                    spikeMark_X = invert ? 28 : 4;
                 }
                 break;
             case CENTER:
@@ -106,6 +113,7 @@ public class TrajectoryConfig {
                 if (stagePosition == StagePosition.APRON) {
                     spikeMark_X = -40;
                     spikeMark_Y = invert ? -29 : 29;
+                    spikeMark_H = invert ? 90 : 270;
                 } else {
                     spikeMark_X = 20;
                     spikeMark_Y = invert ? -24 : 26;
@@ -151,6 +159,22 @@ public class TrajectoryConfig {
                 break;
         }
         return new Pose2d(park_X, park_Y, Math.toRadians(park_H));
+    }
+
+    public Pose2d getApronSafePose(boolean invert){
+        apronSafe_X = -52;
+        apronSafe_Y = invert ? -60 : 60;
+        apronSafe_H = 180;
+
+        return new Pose2d(apronSafe_X, apronSafe_Y, Math.toRadians(apronSafe_H));
+    }
+
+    public Pose2d getApronTrussPose(boolean invert){
+        apronTruss_X = 14;
+        apronTruss_Y = invert ? -60 : 60;
+        apronTruss_H = 180;
+
+        return new Pose2d(apronTruss_X, apronTruss_Y, Math.toRadians(apronTruss_H));
     }
 //    public TrajectorySequence getSpikeMarkTrajectory(SpikeMark detectedSpikeMark, boolean invert, StagePosition stagePosition){
 //

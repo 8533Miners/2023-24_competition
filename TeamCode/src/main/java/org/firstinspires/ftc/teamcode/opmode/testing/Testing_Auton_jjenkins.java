@@ -251,6 +251,8 @@ public class Testing_Auton_jjenkins extends LinearOpMode {
             Pose2d commonPos = trajectoryConfig.getCommonMarkPose(invertedPosition);
             Pose2d boardPos = trajectoryConfig.getBoardPose(location, invertedPosition);
             Pose2d parkPos = trajectoryConfig.getParkPose(fieldParkPosition, invertedPosition);
+            Pose2d apronSafePos = trajectoryConfig.getApronSafePose(invertedPosition);
+            Pose2d apronTrussPos = trajectoryConfig.getApronTrussPose(invertedPosition);
 
             TrajectorySequence spikeMarkTraj;
             TrajectorySequence boardTraj;
@@ -258,21 +260,21 @@ public class Testing_Auton_jjenkins extends LinearOpMode {
 
             if (stagePosition == StagePosition.APRON){
 
-                spikeMarkTraj = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                spikeMarkTraj = drive.trajectorySequenceBuilder(initialMove.end())
                         .lineToLinearHeading(spikeMarkPos) // line to spike mark
                         .build();
 
                 // purple pixel
 
-                boardTraj = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                        .lineToLinearHeading(new Pose2d(-52, 60, Math.toRadians(180))) // get in position to go under truss
-                        .lineToConstantHeading(new Vector2d(14, 60)) // go under truss
-                        .splineToConstantHeading(new Vector2d(49, 35), Math.toRadians(0)) // get to common point next to board
+                boardTraj = drive.trajectorySequenceBuilder(spikeMarkTraj.end())
+                        .lineToLinearHeading(apronSafePos) // get in position to go under truss
+                        .lineToConstantHeading(new Vector2d(apronTrussPos.getX(), apronTrussPos.getY())) // go under truss
+                        .splineToConstantHeading(new Vector2d(boardPos.getX(), boardPos.getY()), Math.toRadians(0)) // get to board
                         .build();
 
                 // yellow pixel
 
-                parkTraj = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                parkTraj = drive.trajectorySequenceBuilder(boardTraj.end())
                         .lineToLinearHeading(commonPos)
                         .splineToLinearHeading(parkPos, Math.toRadians(0))
                         .build();
