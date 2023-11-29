@@ -153,6 +153,9 @@ public class Production_Auton extends LinearOpMode {
 
     public void runOpMode() throws InterruptedException{
 
+        /**
+         * Setup Menu and get the selections
+         */
         telemetry.setAutoClear(false);
         while(!isStarted()) {
             selectionMenu.displayMenu();
@@ -173,23 +176,28 @@ public class Production_Auton extends LinearOpMode {
         selectionMenu.setMenuState(MenuState.READY);
         selectionMenu.displayMenu();
 
-        initTfod();
-        tfObjectPropDetect = new TFObjectPropDetect(tfod, CAMERA_WIDTH, labelToDetect);
-
-        picker = new Picker(hardwareMap);
-        placer = new Placer(hardwareMap);
-
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        TrajectoryConfig trajectoryConfig = new TrajectoryConfig(drive);
-
+        // Set variables for selection menu input
         AllianceColor allianceColor = selectionMenu.getAllianceColor();
         FieldStartPosition fieldStartPosition = selectionMenu.getFieldStartPosition();
         FieldParkPosition fieldParkPosition = selectionMenu.getFieldParkPosition();
 
-        double waitTime1 = 1.5;
-        ElapsedTime waitTimer1 = new ElapsedTime();
+        /**
+         * Setup TFOD
+         */
+        initTfod();
+        tfObjectPropDetect = new TFObjectPropDetect(tfod, CAMERA_WIDTH, labelToDetect);
 
+        /**
+         * Setup Hardware
+         */
+        picker = new Picker(hardwareMap);
+        placer = new Placer(hardwareMap);
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        TrajectoryConfig trajectoryConfig = new TrajectoryConfig(drive);
 
+        /**
+         * Inversion and Stage Position Config based on menu
+         */
         switch(allianceColor){
             case RED:
                 invertedPosition = true;
@@ -208,6 +216,9 @@ public class Production_Auton extends LinearOpMode {
                 break;
         }
 
+        /**
+         * Setup initial pose and move sequence for detection position
+         */
         Pose2d startPose = trajectoryConfig.getStartPose(invertedPosition, stagePosition);
         Pose2d initialMovePos = trajectoryConfig.getInitialMovePose(invertedPosition, stagePosition);
 
@@ -219,16 +230,26 @@ public class Production_Auton extends LinearOpMode {
 
         SpikeMark location = null;
 
+        /**
+         * Setup and run the trajectories based on selections
+         * 1. Do the initial move for detection
+         * 2. Detect the spike mark with the prop (or assume closest to truss)
+         * 3. Create the pose locations based on prop location
+         * 4. Build the trajectory sequences based on pose locations
+         * 5. Build and run the full trajectory we build out
+         */
         waitForStart();
         if (opModeIsActive()){
 
+            // 1. Do initial move
             drive.followTrajectorySequence(initialMove);
 
             runtime.reset();
-
             while (opModeIsActive() & !propDetected & runtime.seconds() < 3) {
                 telemetryTfod();
 
+
+                // 2. Detect the spike mark with the prop (or assume closest to truss)
                 location = tfObjectPropDetect.getSpikeMark(invertedDetection);
                 telemetry.addData("Spike Mark Location", location.toString());
                 telemetry.update();
@@ -245,6 +266,7 @@ public class Production_Auton extends LinearOpMode {
 
             }
 
+            // 3. Create the pose locations based on prop location
             Pose2d spikeMarkPos = trajectoryConfig.getSpikeMarkPose(location, invertedPosition, stagePosition);
             Pose2d commonPos = trajectoryConfig.getCommonMarkPose(invertedPosition);
             Pose2d boardPos = trajectoryConfig.getBoardPose(location, invertedPosition, stagePosition);
@@ -256,6 +278,7 @@ public class Production_Auton extends LinearOpMode {
             TrajectorySequence boardTraj;
             TrajectorySequence parkTraj;
 
+            // 4. Build the trajectory sequences based on pose locations
             if (stagePosition == StagePosition.APRON){
 
                 spikeMarkTraj = drive.trajectorySequenceBuilder(initialMove.end())
@@ -276,8 +299,6 @@ public class Production_Auton extends LinearOpMode {
                         .lineToLinearHeading(commonPos)
                         .splineToLinearHeading(parkPos, Math.toRadians(0))
                         .build();
-
-
 
             } else {
 
@@ -300,6 +321,7 @@ public class Production_Auton extends LinearOpMode {
 
             }
 
+            // Build and run the full trajectory we build out
             drive.followTrajectorySequence(spikeMarkTraj);
             picker.auton_place_spike(Picker.PickerState.AUTON, 1.5, runtime);
             picker.auton_place_spike(Picker.PickerState.HOLD, 0.1, runtime);
