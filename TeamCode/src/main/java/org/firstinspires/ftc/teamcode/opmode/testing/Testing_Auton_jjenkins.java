@@ -28,7 +28,7 @@ import org.firstinspires.ftc.teamcode.subsystems.auton.TrajectoryConfig;
 
 import java.util.List;
 
-@Autonomous(name = "New Trajectory Test", group = "TestAuton")
+@Autonomous(name = "Auton Test - jjenkins", group = "TestAuton")
 public class Testing_Auton_jjenkins extends LinearOpMode {
 
     public ElapsedTime runtime = new ElapsedTime();
@@ -266,9 +266,19 @@ public class Testing_Auton_jjenkins extends LinearOpMode {
 
             } else {
 
-//                spikeMarkTraj = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-//                        .splineToLinearHeading()
-//                        .build();
+                spikeMarkTraj = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                        .splineToLinearHeading(spikeMarkPos, Math.toRadians(180))
+                        .addDisplacementMarker(() -> { // start placing purple pixel
+                            picker.update(Picker.PickerState.OUTAKE);
+                        })
+                        .waitSeconds(2) //does this actually enable to motor to spin for 2 seconds or does it just blip it
+                        .addDisplacementMarker(() -> { // stop placing purple pixel
+                            picker.update(Picker.PickerState.HOLD);
+                        })
+                        .splineToLinearHeading(new Pose2d(49,-35, Math.toRadians(180)), Math.toRadians(0))
+                        // score yellow
+                        // park
+                        .build();
             }
 
             drive.followTrajectorySequence(spikeMarkTraj);

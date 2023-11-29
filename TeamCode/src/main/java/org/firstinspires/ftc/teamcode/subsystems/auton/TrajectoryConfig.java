@@ -104,10 +104,10 @@ public class TrajectoryConfig {
             default:
                 if (stagePosition == StagePosition.APRON) {
                     spikeMark_X = -40;
-                    spikeMark_Y = invert ? 29 : -29;
+                    spikeMark_Y = invert ? -29 : 29;
                 } else {
                     spikeMark_X = 20;
-                    spikeMark_Y = invert ? 24 : -24;
+                    spikeMark_Y = invert ? -24 : 24;
                 }
                 break;
         }
@@ -115,20 +115,20 @@ public class TrajectoryConfig {
     }
     public Pose2d getCommonMarkPose(boolean invert){
         common_X = 43;
-        common_Y = invert ? 35 : -35;
+        common_Y = invert ? -35 : 35;
         common_H = 180;
 
         return new Pose2d(common_X, common_Y, Math.toRadians(common_H));
     }
     public Pose2d getBoardPose(SpikeMark detectedSpikeMark, boolean invert){
-        board_X = 49;
-        board_Y = invert ? 35 : -35;
+        board_X = 53.5;
+        board_Y = invert ? -35 : 35;
         board_H = 180;
 
         if (detectedSpikeMark == SpikeMark.RIGHT) {
-            board_Y = invert ? 29 : -41;
+            board_Y = invert ? -29 : 41;
         } else if (detectedSpikeMark == SpikeMark.LEFT){
-            board_Y = invert ? 41 : -29;
+            board_Y = invert ? -41 : 29;
         }
 
         return new Pose2d(board_X, board_Y, Math.toRadians(board_H));
@@ -139,14 +139,14 @@ public class TrajectoryConfig {
 
         switch(parkPosition){
             case NEAR_WALL:
-                park_Y = invert ? 59 : -59;
+                park_Y = invert ? -59 : 59;
                 break;
             case NEAR_CENTER:
-                park_Y = invert ? 11 : -11;
+                park_Y = invert ? -11 : 11;
                 break;
             default:
             case ON_BACKDROP:
-                park_Y = invert ? 35 : -35;
+                park_Y = invert ? -35 : 35;
                 break;
         }
         return new Pose2d(park_X, park_Y, Math.toRadians(park_H));
