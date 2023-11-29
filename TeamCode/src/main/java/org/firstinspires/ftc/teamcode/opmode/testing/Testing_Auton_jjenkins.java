@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.apache.commons.math3.geometry.Vector;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
@@ -236,7 +237,14 @@ public class Testing_Auton_jjenkins extends LinearOpMode {
 
                 if (location != SpikeMark.NONE && location != null){
                     propDetected = true;
+                } else {
+                    if (invertedDetection) {
+                        location = SpikeMark.LEFT;
+                    } else {
+                        location = SpikeMark.RIGHT;
+                    }
                 }
+
             }
 
             Pose2d spikeMarkPos = trajectoryConfig.getSpikeMarkPose(location, invertedPosition, stagePosition);
@@ -245,43 +253,58 @@ public class Testing_Auton_jjenkins extends LinearOpMode {
             Pose2d parkPos = trajectoryConfig.getParkPose(fieldParkPosition, invertedPosition);
 
             TrajectorySequence spikeMarkTraj;
+            TrajectorySequence boardTraj;
+            TrajectorySequence parkTraj;
 
             if (stagePosition == StagePosition.APRON){
 
                 spikeMarkTraj = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                         .lineToLinearHeading(spikeMarkPos) // line to spike mark
-                        .addDisplacementMarker(() -> { // start placing purple pixel
-                            picker.update(Picker.PickerState.OUTAKE);
-                        })
-                        .waitSeconds(2) //does this actually enable to motor to spin for 2 seconds or does it just blip it
-                        .addDisplacementMarker(() -> { // stop placing purple pixel
-                            picker.update(Picker.PickerState.HOLD);
-                        })
+                        .build();
+
+                // purple pixel
+
+                boardTraj = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                         .lineToLinearHeading(new Pose2d(-52, 60, Math.toRadians(180))) // get in position to go under truss
                         .lineToConstantHeading(new Vector2d(14, 60)) // go under truss
                         .splineToConstantHeading(new Vector2d(49, 35), Math.toRadians(0)) // get to common point next to board
-                        // drive to actual board position
                         .build();
+
+                // yellow pixel
+
+                parkTraj = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                        .lineToLinearHeading(commonPos)
+                        .splineToLinearHeading(parkPos, Math.toRadians(0))
+                        .build();
+
 
 
             } else {
 
-                spikeMarkTraj = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                spikeMarkTraj = drive.trajectorySequenceBuilder(initialMove.end())
                         .splineToLinearHeading(spikeMarkPos, Math.toRadians(180))
-                        .addDisplacementMarker(() -> { // start placing purple pixel
-                            picker.update(Picker.PickerState.OUTAKE);
-                        })
-                        .waitSeconds(2) //does this actually enable to motor to spin for 2 seconds or does it just blip it
-                        .addDisplacementMarker(() -> { // stop placing purple pixel
-                            picker.update(Picker.PickerState.HOLD);
-                        })
-                        .splineToLinearHeading(new Pose2d(49,-35, Math.toRadians(180)), Math.toRadians(0))
-                        // score yellow
-                        // park
                         .build();
+
+                // purple pixel
+
+                boardTraj = drive.trajectorySequenceBuilder(spikeMarkTraj.end())
+                        .lineToLinearHeading(boardPos)
+                        .build();
+
+                // score yellow
+
+                parkTraj = drive.trajectorySequenceBuilder(boardTraj.end())
+//                        .splineToLinearHeading(parkPos, Math.toRadians(180))
+                        .lineToLinearHeading(parkPos)
+                        .build();
+
             }
 
             drive.followTrajectorySequence(spikeMarkTraj);
+            // picker auton set state
+            drive.followTrajectorySequence(boardTraj);
+            // piacer auton set state
+            drive.followTrajectorySequence(parkTraj);
         }
         visionPortal.close();
 

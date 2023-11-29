@@ -54,8 +54,8 @@ public class TrajectoryConfig {
 //    }
 
     public Pose2d getStartPose(boolean invert, StagePosition stagePosition){
-        starting_Y = invert ? 62 : -62;
-        starting_H = invert ? 270 : 90;
+        starting_Y = invert ? -62 : 62;
+        starting_H = invert ? 90: 270;
 
         if (stagePosition == StagePosition.APRON){
             starting_X = -40;
@@ -82,7 +82,8 @@ public class TrajectoryConfig {
     }
     public Pose2d getSpikeMarkPose(SpikeMark detectedSpikeMark, boolean invert, StagePosition stagePosition){
 
-        spikeMark_Y = invert ? 34 : -34;
+        spikeMark_Y = invert ? -34 : 34;
+        spikeMark_H = 180;
 
         switch(detectedSpikeMark){
             case LEFT:
@@ -107,7 +108,7 @@ public class TrajectoryConfig {
                     spikeMark_Y = invert ? -29 : 29;
                 } else {
                     spikeMark_X = 20;
-                    spikeMark_Y = invert ? -24 : 24;
+                    spikeMark_Y = invert ? -24 : 26;
                 }
                 break;
         }
@@ -126,9 +127,9 @@ public class TrajectoryConfig {
         board_H = 180;
 
         if (detectedSpikeMark == SpikeMark.RIGHT) {
-            board_Y = invert ? -29 : 41;
-        } else if (detectedSpikeMark == SpikeMark.LEFT){
             board_Y = invert ? -41 : 29;
+        } else if (detectedSpikeMark == SpikeMark.LEFT){
+            board_Y = invert ? -29: 41;
         }
 
         return new Pose2d(board_X, board_Y, Math.toRadians(board_H));
