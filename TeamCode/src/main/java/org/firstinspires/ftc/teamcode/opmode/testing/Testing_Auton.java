@@ -183,10 +183,9 @@ public class Testing_Auton extends LinearOpMode {
 
     // Offset value from center of board for the left/right april tags
     // The code will automatically invert if we are red vs blue
-    final double RIGHT_TAG = -6;
+    final double RIGHT_TAG = -5.5;
     final double CENTER_TAG = 0;
-    final double LEFT_TAG = 6;
-    double board_offset = CENTER_TAG; //default
+    final double LEFT_TAG = 5.5;
 
     // invert = 1 for blue; invert = -1 for red
     final int NO_INVERT = 1;
@@ -331,15 +330,12 @@ public class Testing_Auton extends LinearOpMode {
                 // 3. Load the trajectory based on the detected spike mark
                 switch (location){
                     case LEFT:
-                        board_offset = LEFT_TAG;
                         propDetected = true;
                         break;
                     case CENTER:
-                        board_offset = CENTER_TAG;
                         propDetected = true;
                         break;
                     case RIGHT:
-                        board_offset = RIGHT_TAG;
                         propDetected = true;
                         break;
                     case NONE: // assume "right trajectory" or invert to left
@@ -368,16 +364,14 @@ public class Testing_Auton extends LinearOpMode {
                 if(invertedDetection==false) {
                     if(location.equals(SpikeMark.LEFT)){
                         location = SpikeMark.RIGHT;
-                        board_offset = RIGHT_TAG;
                     } else if(location.equals(SpikeMark.RIGHT)) {
                         location = SpikeMark.LEFT;
-                        board_offset = LEFT_TAG;
                     }
                 }
 
                 switch (location) {
                     case LEFT:
-                        spikeMark_X = -29;
+                        spikeMark_X = -28.5;
                         spikeMark_Y = invert * 34;
                         spikeMarkApproachAngle = Math.toRadians(invert * STARTING_HEADING+35*invert);
                         break;
@@ -398,14 +392,14 @@ public class Testing_Auton extends LinearOpMode {
                         .addDisplacementMarker(() -> { //start placing purple pixel
                             picker.update(Picker.PickerState.OUTAKE);
                         })
-                        .waitSeconds(1)
+                        .waitSeconds(2)
                         .addDisplacementMarker(() -> { //stop placing purple pixel
                             picker.update(Picker.PickerState.HOLD);
                         })
                         .setTangent(Math.toRadians(180))
-                        .lineToLinearHeading(new Pose2d(starting_x+initialMovePos, invert * 60, Math.toRadians(180))).lineToLinearHeading(new Pose2d(14, invert * 60, Math.toRadians(180)))
+                        .lineToLinearHeading(new Pose2d(starting_x+initialMovePos-8, invert * 60, Math.toRadians(180))).lineToLinearHeading(new Pose2d(14, invert * 60, Math.toRadians(180)))
                         // ** Same code below (clean up?)
-                        .splineToLinearHeading(new Pose2d(53.5, invert * 35 + board_offset, Math.toRadians(180)), Math.toRadians(0))
+                        .splineToLinearHeading(new Pose2d(53.5, invert * 35, Math.toRadians(180)), Math.toRadians(0))
                         .addDisplacementMarker(() -> {
                             placer.update(Placer.PlacerState.DEPLOY);
                         })
@@ -417,20 +411,18 @@ public class Testing_Auton extends LinearOpMode {
                         .addDisplacementMarker(() -> {
                             placer.update(Placer.PlacerState.READY_TO_INTAKE);
                         })
-                        .lineTo(new Vector2d(BOARD_CENTER_X, invert * BOARD_CENTER_Y + board_offset))
+                        .lineTo(new Vector2d(BOARD_CENTER_X, invert * BOARD_CENTER_Y))
                         .splineToLinearHeading(new Pose2d(BOARD_CENTER_X, invert * BOARD_CENTER_Y + invert * parking_offset, Math.toRadians(180)), Math.toRadians(0))
                         .build();
                 // ** end same code
-            } else {
+            } else { // BACKSTAGE
                 // TODO: This is a hack, need to fix inverted detection
                 // Flip the coordinates if our spike marks detection was inverted
                 if(invertedDetection==true) {
                     if(location.equals(SpikeMark.LEFT)){
                         location = SpikeMark.RIGHT;
-                        board_offset = RIGHT_TAG;
                     } else if(location.equals(SpikeMark.RIGHT)) {
                         location = SpikeMark.LEFT;
-                        board_offset = LEFT_TAG;
                     }
                 }
                 switch (location) {
@@ -439,13 +431,13 @@ public class Testing_Auton extends LinearOpMode {
                         spikeMark_Y = invert * 34;
                         break;
                     case RIGHT:
-                        spikeMark_X = 4;
+                        spikeMark_X = 5;
                         spikeMark_Y = invert * 34;
                         break;
                     case CENTER:
                     default:
                         spikeMark_X = 20;
-                        spikeMark_Y = invert * 24;
+                        spikeMark_Y = invert * 26;
                         break;
                 }
                 // Actual trajectory code
@@ -454,13 +446,13 @@ public class Testing_Auton extends LinearOpMode {
                         .addDisplacementMarker(() -> { //start placing purple pixel
                             picker.update(Picker.PickerState.OUTAKE);
                         })
-                        .waitSeconds(1)
+                        .waitSeconds(2)
                         .addDisplacementMarker(() -> { //stop placing purple pixel
                             picker.update(Picker.PickerState.HOLD);
                         })
                         .setTangent(Math.toRadians(0))
                         // ** Same code below (clean up?)
-                        .splineToLinearHeading(new Pose2d(53.5, invert * 35 + board_offset, Math.toRadians(180)), Math.toRadians(0))
+                        .splineToLinearHeading(new Pose2d(53.5, invert * 35, Math.toRadians(180)), Math.toRadians(0))
                         .addDisplacementMarker(() -> {
                             placer.update(Placer.PlacerState.DEPLOY);
                         })
@@ -472,7 +464,7 @@ public class Testing_Auton extends LinearOpMode {
                         .addDisplacementMarker(() -> {
                             placer.update(Placer.PlacerState.READY_TO_INTAKE);
                         })
-                        .lineTo(new Vector2d(BOARD_CENTER_X, invert * BOARD_CENTER_Y + board_offset))
+                        .lineTo(new Vector2d(BOARD_CENTER_X, invert * BOARD_CENTER_Y))
                         .splineToLinearHeading(new Pose2d(BOARD_CENTER_X, invert * BOARD_CENTER_Y + invert * parking_offset, Math.toRadians(180)), Math.toRadians(0))
                         .build();
                 // ** end same code
@@ -514,7 +506,7 @@ public class Testing_Auton extends LinearOpMode {
 
         visionPortal = builder.build();
 
-        tfod.setMinResultConfidence(0.45f);
+        tfod.setMinResultConfidence(0.60f);
     }
 
     private void telemetryTfod() {

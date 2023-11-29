@@ -225,6 +225,7 @@ public class Robot {
         telemetry.addData("robot_state", robot_state.toString());
         telemetry.addData("place_level", placer.place_level);
         placer.log(telemetry);
+        picker.log(telemetry);
         telemetry.update();
 
         is_optr_dpad_up_prev = is_optr_dpad_up_cur;

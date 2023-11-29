@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -75,6 +76,15 @@ public class Placer {
         elevator.log(tele);
         gripper.log(tele);
         tele.addData("Gripper state", gripper_state.toString());
+    }
+
+    public void auton_deploy_elevator(PlacerState desired_state, double time, ElapsedTime runtime) {
+        //calculate target time by adding 1 second to current time
+        double target_time = runtime.seconds() + time;
+        //loop until target time is reached
+        while(runtime.seconds() < target_time) {
+            this.update(desired_state);
+        }
     }
 
 }
