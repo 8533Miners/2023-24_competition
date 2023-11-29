@@ -341,7 +341,7 @@ public class Testing_Auton_jjenkins extends LinearOpMode {
 
         visionPortal = builder.build();
 
-        tfod.setMinResultConfidence(0.45f);
+        tfod.setMinResultConfidence(0.60f);
     }
 
     private void telemetryTfod() {
