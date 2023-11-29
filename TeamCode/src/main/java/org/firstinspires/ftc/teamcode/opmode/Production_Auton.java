@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmode;
 import android.util.Size;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -11,6 +12,8 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.Picker;
+import org.firstinspires.ftc.teamcode.subsystems.Placer;
+import org.firstinspires.ftc.teamcode.subsystems.auton.TrajectoryConfig;
 import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu;
 import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu.AllianceColor;
 import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu.FieldParkPosition;
@@ -24,10 +27,14 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
 
-@Autonomous(name = "Competition Auton", group = "TestAuton")
+@Autonomous(name = "Competition Auton", group = "Auton")
 public class Production_Auton extends LinearOpMode {
-    // Random Robot Variables
+
     public ElapsedTime runtime = new ElapsedTime();
+    public enum StagePosition {
+        APRON,
+        BACKSTAGE
+    }
 
     // Camera Property Variables
     public int CAMERA_WIDTH = 640;
@@ -38,46 +45,114 @@ public class Production_Auton extends LinearOpMode {
 
     // TFOD Variables
     TFObjectPropDetect tfObjectPropDetect;
-
-    private static final String TFOD_MODEL_ASSET = "model_20231104_103203.tflite";
+    private static final String TFOD_MODEL_ASSET = "ssd_mobilenet_v2_320x320_coco17_tpu_8.tflite";
     private static final String[] LABELS = {
-            "prop"
+            "person",
+            "bicycle",
+            "car",
+            "motorcycle",
+            "airplane",
+            "bus",
+            "train",
+            "truck",
+            "boat",
+            "traffic light",
+            "fire hydrant",
+            "???",
+            "stop sign",
+            "parking meter",
+            "bench",
+            "bird",
+            "cat",
+            "dog",
+            "horse",
+            "sheep",
+            "cow",
+            "elephant",
+            "bear",
+            "zebra",
+            "giraffe",
+            "???",
+            "backpack",
+            "umbrella",
+            "???",
+            "???",
+            "handbag",
+            "tie",
+            "suitcase",
+            "frisbee",
+            "skis",
+            "snowboard",
+            "sports ball",
+            "kite",
+            "baseball bat",
+            "baseball glove",
+            "skateboard",
+            "surfboard",
+            "tennis racket",
+            "bottle",
+            "???",
+            "wine glass",
+            "cup",
+            "fork",
+            "knife",
+            "spoon",
+            "bowl",
+            "banana",
+            "apple",
+            "sandwich",
+            "orange",
+            "broccoli",
+            "carrot",
+            "hot dog",
+            "pizza",
+            "donut",
+            "cake",
+            "chair",
+            "couch",
+            "potted plant",
+            "bed",
+            "???",
+            "dining table",
+            "???",
+            "???",
+            "toilet",
+            "???",
+            "tv",
+            "laptop",
+            "mouse",
+            "remote",
+            "keyboard",
+            "cell phone",
+            "microwave",
+            "oven",
+            "toaster",
+            "sink",
+            "refrigerator",
+            "???",
+            "book",
+            "clock",
+            "vase",
+            "scissors",
+            "teddy bear",
+            "hair drier",
+            "toothbrush",
     };
 
-    public String labelToDetect = "prop";
+    public String labelToDetect = "cup";
     private TfodProcessor tfod;
+
     public VisionPortal visionPortal;
     public boolean propDetected = false;
-
-    // Menu variables
     SelectionMenu selectionMenu = new SelectionMenu(this,telemetry);
-
-    // A4 Starting Parameters
-    int A4_starting_x = 16;
-    int A4_starting_y = 62;
-    int starting_heading_A = 270;
-
-    // A2 Starting Parameters
-    int A2_starting_x = -40;
-    int A2_starting_y = 62;
-
-    // F4 Starting Parameters
-    int F4_starting_x = 16;
-    int F4_starting_y = -62;
-    int starting_heading_F = 90;
-
-    // F2 Starting Parameters
-    int F2_starting_x = -40;
-    int F2_starting_y = -62;
-
+    boolean invertedDetection = false; // invert detections based on starting position
+    boolean invertedPosition = false; // separate bool to invert
+    StagePosition stagePosition = StagePosition.BACKSTAGE;
     Picker picker;
+    Placer placer;
 
     public void runOpMode() throws InterruptedException{
-        picker = new Picker(hardwareMap);
 
-        /**
-         * Setup the selection menu
-         */
         telemetry.setAutoClear(false);
         while(!isStarted()) {
             selectionMenu.displayMenu();
@@ -98,395 +173,142 @@ public class Production_Auton extends LinearOpMode {
         selectionMenu.setMenuState(MenuState.READY);
         selectionMenu.displayMenu();
 
-        int startingX;
-        int startingY;
-        int startingHeading;
-        int parking_offset = 0;
-
-        // Init TFOD
         initTfod();
         tfObjectPropDetect = new TFObjectPropDetect(tfod, CAMERA_WIDTH, labelToDetect);
 
-        // Setup hardware mapping and drive style
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        picker = new Picker(hardwareMap);
+        placer = new Placer(hardwareMap);
 
-        /**
-         * Determine the starting position based on menu config
-         */
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        TrajectoryConfig trajectoryConfig = new TrajectoryConfig(drive);
+
         AllianceColor allianceColor = selectionMenu.getAllianceColor();
         FieldStartPosition fieldStartPosition = selectionMenu.getFieldStartPosition();
         FieldParkPosition fieldParkPosition = selectionMenu.getFieldParkPosition();
 
-        // Determine parking offset amount
-        switch(fieldParkPosition){
-            default:
-            case NEAR_WALL:
-                parking_offset = 2;
-                break;
-            case ON_BACKDROP:
-                parking_offset = 24;
-                break;
-            case NEAR_CENTER:
-                parking_offset = 48;
-                break;
-        }
+        double waitTime1 = 1.5;
+        ElapsedTime waitTimer1 = new ElapsedTime();
 
-        TrajectorySequence initialMove;
-        TrajectorySequence leftTraj;
-        TrajectorySequence centerTraj;
-        TrajectorySequence rightTraj;
-        Pose2d startPose;
 
-        boolean invertedDetection; // invert detections based on starting position
-
-        /**
-         * Configure starting X, Y, and heading for starting pose
-         * Invert detection based on starting position if needed
-         */
-        switch (allianceColor) {
+        switch(allianceColor){
             case RED:
+                invertedPosition = true;
                 if(fieldStartPosition == FieldStartPosition.RIGHT) {
-                    // F4
-                    invertedDetection = true; // F4 has inverted detections compared to A4
-                    startingX = F4_starting_x;
-                    startingY = F4_starting_y;
-                    startingHeading = starting_heading_F;
-
-                    startPose = new Pose2d(startingX, startingY, Math.toRadians(startingHeading));
-
-                    initialMove = drive.trajectorySequenceBuilder(startPose)
-                            .strafeRight(4)
-                            .build();
-
-                    /**
-                     * F4 Left Trajectory
-                     */
-                    leftTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                            .forward(28)
-                            .turn(Math.toRadians(90))
-                            .forward(18)
-                            .back(18)
-                            .addDisplacementMarker(() -> { //start placing purple pixel
-                                picker.update(Picker.PickerState.OUTAKE);
-                            })
-                            .waitSeconds(1)
-                            .addDisplacementMarker(() -> { //stop placing purple pixel
-                                picker.update(Picker.PickerState.HOLD);
-                            })
-                            .strafeLeft(24)
-                            .back(24)
-                            .build();
-
-                    /**
-                     * F4 Center Trajectory
-                     */
-                    centerTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                            .strafeLeft(3)
-                            .forward(32)
-                            .addDisplacementMarker(() -> { //start placing purple pixel
-                                picker.update(Picker.PickerState.OUTAKE);
-                            })
-                            .waitSeconds(1)
-                            .addDisplacementMarker(() -> { //stop placing purple pixel
-                                picker.update(Picker.PickerState.HOLD);
-                            })
-                            .back(28)
-                            .strafeRight(34)
-                            .build();
-
-                    /**
-                     * F4 Right Trajectory
-                     */
-                    rightTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                            .strafeRight(2)
-                            .forward(26)
-                            .back(22)
-                            .addDisplacementMarker(() -> { //start placing purple pixel
-                                picker.update(Picker.PickerState.OUTAKE);
-                            })
-                            .waitSeconds(1)
-                            .addDisplacementMarker(() -> { //stop placing purple pixel
-                                picker.update(Picker.PickerState.HOLD);
-                            })
-                            .strafeRight(24)
-                            .build();
+                    invertedDetection = true; // F4 RIGHT detect == A4 LEFT detect
                 } else {
-                    // F2
-                    invertedDetection = false; // F2 has looks the same as A4, so don't invert
-                    startingX = F2_starting_x;
-                    startingY = F2_starting_y;
-                    startingHeading = starting_heading_F;
-
-                    startPose = new Pose2d(startingX,startingY, Math.toRadians(startingHeading));
-
-                    initialMove = drive.trajectorySequenceBuilder(startPose)
-                            .strafeLeft(4)
-                            .build();
-
-                    /**
-                     * F2 Left Trajectory
-                     */
-                    leftTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                            .strafeLeft(2)
-                            .forward(26)
-                            .back(3.5)
-                            .addDisplacementMarker(() -> { //start placing purple pixel
-                                picker.update(Picker.PickerState.OUTAKE);
-                            })
-                            .waitSeconds(1)
-                            .addDisplacementMarker(() -> { //stop placing purple pixel
-                                picker.update(Picker.PickerState.HOLD);
-                            })
-                            .back(11.5)
-                            .turn(Math.toRadians(-90))
-                            .strafeRight(7)
-                            .forward(94)
-                            .build();
-
-                    /**
-                     * F2 Center Trajectory
-                     */
-                    centerTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                            .strafeRight(3)
-                            .forward(32)
-                            .addDisplacementMarker(() -> { //start placing purple pixel
-                                picker.update(Picker.PickerState.OUTAKE);
-                            })
-                            .waitSeconds(1)
-                            .addDisplacementMarker(() -> { //stop placing purple pixel
-                                picker.update(Picker.PickerState.HOLD);
-                            })
-                            .back(28)
-                            .turn(Math.toRadians(-90))
-                            .forward(88)
-                            .build();
-
-                    /**
-                     * F2 Right Trajectory
-                     */
-                    rightTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                            .strafeLeft(4)//initialmove
-                            .forward(28)
-                            .turn(Math.toRadians(-90))
-                            .forward(18)
-                            .back(3.5)
-                            .addDisplacementMarker(() -> { //start placing purple pixel
-                                picker.update(Picker.PickerState.OUTAKE);
-                            })
-                            .waitSeconds(1)
-                            .addDisplacementMarker(() -> { //stop placing purple pixel
-                                picker.update(Picker.PickerState.HOLD);
-                            })
-                            .back(8.5)
-                            .strafeRight(24)
-                            .forward(90)
-                            .build();
+                    stagePosition = StagePosition.APRON;
                 }
                 break;
             case BLUE:
             default:
                 if(fieldStartPosition == FieldStartPosition.RIGHT) {
-                    // A2
+                    stagePosition = StagePosition.APRON;
                     invertedDetection = true; // A2 has inverted detections compared to A4
-                    startingX = A2_starting_x;
-                    startingY = A2_starting_y;
-                    startingHeading = starting_heading_A;
-
-                    startPose = new Pose2d(startingX,startingY, Math.toRadians(startingHeading));
-
-                    initialMove = drive.trajectorySequenceBuilder(startPose)
-                            .strafeRight(4)
-                            .build();
-
-                    /**
-                     * A2 Left Trajectory
-                     */
-                    leftTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                            .forward(28)
-                            .turn(Math.toRadians(90))
-                            .forward(18)
-                            .back(3.5)
-                            .addDisplacementMarker(() -> { //start placing purple pixel
-                                picker.update(Picker.PickerState.OUTAKE);
-                            })
-                            .waitSeconds(1)
-                            .addDisplacementMarker(() -> { //stop placing purple pixel
-                                picker.update(Picker.PickerState.HOLD);
-                            })
-                            .back(8.5)
-                            .strafeLeft(24)
-                            .forward(75)
-                            .strafeRight(40)
-                            .forward(15)
-                            .build();
-
-                    /**
-                     * A2 Center Trajectory
-                     */
-                    centerTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                            .strafeLeft(3)
-                            .forward(32)
-                            .addDisplacementMarker(() -> { //start placing purple pixel
-                                picker.update(Picker.PickerState.OUTAKE);
-                            })
-                            .waitSeconds(1)
-                            .addDisplacementMarker(() -> { //stop placing purple pixel
-                                picker.update(Picker.PickerState.HOLD);
-                            })
-                            .back(28)
-                            .turn(Math.toRadians(90))
-                            .forward(75)
-                            .strafeRight(40)
-                            .forward(15)
-                            .build();
-
-                    /**
-                     * A2 Right Trajectory
-                     */
-                    rightTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                            .strafeRight(2)
-                            .forward(26)
-                            .back(3.5)
-                            .addDisplacementMarker(() -> { //start placing purple pixel
-                                picker.update(Picker.PickerState.OUTAKE);
-                            })
-                            .waitSeconds(1)
-                            .addDisplacementMarker(() -> { //stop placing purple pixel
-                                picker.update(Picker.PickerState.HOLD);
-                            })
-                            .back(11.5)
-                            .turn(Math.toRadians(90))
-                            .strafeLeft(7)
-                            .forward(80)
-                            .strafeRight(40)
-                            .forward(15)
-                            .build();
-
-                } else {
-                    // A4
-                    invertedDetection = false;
-                    startingX = A4_starting_x;
-                    startingY = A4_starting_y;
-                    startingHeading = starting_heading_A;
-
-                    startPose = new Pose2d(startingX,startingY, Math.toRadians(startingHeading));
-
-                    initialMove = drive.trajectorySequenceBuilder(startPose)
-                            .strafeLeft(4)
-                            .build();
-
-                    /**
-                     * A4 Left Trajectory
-                     */
-                    leftTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                            .strafeLeft(2)
-                            .forward(26)
-                            .back(3.5)
-                            .addDisplacementMarker(() -> { //start placing purple pixel
-                                picker.update(Picker.PickerState.OUTAKE);
-                            })
-                            .waitSeconds(1)
-                            .addDisplacementMarker(() -> { //stop placing purple pixel
-                                picker.update(Picker.PickerState.HOLD);
-                            })
-                            .strafeLeft(24)
-                            .build();
-
-                    /**
-                     * A4 Center Trajectory
-                     */
-                    centerTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                            .strafeRight(3)
-                            .forward(32)
-                             .addDisplacementMarker(() -> { //start placing purple pixel
-                                 picker.update(Picker.PickerState.OUTAKE);
-                             })
-                             .waitSeconds(1)
-                             .addDisplacementMarker(() -> { //stop placing purple pixel
-                                 picker.update(Picker.PickerState.HOLD);
-                             })
-                            .back(3.5)
-                            .strafeLeft(34)
-                            .build();
-
-                    /**
-                     * A4 Right Trajectory
-                     */
-                    rightTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                            .strafeLeft(4)//initial move
-                            .forward(28)
-                            .turn(Math.toRadians(-90))
-                            .forward(18)
-                            .back(3.5)
-                            .addDisplacementMarker(() -> { //start placing purple pixel
-                                picker.update(Picker.PickerState.OUTAKE);
-                            })
-                            .waitSeconds(1)
-                            .addDisplacementMarker(() -> { //stop placing purple pixel
-                                picker.update(Picker.PickerState.HOLD);
-                            })
-                            .back(37.5)
-                            .build();
                 }
                 break;
         }
 
-        // Set starting pose
+        Pose2d startPose = trajectoryConfig.getStartPose(invertedPosition, stagePosition);
+        Pose2d initialMovePos = trajectoryConfig.getInitialMovePose(invertedPosition, stagePosition);
+
+        TrajectorySequence initialMove = drive.trajectorySequenceBuilder(startPose)
+                .strafeTo(new Vector2d(initialMovePos.getX(), initialMovePos.getY()))
+                .build();
+
         drive.setPoseEstimate(startPose);
 
-        /**
-         * Now that we have built the trajectories, we need to:
-         * 1. Do the initial move for detection
-         * 2. Detect the spike mark with the prop (or assume closest to truss)
-         * 3. Load the proper trajectory based on starting location into the
-         *    trajectory sequence
-         * 4. Run the trajectory we build out
-         */
-        TrajectorySequence propPositionTrajectory = null;
         SpikeMark location = null;
 
         waitForStart();
         if (opModeIsActive()){
-            // 1. Do the initial move
+
             drive.followTrajectorySequence(initialMove);
 
             runtime.reset();
-            // 2. Attempt to detect the prop for 5 seconds assume closes to truss if not
-            while (opModeIsActive() & !propDetected & runtime.seconds() < 5) {
+
+            while (opModeIsActive() & !propDetected & runtime.seconds() < 3) {
                 telemetryTfod();
 
-                // 2. attempt to detect the spike mark location, returns NONE if no detection
                 location = tfObjectPropDetect.getSpikeMark(invertedDetection);
                 telemetry.addData("Spike Mark Location", location.toString());
                 telemetry.update();
 
-                // 3. Load the trajectory based on the detected spike mark
-                switch (location){
-                    case LEFT:
-                        propPositionTrajectory = leftTraj;
-                        propDetected = true;
-                        break;
-                    case CENTER:
-                        propPositionTrajectory = centerTraj;
-                        propDetected = true;
-                        break;
-                    case RIGHT:
-                        propPositionTrajectory = rightTraj;
-                        propDetected = true;
-                        break;
-                    case NONE: // assume "right trajectory" or invert to left
-                    default:
-                        if(invertedDetection==true) {
-                            propPositionTrajectory = leftTraj;
-                        } else {
-                            propPositionTrajectory = rightTraj;
-                        }
-                        propDetected = false;
-                        break;
+                if (location != SpikeMark.NONE && location != null){
+                    propDetected = true;
+                } else {
+                    if (invertedDetection) {
+                        location = SpikeMark.LEFT;
+                    } else {
+                        location = SpikeMark.RIGHT;
+                    }
                 }
+
             }
-            // 4. Run the trajectory we built out
-            drive.followTrajectorySequence(propPositionTrajectory);
+
+            Pose2d spikeMarkPos = trajectoryConfig.getSpikeMarkPose(location, invertedPosition, stagePosition);
+            Pose2d commonPos = trajectoryConfig.getCommonMarkPose(invertedPosition);
+            Pose2d boardPos = trajectoryConfig.getBoardPose(location, invertedPosition, stagePosition);
+            Pose2d parkPos = trajectoryConfig.getParkPose(fieldParkPosition, invertedPosition);
+            Pose2d apronSafePos = trajectoryConfig.getApronSafePose(invertedPosition);
+            Pose2d apronTrussPos = trajectoryConfig.getApronTrussPose(invertedPosition);
+
+            TrajectorySequence spikeMarkTraj;
+            TrajectorySequence boardTraj;
+            TrajectorySequence parkTraj;
+
+            if (stagePosition == StagePosition.APRON){
+
+                spikeMarkTraj = drive.trajectorySequenceBuilder(initialMove.end())
+                        .lineToLinearHeading(spikeMarkPos) // line to spike mark
+                        .build();
+
+                // purple pixel
+
+                boardTraj = drive.trajectorySequenceBuilder(spikeMarkTraj.end())
+                        .lineToLinearHeading(apronSafePos) // get in position to go under truss
+                        .lineToConstantHeading(new Vector2d(apronTrussPos.getX(), apronTrussPos.getY())) // go under truss
+                        .splineToConstantHeading(new Vector2d(boardPos.getX(), boardPos.getY()), Math.toRadians(0)) // get to board
+                        .build();
+
+                // yellow pixel
+
+                parkTraj = drive.trajectorySequenceBuilder(boardTraj.end())
+                        .lineToLinearHeading(commonPos)
+                        .splineToLinearHeading(parkPos, Math.toRadians(0))
+                        .build();
+
+
+
+            } else {
+
+                spikeMarkTraj = drive.trajectorySequenceBuilder(initialMove.end())
+                        .splineToLinearHeading(spikeMarkPos, Math.toRadians(180))
+                        .build();
+
+                // purple pixel
+
+                boardTraj = drive.trajectorySequenceBuilder(spikeMarkTraj.end())
+                        .lineToLinearHeading(boardPos)
+                        .build();
+
+                // score yellow
+
+                parkTraj = drive.trajectorySequenceBuilder(boardTraj.end())
+//                        .splineToLinearHeading(parkPos, Math.toRadians(180))
+                        .lineToLinearHeading(parkPos)
+                        .build();
+
+            }
+
+            drive.followTrajectorySequence(spikeMarkTraj);
+            picker.auton_place_spike(Picker.PickerState.AUTON, 1.5, runtime);
+            picker.auton_place_spike(Picker.PickerState.HOLD, 0.1, runtime);
+            placer.auton_deploy_elevator(Placer.PlacerState.STOW, 0.2, runtime);
+            drive.followTrajectorySequence(boardTraj);
+            placer.auton_deploy_elevator(Placer.PlacerState.DEPLOY, 2, runtime);
+            placer.auton_deploy_elevator(Placer.PlacerState.PLACE_SECOND, 0.2, runtime);
+            placer.auton_deploy_elevator(Placer.PlacerState.READY_TO_INTAKE, 1, runtime);
+            drive.followTrajectorySequence(parkTraj);
         }
         visionPortal.close();
 
@@ -529,6 +351,8 @@ public class Production_Auton extends LinearOpMode {
         double y = 0;
 
         List<Recognition> currentRecognitions = tfod.getRecognitions();
+
+        telemetry.clearAll();
         telemetry.addData("# Objects Detected", currentRecognitions.size());
 
         for (Recognition recognition : currentRecognitions) {

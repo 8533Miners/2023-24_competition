@@ -9,7 +9,7 @@ public class Placer {
     public final int PLACE_LEVEL_MAX = 6;
     private final int ELEVATOR_STOWED = 0;
     private final int PIXEL_HEIGHT = 240;//TODO
-    private final int BACKDROP_HEIGHT = 1566;
+    private final int BACKDROP_HEIGHT = 1466; //1566;
     private final int CLIMB_HEIGHT = 2300;
     private final int HANGING = 1000;//1280;
     private final int MAX_SAFE = 2800;

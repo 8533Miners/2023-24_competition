@@ -19,7 +19,7 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
 
-//@Disabled
+@Disabled
 @Autonomous(name = "Test Auton Camera Stream - cup", group = "TestAuton")
 public class Testing_Auton_tfod_cup extends LinearOpMode {
     TFObjectPropDetect tfObjectPropDetect;

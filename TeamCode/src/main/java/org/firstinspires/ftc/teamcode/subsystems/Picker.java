@@ -15,6 +15,7 @@ public class Picker {
     private DcMotorEx right_motor;
     private Rev2mDistanceSensor distance_sensor;
     public enum PickerState {
+        AUTON,
         INTAKE,
         OUTAKE,
         HOLD
@@ -30,6 +31,9 @@ public class Picker {
     }
     public void update (PickerState desired_state) {
         switch (desired_state) {
+            case AUTON:
+                left_motor.setPower(-1);
+                right_motor.setPower(1);
             case HOLD:
                 left_motor.setPower(0.0);
                 right_motor.setPower(0.0);

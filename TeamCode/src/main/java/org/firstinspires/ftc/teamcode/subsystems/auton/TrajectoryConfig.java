@@ -1,18 +1,13 @@
 package org.firstinspires.ftc.teamcode.subsystems.auton;
 
-import com.acmerobotics.roadrunner.drive.MecanumDrive;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.opmode.testing.Testing_Auton_jjenkins.StagePosition;
-import org.firstinspires.ftc.teamcode.subsystems.Picker;
-import org.firstinspires.ftc.teamcode.subsystems.Placer;
+import org.firstinspires.ftc.teamcode.opmode.Production_Auton.StagePosition;
 import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu.FieldParkPosition;
 import org.firstinspires.ftc.teamcode.subsystems.vision.SpikeMark;
-import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
+
 /**
  * invert is managing the inversion for red vs. blue alliance start positions.
  * stagePosition is managing the mirror for left vs. right start positions.
@@ -129,15 +124,19 @@ public class TrajectoryConfig {
 
         return new Pose2d(common_X, common_Y, Math.toRadians(common_H));
     }
-    public Pose2d getBoardPose(SpikeMark detectedSpikeMark, boolean invert){
+    public Pose2d getBoardPose(SpikeMark detectedSpikeMark, boolean invert, StagePosition stagePosition){
         board_X = 53.5;
         board_Y = invert ? -35 : 35;
         board_H = 180;
 
+        if (stagePosition == StagePosition.APRON) {
+            board_X = 55.5;
+        }
+
         if (detectedSpikeMark == SpikeMark.RIGHT) {
-            board_Y = invert ? -41 : 29;
+            board_Y = invert ? -42 : 28;
         } else if (detectedSpikeMark == SpikeMark.LEFT){
-            board_Y = invert ? -29: 41;
+            board_Y = invert ? -28: 42;
         }
 
         return new Pose2d(board_X, board_Y, Math.toRadians(board_H));
