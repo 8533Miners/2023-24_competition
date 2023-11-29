@@ -9,39 +9,14 @@ import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu.FieldParkPos
 import org.firstinspires.ftc.teamcode.subsystems.vision.SpikeMark;
 
 /**
- * invert is managing the inversion for red vs. blue alliance start positions.
  * stagePosition is managing the mirror for left vs. right start positions.
  * (a LEFT detection on the APRON start position is a mirror of a RIGHT detection
  * on the BACKSTAGE start position, etc)
  */
 public class TrajectoryConfig {
     private SampleMecanumDrive rrdrive;
-    Trajectory apronTraj;
-    Trajectory backstageTraj;
-    double starting_X;
-    double starting_Y;
-    double starting_H;
-    double initial_X;
-    double initial_Y;
-    double initial_H;
-    double spikeMark_Y;
-    double spikeMark_X;
-    double spikeMark_H;
-    double common_X;
-    double common_Y;
-    double common_H;
-    double board_X;
-    double board_Y;
-    double board_H;
-    double park_X;
-    double park_Y;
-    double park_H;
-    double apronSafe_X;
-    double apronSafe_Y;
-    double apronSafe_H;
-    double apronTruss_X;
-    double apronTruss_Y;
-    double apronTruss_H;
+//    Trajectory apronTraj;
+//    Trajectory backstageTraj;
 
     public TrajectoryConfig(SampleMecanumDrive autonDrive){
         this.rrdrive = autonDrive;
@@ -54,126 +29,156 @@ public class TrajectoryConfig {
 //        return genTraj.build();
 //    }
 
-    public Pose2d getStartPose(boolean invert, StagePosition stagePosition){
-        starting_Y = invert ? -62 : 62;
-        starting_H = invert ? 90: 270;
+    public Pose2d getStartPose(boolean isRedAlliance, StagePosition stagePosition){
+        double pose_X;
+        double pose_Y;
+        double pose_H;
+
+        pose_Y = isRedAlliance ? -62 : 62;
+        pose_H = isRedAlliance ? 90: 270;
 
         if (stagePosition == StagePosition.APRON){
-            starting_X = -40;
+            pose_X = -40;
         } else {
-            starting_X = 16;
+            pose_X = 16;
         }
 
-        return new Pose2d(starting_X, starting_Y, Math.toRadians(starting_H));
+        return new Pose2d(pose_X, pose_Y, Math.toRadians(pose_H));
     }
 
-    public Pose2d getInitialMovePose(boolean invert, StagePosition stagePosition){
+    public Pose2d getInitialMovePose(boolean isRedAlliance, StagePosition stagePosition){
+        double pose_X;
+        double pose_Y;
+        double pose_H;
 
-        Pose2d currentPositionStartPose = getStartPose(invert, stagePosition);
-        initial_Y = currentPositionStartPose.getY();
-        initial_H = currentPositionStartPose.getHeading();
+        Pose2d currentPositionStartPose = getStartPose(isRedAlliance, stagePosition);
+        pose_Y = currentPositionStartPose.getY();
+        pose_H = currentPositionStartPose.getHeading();
 
         if (stagePosition == StagePosition.APRON) {
-            initial_X = -44;
+            pose_X = -44;
         } else {
-            initial_X = 20;
+            pose_X = 20;
         }
 
-        return new Pose2d(initial_X, initial_Y, Math.toRadians(initial_H));
+        return new Pose2d(pose_X, pose_Y, Math.toRadians(pose_H));
     }
-    public Pose2d getSpikeMarkPose(SpikeMark detectedSpikeMark, boolean invert, StagePosition stagePosition){
+    public Pose2d getSpikeMarkPose(SpikeMark detectedSpikeMark, boolean isRedAlliance, StagePosition stagePosition){
+        double pose_X;
+        double pose_Y;
+        double pose_H;
 
-        spikeMark_Y = invert ? -34 : 34;
-        spikeMark_H = 180;
+        pose_Y = isRedAlliance ? -34 : 34;
+        pose_H = 180;
 
         switch(detectedSpikeMark){
             case LEFT:
                 if (stagePosition == StagePosition.APRON){
-                    spikeMark_X = invert ? -45 : -29;
-                    spikeMark_H = invert ? 90 : 305;
+                    pose_X = isRedAlliance ? -45 : -29;
+                    pose_H = isRedAlliance ? 90 : 305;
                 } else {
-                    spikeMark_X = invert ? 4 : 28;
+                    pose_X = isRedAlliance ? 4 : 28;
                 }
                 break;
             case RIGHT:
                 if (stagePosition == StagePosition.APRON) {
-                    spikeMark_X = invert ? -29 : -45;
-                    spikeMark_H = invert ? 55 : 270;
+                    pose_X = isRedAlliance ? -29 : -45;
+                    pose_H = isRedAlliance ? 55 : 270;
                 } else {
-                    spikeMark_X = invert ? 28 : 4;
+                    pose_X = isRedAlliance ? 28 : 4;
                 }
                 break;
             case CENTER:
             default:
                 if (stagePosition == StagePosition.APRON) {
-                    spikeMark_X = -40;
-                    spikeMark_Y = invert ? -29 : 29;
-                    spikeMark_H = invert ? 90 : 270;
+                    pose_X = -40;
+                    pose_Y = isRedAlliance ? -29 : 29;
+                    pose_H = isRedAlliance ? 90 : 270;
                 } else {
-                    spikeMark_X = 20;
-                    spikeMark_Y = invert ? -24 : 26;
+                    pose_X = 20;
+                    pose_Y = isRedAlliance ? -24 : 26;
                 }
                 break;
         }
-        return new Pose2d(spikeMark_X, spikeMark_Y, Math.toRadians(spikeMark_H));
+        return new Pose2d(pose_X, pose_Y, Math.toRadians(pose_H));
     }
-    public Pose2d getCommonMarkPose(boolean invert){
-        common_X = 43;
-        common_Y = invert ? -35 : 35;
-        common_H = 180;
+    public Pose2d getCommonMarkPose(boolean isRedAlliance){
+        double pose_X;
+        double pose_Y;
+        double pose_H;
 
-        return new Pose2d(common_X, common_Y, Math.toRadians(common_H));
+        pose_X = 43;
+        pose_Y = isRedAlliance ? -35 : 35;
+        pose_H = 180;
+
+        return new Pose2d(pose_X, pose_Y, Math.toRadians(pose_H));
     }
-    public Pose2d getBoardPose(SpikeMark detectedSpikeMark, boolean invert, StagePosition stagePosition){
-        board_X = 53.5;
-        board_Y = invert ? -35 : 35;
-        board_H = 180;
+    public Pose2d getBoardPose(SpikeMark detectedSpikeMark, boolean isRedAlliance, StagePosition stagePosition){
+        double pose_X;
+        double pose_Y;
+        double pose_H;
+
+        pose_X = 53.5;
+        pose_Y = isRedAlliance ? -35 : 35;
+        pose_H = 180;
 
         if (stagePosition == StagePosition.APRON) {
-            board_X = 55.5;
+            pose_X = 55.5;
         }
 
         if (detectedSpikeMark == SpikeMark.RIGHT) {
-            board_Y = invert ? -42 : 28;
+            pose_Y = isRedAlliance ? -42 : 28;
         } else if (detectedSpikeMark == SpikeMark.LEFT){
-            board_Y = invert ? -28: 42;
+            pose_Y = isRedAlliance ? -28: 42;
         }
 
-        return new Pose2d(board_X, board_Y, Math.toRadians(board_H));
+        return new Pose2d(pose_X, pose_Y, Math.toRadians(pose_H));
     }
-    public Pose2d getParkPose(FieldParkPosition parkPosition, boolean invert){
-        park_H = 180;
-        park_X = 47;
+    public Pose2d getParkPose(FieldParkPosition parkPosition, boolean isRedAlliance){
+        double pose_X;
+        double pose_Y;
+        double pose_H;
+
+        pose_H = 180;
+        pose_X = 47;
 
         switch(parkPosition){
             case NEAR_WALL:
-                park_Y = invert ? -59 : 59;
+                pose_Y = isRedAlliance ? -59 : 59;
                 break;
             case NEAR_CENTER:
-                park_Y = invert ? -11 : 11;
+                pose_Y = isRedAlliance ? -11 : 11;
                 break;
             default:
             case ON_BACKDROP:
-                park_Y = invert ? -35 : 35;
+                pose_Y = isRedAlliance ? -35 : 35;
                 break;
         }
-        return new Pose2d(park_X, park_Y, Math.toRadians(park_H));
+        return new Pose2d(pose_X, pose_Y, Math.toRadians(pose_H));
     }
 
-    public Pose2d getApronSafePose(boolean invert){
-        apronSafe_X = -52;
-        apronSafe_Y = invert ? -60 : 60;
-        apronSafe_H = 180;
+    public Pose2d getApronSafePose(boolean isRedAlliance){
+        double pose_X;
+        double pose_Y;
+        double pose_H;
 
-        return new Pose2d(apronSafe_X, apronSafe_Y, Math.toRadians(apronSafe_H));
+        pose_X = -52;
+        pose_Y = isRedAlliance ? -60 : 60;
+        pose_H = 180;
+
+        return new Pose2d(pose_X, pose_Y, Math.toRadians(pose_H));
     }
 
-    public Pose2d getApronTrussPose(boolean invert){
-        apronTruss_X = 14;
-        apronTruss_Y = invert ? -60 : 60;
-        apronTruss_H = 180;
+    public Pose2d getApronTrussPose(boolean isRedAlliance){
+        double pose_X;
+        double pose_Y;
+        double pose_H;
 
-        return new Pose2d(apronTruss_X, apronTruss_Y, Math.toRadians(apronTruss_H));
+        pose_X = 14;
+        pose_Y = isRedAlliance ? -60 : 60;
+        pose_H = 180;
+
+        return new Pose2d(pose_X, pose_Y, Math.toRadians(pose_H));
     }
 //    public TrajectorySequence getSpikeMarkTrajectory(SpikeMark detectedSpikeMark, boolean invert, StagePosition stagePosition){
 //
