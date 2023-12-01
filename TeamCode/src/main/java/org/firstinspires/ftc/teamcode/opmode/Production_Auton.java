@@ -19,6 +19,7 @@ import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu.AllianceColo
 import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu.FieldParkPosition;
 import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu.FieldStartPosition;
 import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu.MenuState;
+import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu.ScoreStrategy;
 import org.firstinspires.ftc.teamcode.subsystems.vision.SpikeMark;
 import org.firstinspires.ftc.teamcode.subsystems.vision.TFObjectPropDetect;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
@@ -146,7 +147,6 @@ public class Production_Auton extends LinearOpMode {
     public boolean propDetected = false;
     SelectionMenu selectionMenu = new SelectionMenu(this,telemetry);
     boolean invertedDetection = false; // invert detections based on starting position
-    boolean invertedPosition = false; // separate bool to invert
     StagePosition stagePosition = StagePosition.BACKSTAGE;
     Picker picker;
     Placer placer;
@@ -185,14 +185,11 @@ public class Production_Auton extends LinearOpMode {
         AllianceColor allianceColor = selectionMenu.getAllianceColor();
         FieldStartPosition fieldStartPosition = selectionMenu.getFieldStartPosition();
         FieldParkPosition fieldParkPosition = selectionMenu.getFieldParkPosition();
-
-        double waitTime1 = 1.5;
-        ElapsedTime waitTimer1 = new ElapsedTime();
-
+        ScoreStrategy scoreStrategy = selectionMenu.getScoreStrategy();
+        double startDelay = selectionMenu.getStartDelay();
 
         switch(allianceColor){
             case RED:
-                invertedPosition = true;
                 if(fieldStartPosition == FieldStartPosition.RIGHT) {
                     invertedDetection = true; // F4 RIGHT detect == A4 LEFT detect
                 } else {
@@ -208,8 +205,8 @@ public class Production_Auton extends LinearOpMode {
                 break;
         }
 
-        Pose2d startPose = trajectoryConfig.getStartPose(invertedPosition, stagePosition);
-        Pose2d initialMovePos = trajectoryConfig.getInitialMovePose(invertedPosition, stagePosition);
+        Pose2d startPose = trajectoryConfig.getStartPose(allianceColor, stagePosition);
+        Pose2d initialMovePos = trajectoryConfig.getInitialMovePose(allianceColor, stagePosition);
 
         TrajectorySequence initialMove = drive.trajectorySequenceBuilder(startPose)
                 .strafeTo(new Vector2d(initialMovePos.getX(), initialMovePos.getY()))
@@ -221,6 +218,13 @@ public class Production_Auton extends LinearOpMode {
 
         waitForStart();
         if (opModeIsActive()){
+            runtime.reset();
+            while (opModeIsActive() && runtime.seconds() < startDelay){
+                telemetry.clear();
+                telemetry.addData("Status", "Delaying for " + startDelay + " seconds...");
+                telemetry.addData("Run time", "Seconds - " + runtime.seconds());
+                telemetry.update();
+            }
 
             drive.followTrajectorySequence(initialMove);
 
@@ -245,35 +249,35 @@ public class Production_Auton extends LinearOpMode {
 
             }
 
-            Pose2d spikeMarkPos = trajectoryConfig.getSpikeMarkPose(location, invertedPosition, stagePosition);
-            Pose2d commonPos = trajectoryConfig.getCommonMarkPose(invertedPosition);
-            Pose2d boardPos = trajectoryConfig.getBoardPose(location, invertedPosition, stagePosition);
-            Pose2d parkPos = trajectoryConfig.getParkPose(fieldParkPosition, invertedPosition);
-            Pose2d apronSafePos = trajectoryConfig.getApronSafePose(invertedPosition);
-            Pose2d apronTrussPos = trajectoryConfig.getApronTrussPose(invertedPosition);
+            Pose2d spikeMarkPos = trajectoryConfig.getSpikeMarkPose(location, allianceColor, stagePosition);
+            Pose2d commonPos = trajectoryConfig.getCommonMarkPose(allianceColor);
+            Pose2d boardPos = trajectoryConfig.getBoardPose(location, allianceColor, stagePosition);
+            Pose2d parkPos = trajectoryConfig.getParkPose(fieldParkPosition, allianceColor);
+            Pose2d apronSafePos = trajectoryConfig.getApronSafePose(allianceColor);
+            Pose2d apronTrussPos = trajectoryConfig.getApronTrussPose(allianceColor);
 
             TrajectorySequence spikeMarkTraj;
+            TrajectorySequence apronSafeTraj;
             TrajectorySequence boardTraj;
             TrajectorySequence parkTraj;
 
             if (stagePosition == StagePosition.APRON){
 
                 spikeMarkTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                        .lineToLinearHeading(spikeMarkPos) // line to spike mark
+                        .lineToLinearHeading(spikeMarkPos)
                         .build();
 
-                // purple pixel
-
-                boardTraj = drive.trajectorySequenceBuilder(spikeMarkTraj.end())
+                apronSafeTraj = drive.trajectorySequenceBuilder(spikeMarkTraj.end())
                         .lineToLinearHeading(apronSafePos) // get in position to go under truss
                         .lineToConstantHeading(new Vector2d(apronTrussPos.getX(), apronTrussPos.getY())) // go under truss
+                        .build();
+
+                boardTraj = drive.trajectorySequenceBuilder(apronSafeTraj.end())
                         .splineToConstantHeading(new Vector2d(boardPos.getX(), boardPos.getY()), Math.toRadians(0)) // get to board
                         .build();
 
-                // yellow pixel
-
                 parkTraj = drive.trajectorySequenceBuilder(boardTraj.end())
-                        .lineToLinearHeading(commonPos)
+                        .lineToLinearHeading(commonPos) // TODO: this probably should be removed at this point
                         .splineToLinearHeading(parkPos, Math.toRadians(0))
                         .build();
 
@@ -285,13 +289,11 @@ public class Production_Auton extends LinearOpMode {
                         .splineToLinearHeading(spikeMarkPos, Math.toRadians(180))
                         .build();
 
-                // purple pixel
+                apronSafeTraj = null;
 
                 boardTraj = drive.trajectorySequenceBuilder(spikeMarkTraj.end())
                         .lineToLinearHeading(boardPos)
                         .build();
-
-                // score yellow
 
                 parkTraj = drive.trajectorySequenceBuilder(boardTraj.end())
 //                        .splineToLinearHeading(parkPos, Math.toRadians(180))
@@ -300,15 +302,23 @@ public class Production_Auton extends LinearOpMode {
 
             }
 
-            drive.followTrajectorySequence(spikeMarkTraj);
-            picker.auton_place_spike(Picker.PickerState.AUTON, 1.5, runtime);
-            picker.auton_place_spike(Picker.PickerState.HOLD, 0.1, runtime);
-            placer.auton_deploy_elevator(Placer.PlacerState.STOW, 0.2, runtime);
-            drive.followTrajectorySequence(boardTraj);
-            placer.auton_deploy_elevator(Placer.PlacerState.DEPLOY, 2, runtime);
-            placer.auton_deploy_elevator(Placer.PlacerState.PLACE_SECOND, 0.2, runtime);
-            placer.auton_deploy_elevator(Placer.PlacerState.READY_TO_INTAKE, 1, runtime);
-            drive.followTrajectorySequence(parkTraj);
+            if (scoreStrategy == ScoreStrategy.NO_SCORE){
+                drive.followTrajectorySequence(spikeMarkTraj);
+                if (stagePosition == StagePosition.APRON){
+                    drive.followTrajectorySequence(apronSafeTraj);
+                }
+                drive.followTrajectorySequence(parkTraj);
+            } else {
+                drive.followTrajectorySequence(spikeMarkTraj);
+                picker.auton_place_spike(Picker.PickerState.AUTON, 1.5, runtime);
+                picker.auton_place_spike(Picker.PickerState.HOLD, 0.1, runtime);
+                placer.auton_deploy_elevator(Placer.PlacerState.STOW, 0.2, runtime);
+                drive.followTrajectorySequence(boardTraj);
+                placer.auton_deploy_elevator(Placer.PlacerState.DEPLOY, 2, runtime);
+                placer.auton_deploy_elevator(Placer.PlacerState.PLACE_SECOND, 0.2, runtime);
+                placer.auton_deploy_elevator(Placer.PlacerState.READY_TO_INTAKE, 1, runtime);
+                drive.followTrajectorySequence(parkTraj);
+            }
         }
         visionPortal.close();
 
@@ -370,25 +380,5 @@ public class Production_Auton extends LinearOpMode {
             telemetry.addData("- Position", "%.0f / %.0f", x, y);
             telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
         }   // end for() loop
-    }
-
-    /**
-     * TODO: Function to abstract setting initial move for TFOD
-     * @param startingGrid
-     * @return
-     */
-    public TrajectorySequence setInitialMove(String startingGrid) {
-        return null;
-    }
-
-    /**
-     * Print the menu selection
-     */
-    private void printMenuSelections() {
-        telemetry.clear();
-        telemetry.addLine("Alliance Color: " + selectionMenu.getAllianceColor());
-        telemetry.addLine("Start Position: " + selectionMenu.getFieldStartPosition());
-        telemetry.addLine("Park Position: " + selectionMenu.getFieldParkPosition());
-        telemetry.update();
     }
 }

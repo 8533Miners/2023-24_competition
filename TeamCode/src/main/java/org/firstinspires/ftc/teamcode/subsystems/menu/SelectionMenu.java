@@ -12,7 +12,8 @@ public class SelectionMenu {
         ALLIANCE_COLOR,
         FIELD_START_POSITION,
         FIELD_PARK_POSITION,
-        //        START_DELAY,
+        START_DELAY,
+        SCORE_STRATEGY,
         CONFIRMATION,
         READY
     }
@@ -22,6 +23,8 @@ public class SelectionMenu {
     private AllianceColor allianceColor = AllianceColor.RED;
     private FieldStartPosition fieldStartPosition = FieldStartPosition.LEFT;
     private FieldParkPosition fieldParkPosition = FieldParkPosition.ON_BACKDROP;
+    private StartDelay startDelay = StartDelay.NO_DELAY;
+    private ScoreStrategy scoreStrategy = ScoreStrategy.SCORE;
     private int currentOptionIndex = 0; // Index of the currently selected option
     private ElapsedTime debounceTimer = new ElapsedTime();
 
@@ -39,6 +42,18 @@ public class SelectionMenu {
         NEAR_WALL,
         ON_BACKDROP,
         NEAR_CENTER
+    }
+
+    public enum StartDelay {
+        NO_DELAY,
+        ONE_SECOND,
+        THREE_SECOND,
+        FIVE_SECOND
+    }
+
+    public enum ScoreStrategy {
+        SCORE,
+        NO_SCORE
     }
 
     /**
@@ -73,6 +88,15 @@ public class SelectionMenu {
                 telemetry.addLine("Press 'A' to select or 'B' to go back.");
                 break;
 
+            case START_DELAY:
+                telemetry.addLine("Select Start Delay:");
+                displayOption("1. No Delay", 0);
+                displayOption("2. 1 Second", 1);
+                displayOption("3. 3 Seconds", 2);
+                displayOption("4. 5 Seconds", 3);
+                telemetry.addLine("Press 'A' to select or 'B' to go back.");
+                break;
+
             case FIELD_START_POSITION:
                 telemetry.addLine("Select Field Start Position:");
                 displayOption("1. Left", 0);
@@ -88,11 +112,19 @@ public class SelectionMenu {
                 telemetry.addLine("Press 'A' to select or 'B' to go back.");
                 break;
 
+            case SCORE_STRATEGY:
+                telemetry.addLine("Select Auton Strategy");
+                displayOption("1. Score Yellow Pixel", 0);
+                displayOption("2. Do NOT score Yellow Pixel", 1);
+                telemetry.addLine("Press 'A' to select or 'B' to go back.");
+
             case CONFIRMATION:
                 telemetry.addLine("Confirm Selection:");
                 telemetry.addLine("Alliance Color: " + allianceColor.toString());
                 telemetry.addLine("Field Start Position: " + fieldStartPosition.toString());
                 telemetry.addLine("Field Park Position: " + fieldParkPosition.toString());
+                telemetry.addLine("Start Delay: " + startDelay.toString());
+                telemetry.addLine("Score Strategy: " + scoreStrategy.toString());
                 telemetry.addLine("Press 'A' to confirm or 'B' to go back.");
                 break;
 
@@ -140,14 +172,29 @@ public class SelectionMenu {
                     setMenuState(MenuState.FIELD_PARK_POSITION);
                 }
                 break;
+
             case ALLIANCE_COLOR:
                 if (currentOptionIndex == 0) {
                     allianceColor = AllianceColor.RED;
                 } else if (currentOptionIndex == 1) {
                     allianceColor = AllianceColor.BLUE;
                 }
+                setMenuState(MenuState.START_DELAY);
+                break;
+
+            case START_DELAY:
+                if (currentOptionIndex == 0) {
+                    startDelay = StartDelay.NO_DELAY;
+                } else if (currentOptionIndex == 1) {
+                    startDelay = StartDelay.ONE_SECOND;
+                } else if (currentOptionIndex == 2) {
+                    startDelay = StartDelay.THREE_SECOND;
+                } else if (currentOptionIndex == 3) {
+                    startDelay = StartDelay.FIVE_SECOND;
+                }
                 setMenuState(MenuState.FIELD_START_POSITION);
                 break;
+
             case FIELD_START_POSITION:
                 if (currentOptionIndex == 0) {
                     fieldStartPosition = FieldStartPosition.LEFT;
@@ -164,8 +211,15 @@ public class SelectionMenu {
                 } else if (currentOptionIndex == 2){
                     fieldParkPosition = FieldParkPosition.NEAR_CENTER;
                 }
-                setMenuState(MenuState.CONFIRMATION);
+                setMenuState(MenuState.SCORE_STRATEGY);
                 break;
+            case SCORE_STRATEGY:
+                if (currentOptionIndex == 0){
+                    scoreStrategy = ScoreStrategy.SCORE;
+                } else if (currentOptionIndex == 1){
+                    scoreStrategy = ScoreStrategy.NO_SCORE;
+                }
+                setMenuState(MenuState.CONFIRMATION);
             case CONFIRMATION:
                 setMenuState(MenuState.READY);
                 break;
@@ -185,19 +239,25 @@ public class SelectionMenu {
             case ALLIANCE_COLOR:
                 setMenuState(MenuState.MAIN_MENU);
                 break;
-            case FIELD_START_POSITION:
+            case START_DELAY:
                 setMenuState(MenuState.ALLIANCE_COLOR);
+                break;
+            case FIELD_START_POSITION:
+                setMenuState(MenuState.START_DELAY);
                 break;
             case FIELD_PARK_POSITION:
                 setMenuState(MenuState.FIELD_START_POSITION);
                 break;
+            case SCORE_STRATEGY:
+                setMenuState(MenuState.FIELD_PARK_POSITION);
             case CONFIRMATION:
                 if (currentOptionIndex == 0) {
-                    setMenuState(MenuState.FIELD_PARK_POSITION);
+                    setMenuState(MenuState.SCORE_STRATEGY);
                 }
                 break;
         }
         currentOptionIndex = 0; // Reset the option index
+        opMode.sleep(300);
     }
     public int getMenuOptionCount() {
         // Return the number of menu options for the current menu
@@ -223,5 +283,23 @@ public class SelectionMenu {
     }
     public FieldParkPosition getFieldParkPosition() {
         return fieldParkPosition;
+    }
+
+    public ScoreStrategy getScoreStrategy() {
+        return scoreStrategy;
+    }
+
+    public double getStartDelay() {
+        switch (startDelay){
+            default:
+            case NO_DELAY:
+                return 0.0;
+            case ONE_SECOND:
+                return 1.0;
+            case THREE_SECOND:
+                return 3.0;
+            case FIVE_SECOND:
+                return 5.0;
+        }
     }
 }

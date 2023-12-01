@@ -5,7 +5,9 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.opmode.Production_Auton.StagePosition;
+import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu.FieldStartPosition;
 import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu.FieldParkPosition;
+import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu.AllianceColor;
 import org.firstinspires.ftc.teamcode.subsystems.vision.SpikeMark;
 
 /**
@@ -29,13 +31,13 @@ public class TrajectoryConfig {
 //        return genTraj.build();
 //    }
 
-    public Pose2d getStartPose(boolean isRedAlliance, StagePosition stagePosition){
+    public Pose2d getStartPose(AllianceColor allianceColor, StagePosition stagePosition){
         double pose_X;
         double pose_Y;
         double pose_H;
 
-        pose_Y = isRedAlliance ? -62 : 62;
-        pose_H = isRedAlliance ? 90: 270;
+        pose_Y = (allianceColor == AllianceColor.RED) ? -62 : 62;
+        pose_H = (allianceColor == AllianceColor.RED) ? 90 : 270;
 
         if (stagePosition == StagePosition.APRON){
             pose_X = -40;
@@ -46,12 +48,12 @@ public class TrajectoryConfig {
         return new Pose2d(pose_X, pose_Y, Math.toRadians(pose_H));
     }
 
-    public Pose2d getInitialMovePose(boolean isRedAlliance, StagePosition stagePosition){
+    public Pose2d getInitialMovePose(AllianceColor allianceColor, StagePosition stagePosition){
         double pose_X;
         double pose_Y;
         double pose_H;
 
-        Pose2d currentPositionStartPose = getStartPose(isRedAlliance, stagePosition);
+        Pose2d currentPositionStartPose = getStartPose(allianceColor, stagePosition);
         pose_Y = currentPositionStartPose.getY();
         pose_H = currentPositionStartPose.getHeading();
 
@@ -63,63 +65,63 @@ public class TrajectoryConfig {
 
         return new Pose2d(pose_X, pose_Y, Math.toRadians(pose_H));
     }
-    public Pose2d getSpikeMarkPose(SpikeMark detectedSpikeMark, boolean isRedAlliance, StagePosition stagePosition){
+    public Pose2d getSpikeMarkPose(SpikeMark detectedSpikeMark, AllianceColor allianceColor, StagePosition stagePosition){
         double pose_X;
         double pose_Y;
         double pose_H;
 
-        pose_Y = isRedAlliance ? -34 : 34;
+        pose_Y = (allianceColor == AllianceColor.RED) ? -34 : 34;
         pose_H = 180;
 
         switch(detectedSpikeMark){
             case LEFT:
                 if (stagePosition == StagePosition.APRON){
-                    pose_X = isRedAlliance ? -45 : -29;
-                    pose_H = isRedAlliance ? 90 : 305;
+                    pose_X = (allianceColor == AllianceColor.RED) ? -45 : -29;
+                    pose_H = (allianceColor == AllianceColor.RED) ? 90 : 305;
                 } else {
-                    pose_X = isRedAlliance ? 4 : 28;
+                    pose_X = (allianceColor == AllianceColor.RED) ? 4 : 28;
                 }
                 break;
             case RIGHT:
                 if (stagePosition == StagePosition.APRON) {
-                    pose_X = isRedAlliance ? -29 : -45;
-                    pose_H = isRedAlliance ? 55 : 270;
+                    pose_X = (allianceColor == AllianceColor.RED) ? -29 : -45;
+                    pose_H = (allianceColor == AllianceColor.RED) ? 55 : 270;
                 } else {
-                    pose_X = isRedAlliance ? 28 : 4;
+                    pose_X = (allianceColor == AllianceColor.RED) ? 28 : 4;
                 }
                 break;
             case CENTER:
             default:
                 if (stagePosition == StagePosition.APRON) {
                     pose_X = -40;
-                    pose_Y = isRedAlliance ? -29 : 29;
-                    pose_H = isRedAlliance ? 90 : 270;
+                    pose_Y = (allianceColor == AllianceColor.RED) ? -29 : 29;
+                    pose_H = (allianceColor == AllianceColor.RED) ? 90 : 270;
                 } else {
                     pose_X = 20;
-                    pose_Y = isRedAlliance ? -24 : 26;
+                    pose_Y = (allianceColor == AllianceColor.RED) ? -24 : 26;
                 }
                 break;
         }
         return new Pose2d(pose_X, pose_Y, Math.toRadians(pose_H));
     }
-    public Pose2d getCommonMarkPose(boolean isRedAlliance){
+    public Pose2d getCommonMarkPose(AllianceColor allianceColor){
         double pose_X;
         double pose_Y;
         double pose_H;
 
         pose_X = 43;
-        pose_Y = isRedAlliance ? -35 : 35;
+        pose_Y = (allianceColor == AllianceColor.RED) ? -35 : 35;
         pose_H = 180;
 
         return new Pose2d(pose_X, pose_Y, Math.toRadians(pose_H));
     }
-    public Pose2d getBoardPose(SpikeMark detectedSpikeMark, boolean isRedAlliance, StagePosition stagePosition){
+    public Pose2d getBoardPose(SpikeMark detectedSpikeMark, AllianceColor allianceColor, StagePosition stagePosition){
         double pose_X;
         double pose_Y;
         double pose_H;
 
         pose_X = 53.5;
-        pose_Y = isRedAlliance ? -35 : 35;
+        pose_Y = (allianceColor == AllianceColor.RED) ? -35 : 35;
         pose_H = 180;
 
         if (stagePosition == StagePosition.APRON) {
@@ -127,14 +129,14 @@ public class TrajectoryConfig {
         }
 
         if (detectedSpikeMark == SpikeMark.RIGHT) {
-            pose_Y = isRedAlliance ? -42 : 28;
+            pose_Y = (allianceColor == AllianceColor.RED) ? -42 : 28;
         } else if (detectedSpikeMark == SpikeMark.LEFT){
-            pose_Y = isRedAlliance ? -28: 42;
+            pose_Y = (allianceColor == AllianceColor.RED) ? -28: 42;
         }
 
         return new Pose2d(pose_X, pose_Y, Math.toRadians(pose_H));
     }
-    public Pose2d getParkPose(FieldParkPosition parkPosition, boolean isRedAlliance){
+    public Pose2d getParkPose(FieldParkPosition parkPosition, AllianceColor allianceColor){
         double pose_X;
         double pose_Y;
         double pose_H;
@@ -144,38 +146,38 @@ public class TrajectoryConfig {
 
         switch(parkPosition){
             case NEAR_WALL:
-                pose_Y = isRedAlliance ? -59 : 59;
+                pose_Y = (allianceColor == AllianceColor.RED) ? -59 : 59;
                 break;
             case NEAR_CENTER:
-                pose_Y = isRedAlliance ? -11 : 11;
+                pose_Y = (allianceColor == AllianceColor.RED) ? -11 : 11;
                 break;
             default:
             case ON_BACKDROP:
-                pose_Y = isRedAlliance ? -35 : 35;
+                pose_Y = (allianceColor == AllianceColor.RED) ? -35 : 35;
                 break;
         }
         return new Pose2d(pose_X, pose_Y, Math.toRadians(pose_H));
     }
 
-    public Pose2d getApronSafePose(boolean isRedAlliance){
+    public Pose2d getApronSafePose(AllianceColor allianceColor){
         double pose_X;
         double pose_Y;
         double pose_H;
 
         pose_X = -52;
-        pose_Y = isRedAlliance ? -60 : 60;
+        pose_Y = (allianceColor == AllianceColor.RED) ? -60 : 60;
         pose_H = 180;
 
         return new Pose2d(pose_X, pose_Y, Math.toRadians(pose_H));
     }
 
-    public Pose2d getApronTrussPose(boolean isRedAlliance){
+    public Pose2d getApronTrussPose(AllianceColor allianceColor){
         double pose_X;
         double pose_Y;
         double pose_H;
 
         pose_X = 14;
-        pose_Y = isRedAlliance ? -60 : 60;
+        pose_Y = (allianceColor == AllianceColor.RED) ? -60 : 60;
         pose_H = 180;
 
         return new Pose2d(pose_X, pose_Y, Math.toRadians(pose_H));
