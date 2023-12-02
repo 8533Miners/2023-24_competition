@@ -17,17 +17,6 @@ public class SelectionMenu {
         CONFIRMATION,
         READY
     }
-    Telemetry telemetry;
-    private LinearOpMode opMode;
-    public MenuState currentMenu = MenuState.MAIN_MENU;
-    private AllianceColor allianceColor = AllianceColor.RED;
-    private FieldStartPosition fieldStartPosition = FieldStartPosition.LEFT;
-    private FieldParkPosition fieldParkPosition = FieldParkPosition.ON_BACKDROP;
-    private StartDelay startDelay = StartDelay.NO_DELAY;
-    private ScoreStrategy scoreStrategy = ScoreStrategy.SCORE;
-    private int currentOptionIndex = 0; // Index of the currently selected option
-    private ElapsedTime debounceTimer = new ElapsedTime();
-
     public enum AllianceColor {
         RED,
         BLUE
@@ -56,8 +45,20 @@ public class SelectionMenu {
         NO_SCORE
     }
 
+    Telemetry telemetry;
+    private LinearOpMode opMode;
+    public MenuState currentMenu = MenuState.MAIN_MENU;
+    private AllianceColor allianceColor = AllianceColor.RED;
+    private FieldStartPosition fieldStartPosition = FieldStartPosition.LEFT;
+    private FieldParkPosition fieldParkPosition = FieldParkPosition.ON_BACKDROP;
+    private StartDelay startDelay = StartDelay.NO_DELAY;
+    private ScoreStrategy scoreStrategy = ScoreStrategy.SCORE;
+    private int currentOptionIndex = 0; // Index of the currently selected option
+    private ElapsedTime debounceTimer = new ElapsedTime();
+
     /**
      * constructor
+     * @param opmode
      * @param telemetry
      */
     public SelectionMenu(LinearOpMode opmode, Telemetry telemetry) {
@@ -78,6 +79,8 @@ public class SelectionMenu {
                 displayOption("1. Select Alliance Color", 0);
                 displayOption("2. Select Field Start Position", 1);
                 displayOption("3. Select Field Park Position", 2);
+                displayOption("4. Select Start Delay", 3);
+                displayOption("5. Select Score Strategy", 4);
                 telemetry.addLine("Use DPAD UP/DOWN to navigate and Press 'A' to select");
                 break;
 
