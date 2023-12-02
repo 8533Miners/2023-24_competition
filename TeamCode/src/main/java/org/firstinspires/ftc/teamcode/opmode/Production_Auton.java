@@ -304,6 +304,8 @@ public class Production_Auton extends LinearOpMode {
 
             if (scoreStrategy == ScoreStrategy.NO_SCORE){
                 drive.followTrajectorySequence(spikeMarkTraj);
+                picker.auton_place_spike(Picker.PickerState.AUTON, 1.5, runtime);
+                picker.auton_place_spike(Picker.PickerState.HOLD, 0.1, runtime);
                 if (stagePosition == StagePosition.APRON){
                     drive.followTrajectorySequence(apronSafeTraj);
                 }
