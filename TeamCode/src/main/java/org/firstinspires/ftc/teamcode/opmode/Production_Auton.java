@@ -278,6 +278,7 @@ public class Production_Auton extends LinearOpMode {
                         .build();
 
                 parkTraj = drive.trajectorySequenceBuilder(boardTraj.end())
+                        .lineToLinearHeading(commonPos)
                         .splineToLinearHeading(parkPos, Math.toRadians(0))
                         .build();
 
