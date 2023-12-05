@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu.AllianceColo
 import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu.FieldParkPosition;
 import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu.FieldStartPosition;
 import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu.MenuState;
-import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu.ScoreStrategy;
+import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu.StartDelay;
 import org.firstinspires.ftc.teamcode.subsystems.vision.SpikeMark;
 import org.firstinspires.ftc.teamcode.subsystems.vision.TFObjectPropDetect;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
@@ -185,8 +185,9 @@ public class Production_Auton extends LinearOpMode {
         AllianceColor allianceColor = selectionMenu.getAllianceColor();
         FieldStartPosition fieldStartPosition = selectionMenu.getFieldStartPosition();
         FieldParkPosition fieldParkPosition = selectionMenu.getFieldParkPosition();
-        ScoreStrategy scoreStrategy = selectionMenu.getScoreStrategy();
         double startDelay = selectionMenu.getStartDelay();
+
+
 
         switch(allianceColor){
             case RED:
@@ -218,7 +219,9 @@ public class Production_Auton extends LinearOpMode {
 
         waitForStart();
         if (opModeIsActive()){
+
             runtime.reset();
+
             while (opModeIsActive() && runtime.seconds() < startDelay){
                 telemetry.clear();
                 telemetry.addData("Status", "Delaying for " + startDelay + " seconds...");
@@ -256,32 +259,27 @@ public class Production_Auton extends LinearOpMode {
             Pose2d apronSafePos = trajectoryConfig.getApronSafePose(allianceColor);
             Pose2d apronTrussPos = trajectoryConfig.getApronTrussPose(allianceColor);
 
+
             TrajectorySequence spikeMarkTraj;
-            TrajectorySequence apronSafeTraj;
             TrajectorySequence boardTraj;
             TrajectorySequence parkTraj;
 
             if (stagePosition == StagePosition.APRON){
 
                 spikeMarkTraj = drive.trajectorySequenceBuilder(initialMove.end())
-                        .lineToLinearHeading(spikeMarkPos)
+                        .lineToLinearHeading(spikeMarkPos) // line to spike mark
                         .build();
 
-                apronSafeTraj = drive.trajectorySequenceBuilder(spikeMarkTraj.end())
+
+                boardTraj = drive.trajectorySequenceBuilder(spikeMarkTraj.end())
                         .lineToLinearHeading(apronSafePos) // get in position to go under truss
                         .lineToConstantHeading(new Vector2d(apronTrussPos.getX(), apronTrussPos.getY())) // go under truss
-                        .build();
-
-                boardTraj = drive.trajectorySequenceBuilder(apronSafeTraj.end())
                         .splineToConstantHeading(new Vector2d(boardPos.getX(), boardPos.getY()), Math.toRadians(0)) // get to board
                         .build();
 
                 parkTraj = drive.trajectorySequenceBuilder(boardTraj.end())
-                        .lineToLinearHeading(commonPos) // TODO: this probably should be removed at this point
                         .splineToLinearHeading(parkPos, Math.toRadians(0))
                         .build();
-
-
 
             } else {
 
@@ -289,41 +287,26 @@ public class Production_Auton extends LinearOpMode {
                         .splineToLinearHeading(spikeMarkPos, Math.toRadians(180))
                         .build();
 
-                apronSafeTraj = null;
-
                 boardTraj = drive.trajectorySequenceBuilder(spikeMarkTraj.end())
                         .lineToLinearHeading(boardPos)
                         .build();
 
+
                 parkTraj = drive.trajectorySequenceBuilder(boardTraj.end())
-//                        .splineToLinearHeading(parkPos, Math.toRadians(180))
                         .lineToLinearHeading(parkPos)
                         .build();
 
             }
 
-            if (scoreStrategy == ScoreStrategy.NO_SCORE){
-                drive.followTrajectorySequence(spikeMarkTraj);
-                picker.auton_place_spike(Picker.PickerState.AUTON, 1.5, runtime);
-                picker.auton_place_spike(Picker.PickerState.HOLD, 0.1, runtime);
-                if (stagePosition == StagePosition.APRON){
-                    drive.followTrajectorySequence(apronSafeTraj);
-                }
-                drive.followTrajectorySequence(parkTraj);
-            } else {
-                drive.followTrajectorySequence(spikeMarkTraj);
-                picker.auton_place_spike(Picker.PickerState.AUTON, 1.5, runtime);
-                picker.auton_place_spike(Picker.PickerState.HOLD, 0.1, runtime);
-                placer.auton_deploy_elevator(Placer.PlacerState.STOW, 0.2, runtime);
-                if (stagePosition == StagePosition.APRON){
-                    drive.followTrajectorySequence(apronSafeTraj);
-                }
-                drive.followTrajectorySequence(boardTraj);
-                placer.auton_deploy_elevator(Placer.PlacerState.DEPLOY, 2, runtime);
-                placer.auton_deploy_elevator(Placer.PlacerState.PLACE_SECOND, 0.2, runtime);
-                placer.auton_deploy_elevator(Placer.PlacerState.READY_TO_INTAKE, 1, runtime);
-                drive.followTrajectorySequence(parkTraj);
-            }
+            drive.followTrajectorySequence(spikeMarkTraj);
+            picker.auton_place_spike(Picker.PickerState.AUTON, 1.5, runtime);
+            picker.auton_place_spike(Picker.PickerState.HOLD, 0.1, runtime);
+            placer.auton_deploy_elevator(Placer.PlacerState.STOW, 0.2, runtime);
+            drive.followTrajectorySequence(boardTraj);
+            placer.auton_deploy_elevator(Placer.PlacerState.DEPLOY, 2, runtime);
+            placer.auton_deploy_elevator(Placer.PlacerState.PLACE_SECOND, 0.2, runtime);
+            placer.auton_deploy_elevator(Placer.PlacerState.READY_TO_INTAKE, 1, runtime);
+            drive.followTrajectorySequence(parkTraj);
         }
         visionPortal.close();
 

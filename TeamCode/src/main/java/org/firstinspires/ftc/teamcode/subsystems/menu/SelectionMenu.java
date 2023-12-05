@@ -13,7 +13,7 @@ public class SelectionMenu {
         FIELD_START_POSITION,
         FIELD_PARK_POSITION,
         START_DELAY,
-        SCORE_STRATEGY,
+//        SCORE_STRATEGY,
         CONFIRMATION,
         READY
     }
@@ -40,10 +40,10 @@ public class SelectionMenu {
         FIVE_SECOND
     }
 
-    public enum ScoreStrategy {
-        SCORE,
-        NO_SCORE
-    }
+//    public enum ScoreStrategy {
+//        SCORE,
+//        NO_SCORE
+//    }
 
     Telemetry telemetry;
     private LinearOpMode opMode;
@@ -52,7 +52,7 @@ public class SelectionMenu {
     private FieldStartPosition fieldStartPosition = FieldStartPosition.LEFT;
     private FieldParkPosition fieldParkPosition = FieldParkPosition.ON_BACKDROP;
     private StartDelay startDelay = StartDelay.NO_DELAY;
-    private ScoreStrategy scoreStrategy = ScoreStrategy.SCORE;
+//    private ScoreStrategy scoreStrategy = ScoreStrategy.SCORE;
     private int currentOptionIndex = 0; // Index of the currently selected option
     private ElapsedTime debounceTimer = new ElapsedTime();
 
@@ -80,7 +80,7 @@ public class SelectionMenu {
                 displayOption("2. Select Field Start Position", 1);
                 displayOption("3. Select Field Park Position", 2);
                 displayOption("4. Select Start Delay", 3);
-                displayOption("5. Select Score Strategy", 4);
+//                displayOption("5. Select Score Strategy", 4);
                 telemetry.addLine("Use DPAD UP/DOWN to navigate and Press 'A' to select");
                 break;
 
@@ -115,11 +115,12 @@ public class SelectionMenu {
                 telemetry.addLine("Press 'A' to select or 'B' to go back.");
                 break;
 
-            case SCORE_STRATEGY:
-                telemetry.addLine("Select Auton Strategy");
-                displayOption("1. Score Yellow Pixel", 0);
-                displayOption("2. Do NOT score Yellow Pixel", 1);
-                telemetry.addLine("Press 'A' to select or 'B' to go back.");
+//            case SCORE_STRATEGY:
+//                telemetry.addLine("Select Auton Strategy");
+//                displayOption("1. Score Yellow Pixel", 0);
+//                displayOption("2. Do NOT score Yellow Pixel", 1);
+//                telemetry.addLine("Press 'A' to select or 'B' to go back.");
+//                break;
 
             case CONFIRMATION:
                 telemetry.addLine("Confirm Selection:");
@@ -127,7 +128,7 @@ public class SelectionMenu {
                 telemetry.addLine("Field Start Position: " + fieldStartPosition.toString());
                 telemetry.addLine("Field Park Position: " + fieldParkPosition.toString());
                 telemetry.addLine("Start Delay: " + startDelay.toString());
-                telemetry.addLine("Score Strategy: " + scoreStrategy.toString());
+//                telemetry.addLine("Score Strategy: " + scoreStrategy.toString());
                 telemetry.addLine("Press 'A' to confirm or 'B' to go back.");
                 break;
 
@@ -206,6 +207,7 @@ public class SelectionMenu {
                 }
                 setMenuState(MenuState.FIELD_PARK_POSITION);
                 break;
+
             case FIELD_PARK_POSITION:
                 if (currentOptionIndex == 0){
                     fieldParkPosition = FieldParkPosition.NEAR_WALL;
@@ -214,18 +216,21 @@ public class SelectionMenu {
                 } else if (currentOptionIndex == 2){
                     fieldParkPosition = FieldParkPosition.NEAR_CENTER;
                 }
-                setMenuState(MenuState.SCORE_STRATEGY);
-                break;
-            case SCORE_STRATEGY:
-                if (currentOptionIndex == 0){
-                    scoreStrategy = ScoreStrategy.SCORE;
-                } else if (currentOptionIndex == 1){
-                    scoreStrategy = ScoreStrategy.NO_SCORE;
-                }
                 setMenuState(MenuState.CONFIRMATION);
+                break;
+
+//            case SCORE_STRATEGY:
+//                if (currentOptionIndex == 0){
+//                    scoreStrategy = ScoreStrategy.SCORE;
+//                } else if (currentOptionIndex == 1){
+//                    scoreStrategy = ScoreStrategy.NO_SCORE;
+//                }
+//                setMenuState(MenuState.CONFIRMATION);
+
             case CONFIRMATION:
                 setMenuState(MenuState.READY);
                 break;
+
             default:
                 telemetry.addLine("" + currentMenu);
                 break;
@@ -251,11 +256,11 @@ public class SelectionMenu {
             case FIELD_PARK_POSITION:
                 setMenuState(MenuState.FIELD_START_POSITION);
                 break;
-            case SCORE_STRATEGY:
-                setMenuState(MenuState.FIELD_PARK_POSITION);
+//            case SCORE_STRATEGY:
+//                setMenuState(MenuState.FIELD_PARK_POSITION);
             case CONFIRMATION:
                 if (currentOptionIndex == 0) {
-                    setMenuState(MenuState.SCORE_STRATEGY);
+                    setMenuState(MenuState.FIELD_PARK_POSITION);
                 }
                 break;
         }
@@ -288,9 +293,9 @@ public class SelectionMenu {
         return fieldParkPosition;
     }
 
-    public ScoreStrategy getScoreStrategy() {
-        return scoreStrategy;
-    }
+//    public ScoreStrategy getScoreStrategy() {
+//        return scoreStrategy;
+//    }
 
     public double getStartDelay() {
         switch (startDelay){

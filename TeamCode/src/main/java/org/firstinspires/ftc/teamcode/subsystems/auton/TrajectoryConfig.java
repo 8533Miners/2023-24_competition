@@ -1,13 +1,11 @@
 package org.firstinspires.ftc.teamcode.subsystems.auton;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.opmode.Production_Auton.StagePosition;
-import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu.FieldStartPosition;
 import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu.FieldParkPosition;
 import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu.AllianceColor;
+import org.firstinspires.ftc.teamcode.opmode.Production_Auton.StagePosition;
 import org.firstinspires.ftc.teamcode.subsystems.vision.SpikeMark;
 
 /**
