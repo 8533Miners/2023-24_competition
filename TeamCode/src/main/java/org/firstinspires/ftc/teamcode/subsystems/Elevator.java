@@ -76,6 +76,8 @@ public class Elevator {
 
         //Only home if we are trying to go to home
         if(target_position == 0 && elevator_limit.isPressed()) {
+            elevator_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            elevator_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             is_homed = true;
         }
 

@@ -315,6 +315,9 @@ public class Production_Auton extends LinearOpMode {
                 picker.auton_place_spike(Picker.PickerState.AUTON, 1.5, runtime);
                 picker.auton_place_spike(Picker.PickerState.HOLD, 0.1, runtime);
                 placer.auton_deploy_elevator(Placer.PlacerState.STOW, 0.2, runtime);
+                if (stagePosition == StagePosition.APRON){
+                    drive.followTrajectorySequence(apronSafeTraj);
+                }
                 drive.followTrajectorySequence(boardTraj);
                 placer.auton_deploy_elevator(Placer.PlacerState.DEPLOY, 2, runtime);
                 placer.auton_deploy_elevator(Placer.PlacerState.PLACE_SECOND, 0.2, runtime);
