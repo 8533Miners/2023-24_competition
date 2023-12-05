@@ -79,13 +79,10 @@ public class Elevator {
             is_homed = true;
         }
 
-//        //Did we reach 0, but not press the homing button?
-//        if(target_position == 0 && elevator_motor.getCurrentPosition() <= 0 && !is_homed) {
-//            //Yes, continue moving down
-//            elevator_motor.setPower(-0.05);
-        if(pidf_controller.getTargetPosition() == 0 && //Note 0 here means ELEVATOR_STOWED position
-                elevator_motor.getCurrentPosition() < 60) {
-            elevator_motor.setPower(0.0);
+        //Did we reach 0, but not press the homing button?
+        if(target_position == 0 && elevator_motor.getCurrentPosition() <= 0 && !is_homed) {
+            //Yes, continue moving down
+            elevator_motor.setPower(-0.05);
         } else {
             //No, normal motor control using pidf controller
             elevator_motor.setPower(pidf_controller.update(elevator_motor.getCurrentPosition()));

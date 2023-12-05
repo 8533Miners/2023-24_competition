@@ -23,7 +23,7 @@ public class Picker {
     public Picker(HardwareMap hardwareMap) {
         left_motor = hardwareMap.get(DcMotorEx.class, "picker_left");
         right_motor = hardwareMap.get(DcMotorEx.class, "picker_right");
-        distance_sensor = hardwareMap.get(Rev2mDistanceSensor.class, "distance");
+//        distance_sensor = hardwareMap.get(Rev2mDistanceSensor.class, "distance");
         left_motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         right_motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         left_motor.setMotorEnable();
@@ -50,7 +50,7 @@ public class Picker {
     }
 
     public void log(Telemetry tele){
-        tele.addData("Distance sensor", distance_sensor.getDistance(DistanceUnit.MM));
+//        tele.addData("Distance sensor", distance_sensor.getDistance(DistanceUnit.MM));
     }
 
     public void auton_place_spike(PickerState desired_state, double time, ElapsedTime runtime) {
