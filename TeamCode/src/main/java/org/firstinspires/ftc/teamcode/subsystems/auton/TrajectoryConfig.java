@@ -77,7 +77,7 @@ public class TrajectoryConfig {
                     pose_X = (allianceColor == AllianceColor.RED) ? -45 : -29;
                     pose_H = (allianceColor == AllianceColor.RED) ? 90 : 305;
                 } else {
-                    pose_X = (allianceColor == AllianceColor.RED) ? 4 : 28;
+                    pose_X = (allianceColor == AllianceColor.RED) ? 6.5 : 28;
                 }
                 break;
             case RIGHT:
@@ -85,7 +85,7 @@ public class TrajectoryConfig {
                     pose_X = (allianceColor == AllianceColor.RED) ? -29 : -45;
                     pose_H = (allianceColor == AllianceColor.RED) ? 55 : 270;
                 } else {
-                    pose_X = (allianceColor == AllianceColor.RED) ? 28 : 4;
+                    pose_X = (allianceColor == AllianceColor.RED) ? 28 : 6.5;
                 }
                 break;
             case CENTER:
@@ -118,12 +118,17 @@ public class TrajectoryConfig {
         double pose_Y;
         double pose_H;
 
+        double fudge_factor = (allianceColor == AllianceColor.RED) ? -8 : 1.5;
+
+        fudge_factor = (stagePosition != StagePosition.APRON) ? 0 : fudge_factor;
         pose_X = 53.5;
         pose_Y = (allianceColor == AllianceColor.RED) ? -35 : 35;
         pose_H = 180;
 
+
+
         if (stagePosition == StagePosition.APRON) {
-            pose_X = 55.5;
+            pose_X = 56.5;
         }
 
         if (detectedSpikeMark == SpikeMark.RIGHT) {
@@ -132,7 +137,7 @@ public class TrajectoryConfig {
             pose_Y = (allianceColor == AllianceColor.RED) ? -28: 42;
         }
 
-        return new Pose2d(pose_X, pose_Y, Math.toRadians(pose_H));
+        return new Pose2d(pose_X, pose_Y + fudge_factor, Math.toRadians(pose_H));
     }
     public Pose2d getParkPose(FieldParkPosition parkPosition, AllianceColor allianceColor){
         double pose_X;
