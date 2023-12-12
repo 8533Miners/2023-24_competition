@@ -29,7 +29,7 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
 
-@Disabled
+
 @Autonomous(name = "Competition Auton", group = "Auton")
 public class Production_Auton extends LinearOpMode {
 
@@ -344,7 +344,7 @@ public class Production_Auton extends LinearOpMode {
 
         visionPortal = builder.build();
 
-        tfod.setMinResultConfidence(0.60f);
+        tfod.setMinResultConfidence(0.50f);
     }
 
     private void telemetryTfod() {

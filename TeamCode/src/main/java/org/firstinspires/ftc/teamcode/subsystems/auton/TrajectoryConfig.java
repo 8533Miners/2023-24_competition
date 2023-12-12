@@ -118,7 +118,7 @@ public class TrajectoryConfig {
         double pose_Y;
         double pose_H;
 
-        double fudge_factor = (allianceColor == AllianceColor.RED) ? -8 : 1.5;
+        double fudge_factor = (allianceColor == AllianceColor.RED) ? -9.5 : 1.5;
 
         fudge_factor = (stagePosition != StagePosition.APRON) ? 0 : fudge_factor;
         pose_X = 53.5;
