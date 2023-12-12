@@ -5,6 +5,7 @@ import android.util.Size;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -19,6 +20,7 @@ import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu.AllianceColo
 import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu.FieldParkPosition;
 import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu.FieldStartPosition;
 import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu.MenuState;
+import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu.StartDelay;
 import org.firstinspires.ftc.teamcode.subsystems.vision.SpikeMark;
 import org.firstinspires.ftc.teamcode.subsystems.vision.TFObjectPropDetect;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
@@ -26,6 +28,7 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
+
 
 @Autonomous(name = "Competition Auton", group = "Auton")
 public class Production_Auton extends LinearOpMode {
@@ -146,16 +149,12 @@ public class Production_Auton extends LinearOpMode {
     public boolean propDetected = false;
     SelectionMenu selectionMenu = new SelectionMenu(this,telemetry);
     boolean invertedDetection = false; // invert detections based on starting position
-    boolean invertedPosition = false; // separate bool to invert
     StagePosition stagePosition = StagePosition.BACKSTAGE;
     Picker picker;
     Placer placer;
 
     public void runOpMode() throws InterruptedException{
 
-        /**
-         * Setup Menu and get the selections
-         */
         telemetry.setAutoClear(false);
         while(!isStarted()) {
             selectionMenu.displayMenu();
@@ -176,31 +175,24 @@ public class Production_Auton extends LinearOpMode {
         selectionMenu.setMenuState(MenuState.READY);
         selectionMenu.displayMenu();
 
-        // Set variables for selection menu input
-        AllianceColor allianceColor = selectionMenu.getAllianceColor();
-        FieldStartPosition fieldStartPosition = selectionMenu.getFieldStartPosition();
-        FieldParkPosition fieldParkPosition = selectionMenu.getFieldParkPosition();
-
-        /**
-         * Setup TFOD
-         */
         initTfod();
         tfObjectPropDetect = new TFObjectPropDetect(tfod, CAMERA_WIDTH, labelToDetect);
 
-        /**
-         * Setup Hardware
-         */
         picker = new Picker(hardwareMap);
         placer = new Placer(hardwareMap);
+
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         TrajectoryConfig trajectoryConfig = new TrajectoryConfig(drive);
 
-        /**
-         * Inversion and Stage Position Config based on menu
-         */
+        AllianceColor allianceColor = selectionMenu.getAllianceColor();
+        FieldStartPosition fieldStartPosition = selectionMenu.getFieldStartPosition();
+        FieldParkPosition fieldParkPosition = selectionMenu.getFieldParkPosition();
+        double startDelay = selectionMenu.getStartDelay();
+
+
+
         switch(allianceColor){
             case RED:
-                invertedPosition = true;
                 if(fieldStartPosition == FieldStartPosition.RIGHT) {
                     invertedDetection = true; // F4 RIGHT detect == A4 LEFT detect
                 } else {
@@ -216,11 +208,8 @@ public class Production_Auton extends LinearOpMode {
                 break;
         }
 
-        /**
-         * Setup initial pose and move sequence for detection position
-         */
-        Pose2d startPose = trajectoryConfig.getStartPose(invertedPosition, stagePosition);
-        Pose2d initialMovePos = trajectoryConfig.getInitialMovePose(invertedPosition, stagePosition);
+        Pose2d startPose = trajectoryConfig.getStartPose(allianceColor, stagePosition);
+        Pose2d initialMovePos = trajectoryConfig.getInitialMovePose(allianceColor, stagePosition);
 
         TrajectorySequence initialMove = drive.trajectorySequenceBuilder(startPose)
                 .strafeTo(new Vector2d(initialMovePos.getX(), initialMovePos.getY()))
@@ -230,26 +219,25 @@ public class Production_Auton extends LinearOpMode {
 
         SpikeMark location = null;
 
-        /**
-         * Setup and run the trajectories based on selections
-         * 1. Do the initial move for detection
-         * 2. Detect the spike mark with the prop (or assume closest to truss)
-         * 3. Create the pose locations based on prop location
-         * 4. Build the trajectory sequences based on pose locations
-         * 5. Build and run the full trajectory we build out
-         */
         waitForStart();
         if (opModeIsActive()){
 
-            // 1. Do initial move
+            runtime.reset();
+
+            while (opModeIsActive() && runtime.seconds() < startDelay){
+                telemetry.clear();
+                telemetry.addData("Status", "Delaying for " + startDelay + " seconds...");
+                telemetry.addData("Run time", "Seconds - " + runtime.seconds());
+                telemetry.update();
+            }
+
             drive.followTrajectorySequence(initialMove);
 
             runtime.reset();
+
             while (opModeIsActive() & !propDetected & runtime.seconds() < 3) {
                 telemetryTfod();
 
-
-                // 2. Detect the spike mark with the prop (or assume closest to truss)
                 location = tfObjectPropDetect.getSpikeMark(invertedDetection);
                 telemetry.addData("Spike Mark Location", location.toString());
                 telemetry.update();
@@ -266,34 +254,30 @@ public class Production_Auton extends LinearOpMode {
 
             }
 
-            // 3. Create the pose locations based on prop location
-            Pose2d spikeMarkPos = trajectoryConfig.getSpikeMarkPose(location, invertedPosition, stagePosition);
-            Pose2d commonPos = trajectoryConfig.getCommonMarkPose(invertedPosition);
-            Pose2d boardPos = trajectoryConfig.getBoardPose(location, invertedPosition, stagePosition);
-            Pose2d parkPos = trajectoryConfig.getParkPose(fieldParkPosition, invertedPosition);
-            Pose2d apronSafePos = trajectoryConfig.getApronSafePose(invertedPosition);
-            Pose2d apronTrussPos = trajectoryConfig.getApronTrussPose(invertedPosition);
+            Pose2d spikeMarkPos = trajectoryConfig.getSpikeMarkPose(location, allianceColor, stagePosition);
+            Pose2d commonPos = trajectoryConfig.getCommonMarkPose(allianceColor);
+            Pose2d boardPos = trajectoryConfig.getBoardPose(location, allianceColor, stagePosition);
+            Pose2d parkPos = trajectoryConfig.getParkPose(fieldParkPosition, allianceColor);
+            Pose2d apronSafePos = trajectoryConfig.getApronSafePose(allianceColor);
+            Pose2d apronTrussPos = trajectoryConfig.getApronTrussPose(allianceColor);
+
 
             TrajectorySequence spikeMarkTraj;
             TrajectorySequence boardTraj;
             TrajectorySequence parkTraj;
 
-            // 4. Build the trajectory sequences based on pose locations
             if (stagePosition == StagePosition.APRON){
 
                 spikeMarkTraj = drive.trajectorySequenceBuilder(initialMove.end())
                         .lineToLinearHeading(spikeMarkPos) // line to spike mark
                         .build();
 
-                // purple pixel
 
                 boardTraj = drive.trajectorySequenceBuilder(spikeMarkTraj.end())
                         .lineToLinearHeading(apronSafePos) // get in position to go under truss
                         .lineToConstantHeading(new Vector2d(apronTrussPos.getX(), apronTrussPos.getY())) // go under truss
                         .splineToConstantHeading(new Vector2d(boardPos.getX(), boardPos.getY()), Math.toRadians(0)) // get to board
                         .build();
-
-                // yellow pixel
 
                 parkTraj = drive.trajectorySequenceBuilder(boardTraj.end())
                         .lineToLinearHeading(commonPos)
@@ -306,22 +290,17 @@ public class Production_Auton extends LinearOpMode {
                         .splineToLinearHeading(spikeMarkPos, Math.toRadians(180))
                         .build();
 
-                // purple pixel
-
                 boardTraj = drive.trajectorySequenceBuilder(spikeMarkTraj.end())
                         .lineToLinearHeading(boardPos)
                         .build();
 
-                // score yellow
 
                 parkTraj = drive.trajectorySequenceBuilder(boardTraj.end())
-//                        .splineToLinearHeading(parkPos, Math.toRadians(180))
                         .lineToLinearHeading(parkPos)
                         .build();
 
             }
 
-            // Build and run the full trajectory we build out
             drive.followTrajectorySequence(spikeMarkTraj);
             picker.auton_place_spike(Picker.PickerState.AUTON, 1.5, runtime);
             picker.auton_place_spike(Picker.PickerState.HOLD, 0.1, runtime);
@@ -365,7 +344,7 @@ public class Production_Auton extends LinearOpMode {
 
         visionPortal = builder.build();
 
-        tfod.setMinResultConfidence(0.60f);
+        tfod.setMinResultConfidence(0.50f);
     }
 
     private void telemetryTfod() {
@@ -392,25 +371,5 @@ public class Production_Auton extends LinearOpMode {
             telemetry.addData("- Position", "%.0f / %.0f", x, y);
             telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
         }   // end for() loop
-    }
-
-    /**
-     * TODO: Function to abstract setting initial move for TFOD
-     * @param startingGrid
-     * @return
-     */
-    public TrajectorySequence setInitialMove(String startingGrid) {
-        return null;
-    }
-
-    /**
-     * Print the menu selection
-     */
-    private void printMenuSelections() {
-        telemetry.clear();
-        telemetry.addLine("Alliance Color: " + selectionMenu.getAllianceColor());
-        telemetry.addLine("Start Position: " + selectionMenu.getFieldStartPosition());
-        telemetry.addLine("Park Position: " + selectionMenu.getFieldParkPosition());
-        telemetry.update();
     }
 }

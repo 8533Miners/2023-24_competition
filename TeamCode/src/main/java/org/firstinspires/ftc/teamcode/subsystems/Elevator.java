@@ -76,16 +76,15 @@ public class Elevator {
 
         //Only home if we are trying to go to home
         if(target_position == 0 && elevator_limit.isPressed()) {
+            elevator_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            elevator_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             is_homed = true;
         }
 
-//        //Did we reach 0, but not press the homing button?
-//        if(target_position == 0 && elevator_motor.getCurrentPosition() <= 0 && !is_homed) {
-//            //Yes, continue moving down
-//            elevator_motor.setPower(-0.05);
-        if(pidf_controller.getTargetPosition() == 0 && //Note 0 here means ELEVATOR_STOWED position
-                elevator_motor.getCurrentPosition() < 60) {
-            elevator_motor.setPower(0.0);
+        //Did we reach 0, but not press the homing button?
+        if(target_position == 0 && elevator_motor.getCurrentPosition() <= 0 && !is_homed) {
+            //Yes, continue moving down
+            elevator_motor.setPower(-0.25);
         } else {
             //No, normal motor control using pidf controller
             elevator_motor.setPower(pidf_controller.update(elevator_motor.getCurrentPosition()));

@@ -1,14 +1,17 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.Encoder;
 @Disabled
+@TeleOp(group = "drive")
 public class Testing_outputEncoderValues extends LinearOpMode {
     private Encoder leftEncoder, rightEncoder, frontEncoder;
 
@@ -18,9 +21,15 @@ public class Testing_outputEncoderValues extends LinearOpMode {
 
         drive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        leftEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "leftFront"));
-        rightEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "rightFront"));
-        frontEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "leftRear"));
+        leftEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "front_left"));
+        rightEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "front_right"));
+        frontEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "back_left"));
+
+        rightEncoder.setDirection(Encoder.Direction.REVERSE);
+        leftEncoder.setDirection(Encoder.Direction.REVERSE);
+
+        waitForStart();
+
 
         while (opModeIsActive() && !isStopRequested()) {
             drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);

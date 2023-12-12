@@ -23,16 +23,18 @@ public class TFObjectPropDetect {
 
     public SpikeMark getSpikeMark(boolean invertDetect) {
         List<Recognition> currentRecognitions = TFOD.getRecognitions();
+        boolean cupDetected = false;
 
         for (Recognition recognition : currentRecognitions) {
-            if (recognition.getConfidence() > highestConf){
+            if (recognition.getConfidence() > highestConf && recognition.getLabel() == LABEL){
                 highestConf = recognition.getConfidence();
+                cupDetected = true;
 
                 x = (recognition.getLeft() + recognition.getRight()) / 2 ;
             }
         }
 
-        if (currentRecognitions.size() >= 1) {
+        if (currentRecognitions.size() >= 1 && cupDetected) {
             if (invertDetect) {
                 spikeMark = (x >= CAMERA_WIDTH / 2) ? SpikeMark.RIGHT : SpikeMark.CENTER;
             } else {

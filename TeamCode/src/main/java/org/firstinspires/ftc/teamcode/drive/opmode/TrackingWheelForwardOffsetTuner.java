@@ -92,11 +92,13 @@ public class TrackingWheelForwardOffsetTuner extends LinearOpMode {
             sleep(DELAY);
         }
 
+        Pose2d poseEstimate = drive.getPoseEstimate();
         telemetry.clearAll();
         telemetry.addLine("Tuning complete");
         telemetry.addLine(Misc.formatInvariant("Effective forward offset = %.2f (SE = %.3f)",
                 forwardOffsetStats.getMean(),
                 forwardOffsetStats.getStandardDeviation() / Math.sqrt(NUM_TRIALS)));
+        telemetry.addData("final heading", poseEstimate.getHeading());
         telemetry.update();
 
         while (!isStopRequested()) {
