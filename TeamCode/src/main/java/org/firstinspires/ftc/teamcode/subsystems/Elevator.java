@@ -50,7 +50,14 @@ public class Elevator {
                 new PIDCoefficients(
                         0.01,
                         0.0,
-                        0.0)
+                        0.0),
+                0.0,
+                0.0,
+                0.0,
+                //anonymous function takes raw values and calculates additive term in output units (+/-%FS)
+                //TODO we need to measure %FS applied when in steady state during deployed state
+                //Make sure to test at different positions to see if there is any sensitivity
+                (measuredPosition, measuredVelocity) -> {return 0.0;}
         );
 
         pidf_controller.setOutputBounds(-1.0,1.0);
@@ -98,8 +105,8 @@ public class Elevator {
                 elevator_motor.getCurrent(CurrentUnit.AMPS));
         tele.addData("Elevator current target position",
                 pidf_controller.getTargetPosition());
-        tele.addData("Elevator is_homed",is_homed);
-        tele.addData("Homing button isPressed()", elevator_limit.isPressed());
+        tele.addData("Elevator motor power (+/-%FS)",
+                elevator_motor.getPower());
     }
 
 }
