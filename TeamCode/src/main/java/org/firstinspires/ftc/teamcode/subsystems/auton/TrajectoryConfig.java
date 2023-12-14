@@ -174,7 +174,7 @@ public class TrajectoryConfig {
         return new Pose2d(pose_X, pose_Y, Math.toRadians(pose_H));
     }
 
-    public Pose2d getApronSafePoseAlt(AllianceColor allianceColor){
+    public Pose2d getApronAltPose(AllianceColor allianceColor){
         double pose_X;
         double pose_Y;
         double pose_H;

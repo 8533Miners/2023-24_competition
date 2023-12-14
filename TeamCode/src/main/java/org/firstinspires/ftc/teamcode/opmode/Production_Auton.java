@@ -258,18 +258,15 @@ public class Production_Auton extends LinearOpMode {
             Pose2d commonPos = trajectoryConfig.getCommonMarkPose(allianceColor);
             Pose2d boardPos = trajectoryConfig.getBoardPose(location, allianceColor, stagePosition);
             Pose2d parkPos = trajectoryConfig.getParkPose(fieldParkPosition, allianceColor);
-            Pose2d apronSafePos;
+            Pose2d apronSafePos = trajectoryConfig.getApronSafePose(allianceColor);
+            Pose2d apronAltPos = trajectoryConfig.getApronAltPose(allianceColor);
             Pose2d apronTrussPos;
 
             if(altPath==AltPath.ALT_PATH) {
-                apronSafePos = trajectoryConfig.getApronSafePoseAlt(allianceColor);
                 apronTrussPos = trajectoryConfig.getApronTrussPoseAlt(allianceColor);
             } else {
-                apronSafePos = trajectoryConfig.getApronSafePose(allianceColor);
                 apronTrussPos = trajectoryConfig.getApronTrussPose(allianceColor);
             }
-
-
 
             TrajectorySequence spikeMarkTraj;
             TrajectorySequence boardTraj;
@@ -281,12 +278,20 @@ public class Production_Auton extends LinearOpMode {
                         .lineToLinearHeading(spikeMarkPos) // line to spike mark
                         .build();
 
-
-                boardTraj = drive.trajectorySequenceBuilder(spikeMarkTraj.end())
-                        .lineToLinearHeading(apronSafePos) // get in position to go under truss
-                        .lineToConstantHeading(new Vector2d(apronTrussPos.getX(), apronTrussPos.getY())) // go under truss
-                        .splineToConstantHeading(new Vector2d(boardPos.getX(), boardPos.getY()), Math.toRadians(0)) // get to board
-                        .build();
+                if(altPath==AltPath.ALT_PATH){
+                    boardTraj = drive.trajectorySequenceBuilder(spikeMarkTraj.end())
+                            .lineToLinearHeading(apronSafePos) // get in position to clear the purple pixels
+                            .lineToLinearHeading(apronAltPos) // move to position to go under truss
+                            .lineToConstantHeading(new Vector2d(apronTrussPos.getX(), apronTrussPos.getY())) // go under truss
+                            .splineToConstantHeading(new Vector2d(boardPos.getX(), boardPos.getY()), Math.toRadians(0)) // get to board
+                            .build();
+                } else {
+                    boardTraj = drive.trajectorySequenceBuilder(spikeMarkTraj.end())
+                            .lineToLinearHeading(apronSafePos) // get in position to go under truss
+                            .lineToConstantHeading(new Vector2d(apronTrussPos.getX(), apronTrussPos.getY())) // go under truss
+                            .splineToConstantHeading(new Vector2d(boardPos.getX(), boardPos.getY()), Math.toRadians(0)) // get to board
+                            .build();
+                }
 
                 parkTraj = drive.trajectorySequenceBuilder(boardTraj.end())
                         .lineToLinearHeading(commonPos)
