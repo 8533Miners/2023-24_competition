@@ -48,16 +48,14 @@ public class Elevator {
 
         pidf_controller = new PIDFController(
                 new PIDCoefficients(
-                        0.01,
+                        0.002,
                         0.0,
                         0.0),
                 0.0,
                 0.0,
                 0.0,
                 //anonymous function takes raw values and calculates additive term in output units (+/-%FS)
-                //TODO we need to measure %FS applied when in steady state during deployed state
-                //Make sure to test at different positions to see if there is any sensitivity
-                (measuredPosition, measuredVelocity) -> {return 0.0;}
+                (measuredPosition, measuredVelocity) -> {return 0.02;}
         );
 
         pidf_controller.setOutputBounds(-1.0,1.0);
