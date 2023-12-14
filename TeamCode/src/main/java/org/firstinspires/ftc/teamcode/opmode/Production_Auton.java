@@ -262,7 +262,7 @@ public class Production_Auton extends LinearOpMode {
             Pose2d apronAltPos = trajectoryConfig.getApronAltPose(allianceColor);
             Pose2d apronTrussPos;
 
-            if(altPath==AltPath.ALT_PATH) {
+            if(altPath == AltPath.ALT_PATH) {
                 apronTrussPos = trajectoryConfig.getApronTrussPoseAlt(allianceColor);
             } else {
                 apronTrussPos = trajectoryConfig.getApronTrussPose(allianceColor);
@@ -278,7 +278,7 @@ public class Production_Auton extends LinearOpMode {
                         .lineToLinearHeading(spikeMarkPos) // line to spike mark
                         .build();
 
-                if(altPath==AltPath.ALT_PATH){
+                if(altPath == AltPath.ALT_PATH){
                     boardTraj = drive.trajectorySequenceBuilder(spikeMarkTraj.end())
                             .lineToLinearHeading(apronSafePos) // get in position to clear the purple pixels
                             .lineToLinearHeading(apronAltPos) // move to position to go under truss

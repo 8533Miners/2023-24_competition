@@ -179,7 +179,7 @@ public class TrajectoryConfig {
         double pose_Y;
         double pose_H;
 
-        pose_X = -52;
+        pose_X = -58;
         pose_Y = (allianceColor == AllianceColor.RED) ? -10 : 10;
         pose_H = 180;
 
