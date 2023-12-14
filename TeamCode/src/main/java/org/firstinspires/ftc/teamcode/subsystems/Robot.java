@@ -68,7 +68,7 @@ public class Robot {
         boolean is_cancel_hold_command = is_optr_b;
 
         //When dpad_up is initially pressed down
-        boolean is_prepare_to_score_command = is_optr_dpad_up_cur && !is_optr_dpad_up_prev;
+        boolean is_prepare_to_score_command = !is_optr_dpad_up_cur && is_optr_dpad_up_prev;
         //When dpad_up is let go from press
         boolean is_place_level_increment_command = !is_optr_dpad_up_cur && is_optr_dpad_up_prev;
         //When dpad_down is let go from press
@@ -218,7 +218,7 @@ public class Robot {
         telemetry.addData("Placer state", new_placer_state.toString());
 
         picker.update(new_picker_state);
-        placer.update(new_placer_state);
+        placer.update(new_placer_state,false);
         drone_launcher.update(is_drone_launch_command);
         drive.update();
 

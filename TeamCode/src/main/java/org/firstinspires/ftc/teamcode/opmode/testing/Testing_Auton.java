@@ -402,15 +402,15 @@ public class Testing_Auton extends LinearOpMode {
                         // ** Same code below (clean up?)
                         .splineToLinearHeading(new Pose2d(53.5, invert * 35, Math.toRadians(180)), Math.toRadians(0))
                         .addDisplacementMarker(() -> {
-                            placer.update(Placer.PlacerState.DEPLOY);
+                            placer.update(Placer.PlacerState.DEPLOY, false);
                         })
                         .waitSeconds(1) // Wait for elevator/placer to get to position
                         .addDisplacementMarker(() -> {
-                            placer.update(Placer.PlacerState.PLACE_SECOND);
+                            placer.update(Placer.PlacerState.PLACE_SECOND, false);
                         })
                         .waitSeconds(0.5) // Wait for gripper to release
                         .addDisplacementMarker(() -> {
-                            placer.update(Placer.PlacerState.READY_TO_INTAKE);
+                            placer.update(Placer.PlacerState.READY_TO_INTAKE, false);
                         })
                         .lineTo(new Vector2d(BOARD_CENTER_X, invert * BOARD_CENTER_Y))
                         .splineToLinearHeading(new Pose2d(BOARD_CENTER_X, invert * BOARD_CENTER_Y + invert * parking_offset, Math.toRadians(180)), Math.toRadians(0))
@@ -455,15 +455,15 @@ public class Testing_Auton extends LinearOpMode {
                         // ** Same code below (clean up?)
                         .splineToLinearHeading(new Pose2d(53.5, invert * 35, Math.toRadians(180)), Math.toRadians(0))
                         .addDisplacementMarker(() -> {
-                            placer.update(Placer.PlacerState.DEPLOY);
+                            placer.update(Placer.PlacerState.DEPLOY, false);
                         })
                         .waitSeconds(1) // Wait for elevator/placer to get to position
                         .addDisplacementMarker(() -> {
-                            placer.update(Placer.PlacerState.PLACE_SECOND);
+                            placer.update(Placer.PlacerState.PLACE_SECOND, false);
                         })
                         .waitSeconds(0.5) // Wait for gripper to release
                         .addDisplacementMarker(() -> {
-                            placer.update(Placer.PlacerState.READY_TO_INTAKE);
+                            placer.update(Placer.PlacerState.READY_TO_INTAKE, false);
                         })
                         .lineTo(new Vector2d(BOARD_CENTER_X, invert * BOARD_CENTER_Y))
                         .splineToLinearHeading(new Pose2d(BOARD_CENTER_X, invert * BOARD_CENTER_Y + invert * parking_offset, Math.toRadians(180)), Math.toRadians(0))

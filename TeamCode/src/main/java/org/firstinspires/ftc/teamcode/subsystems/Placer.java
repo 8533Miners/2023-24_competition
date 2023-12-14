@@ -30,7 +30,7 @@ public class Placer {
         gripper = new Gripper(hardwareMap);
         elevator = new Elevator(hardwareMap);
     }
-    public void update(PlacerState desired_state) {
+    public void update(PlacerState desired_state, boolean is_forced_zero) {
         Gripper.GripperState new_gripper_state;
         int new_elevator_position;
         switch (desired_state) {
@@ -70,7 +70,7 @@ public class Placer {
         new_elevator_position = Math.min(new_elevator_position,MAX_SAFE);
 
         gripper.update(new_gripper_state);
-        elevator.update(new_elevator_position);
+        elevator.update(new_elevator_position,false);
     }
     public void log(Telemetry tele){
         elevator.log(tele);
@@ -78,12 +78,12 @@ public class Placer {
         tele.addData("Gripper state", gripper_state.toString());
     }
 
-    public void auton_deploy_elevator(PlacerState desired_state, double time, ElapsedTime runtime) {
+    public void auton_deploy_elevator(PlacerState desired_state, double time, ElapsedTime runtime, boolean is_force_zero) {
         //calculate target time by adding 1 second to current time
         double target_time = runtime.seconds() + time;
         //loop until target time is reached
         while(runtime.seconds() < target_time) {
-            this.update(desired_state);
+            this.update(desired_state, is_force_zero);
         }
     }
 

@@ -93,7 +93,7 @@ public class Testing_Placer extends LinearOpMode {
                     break;
                 default: desired_state = Placer.PlacerState.READY_TO_INTAKE; break;
             }
-            placer.update(desired_state);
+            placer.update(desired_state, false);
 
         }
 
