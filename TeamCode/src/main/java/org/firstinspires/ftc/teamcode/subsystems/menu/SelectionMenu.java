@@ -13,7 +13,7 @@ public class SelectionMenu {
         FIELD_START_POSITION,
         FIELD_PARK_POSITION,
         START_DELAY,
-//        SCORE_STRATEGY,
+        ALT_PATH,
         CONFIRMATION,
         READY
     }
@@ -40,6 +40,11 @@ public class SelectionMenu {
         FIVE_SECOND
     }
 
+    public enum AltPath {
+        STANDARD_PATH,
+        ALT_PATH
+    }
+
 //    public enum ScoreStrategy {
 //        SCORE,
 //        NO_SCORE
@@ -51,6 +56,7 @@ public class SelectionMenu {
     private AllianceColor allianceColor = AllianceColor.RED;
     private FieldStartPosition fieldStartPosition = FieldStartPosition.LEFT;
     private FieldParkPosition fieldParkPosition = FieldParkPosition.ON_BACKDROP;
+    private AltPath altPath = AltPath.STANDARD_PATH;
     private StartDelay startDelay = StartDelay.NO_DELAY;
 //    private ScoreStrategy scoreStrategy = ScoreStrategy.SCORE;
     private int currentOptionIndex = 0; // Index of the currently selected option
@@ -80,7 +86,7 @@ public class SelectionMenu {
                 displayOption("2. Select Field Start Position", 1);
                 displayOption("3. Select Field Park Position", 2);
                 displayOption("4. Select Start Delay", 3);
-//                displayOption("5. Select Score Strategy", 4);
+                displayOption("5. Select Alternate Path", 4);
                 telemetry.addLine("Use DPAD UP/DOWN to navigate and Press 'A' to select");
                 break;
 
@@ -115,6 +121,13 @@ public class SelectionMenu {
                 telemetry.addLine("Press 'A' to select or 'B' to go back.");
                 break;
 
+            case ALT_PATH:
+                telemetry.addLine("Enable Alternative Path?");
+                displayOption("1. No", 0);
+                displayOption("2. Yes", 1);
+                telemetry.addLine("Press 'A' to select or 'B' to go back.");
+                break;
+
 //            case SCORE_STRATEGY:
 //                telemetry.addLine("Select Auton Strategy");
 //                displayOption("1. Score Yellow Pixel", 0);
@@ -128,6 +141,7 @@ public class SelectionMenu {
                 telemetry.addLine("Field Start Position: " + fieldStartPosition.toString());
                 telemetry.addLine("Field Park Position: " + fieldParkPosition.toString());
                 telemetry.addLine("Start Delay: " + startDelay.toString());
+                telemetry.addLine("Alternative Path: " + altPath.toString());
 //                telemetry.addLine("Score Strategy: " + scoreStrategy.toString());
                 telemetry.addLine("Press 'A' to confirm or 'B' to go back.");
                 break;
@@ -216,6 +230,15 @@ public class SelectionMenu {
                 } else if (currentOptionIndex == 2){
                     fieldParkPosition = FieldParkPosition.NEAR_CENTER;
                 }
+                setMenuState(MenuState.ALT_PATH);
+                break;
+
+            case ALT_PATH:
+                if (currentOptionIndex == 0){
+                    altPath = AltPath.STANDARD_PATH;
+                } else if (currentOptionIndex == 1){
+                    altPath = AltPath.ALT_PATH;
+                }
                 setMenuState(MenuState.CONFIRMATION);
                 break;
 
@@ -256,6 +279,9 @@ public class SelectionMenu {
             case FIELD_PARK_POSITION:
                 setMenuState(MenuState.FIELD_START_POSITION);
                 break;
+            case ALT_PATH:
+                setMenuState(MenuState.ALT_PATH);
+                break;
 //            case SCORE_STRATEGY:
 //                setMenuState(MenuState.FIELD_PARK_POSITION);
             case CONFIRMATION:
@@ -278,6 +304,8 @@ public class SelectionMenu {
                 return FieldStartPosition.values().length;
             case FIELD_PARK_POSITION:
                 return FieldParkPosition.values().length;
+            case ALT_PATH:
+                return AltPath.values().length;
             default:
                 return 0;
         }
@@ -292,6 +320,7 @@ public class SelectionMenu {
     public FieldParkPosition getFieldParkPosition() {
         return fieldParkPosition;
     }
+    public AltPath getAltPath() { return altPath; }
 
 //    public ScoreStrategy getScoreStrategy() {
 //        return scoreStrategy;

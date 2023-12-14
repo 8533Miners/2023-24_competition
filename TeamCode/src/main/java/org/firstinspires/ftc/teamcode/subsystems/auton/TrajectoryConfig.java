@@ -174,6 +174,18 @@ public class TrajectoryConfig {
         return new Pose2d(pose_X, pose_Y, Math.toRadians(pose_H));
     }
 
+    public Pose2d getApronSafePoseAlt(AllianceColor allianceColor){
+        double pose_X;
+        double pose_Y;
+        double pose_H;
+
+        pose_X = -52;
+        pose_Y = (allianceColor == AllianceColor.RED) ? -10 : 10;
+        pose_H = 180;
+
+        return new Pose2d(pose_X, pose_Y, Math.toRadians(pose_H));
+    }
+
     public Pose2d getApronTrussPose(AllianceColor allianceColor){
         double pose_X;
         double pose_Y;
@@ -181,6 +193,18 @@ public class TrajectoryConfig {
 
         pose_X = 14;
         pose_Y = (allianceColor == AllianceColor.RED) ? -60 : 60;
+        pose_H = 180;
+
+        return new Pose2d(pose_X, pose_Y, Math.toRadians(pose_H));
+    }
+
+    public Pose2d getApronTrussPoseAlt(AllianceColor allianceColor){
+        double pose_X;
+        double pose_Y;
+        double pose_H;
+
+        pose_X = 14;
+        pose_Y = (allianceColor == AllianceColor.RED) ? -10 : 10;
         pose_H = 180;
 
         return new Pose2d(pose_X, pose_Y, Math.toRadians(pose_H));

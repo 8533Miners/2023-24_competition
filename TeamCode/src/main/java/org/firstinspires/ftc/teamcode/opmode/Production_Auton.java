@@ -19,6 +19,7 @@ import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu;
 import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu.AllianceColor;
 import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu.FieldParkPosition;
 import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu.FieldStartPosition;
+import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu.AltPath;
 import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu.MenuState;
 import org.firstinspires.ftc.teamcode.subsystems.menu.SelectionMenu.StartDelay;
 import org.firstinspires.ftc.teamcode.subsystems.vision.SpikeMark;
@@ -187,9 +188,8 @@ public class Production_Auton extends LinearOpMode {
         AllianceColor allianceColor = selectionMenu.getAllianceColor();
         FieldStartPosition fieldStartPosition = selectionMenu.getFieldStartPosition();
         FieldParkPosition fieldParkPosition = selectionMenu.getFieldParkPosition();
+        AltPath altPath = selectionMenu.getAltPath();
         double startDelay = selectionMenu.getStartDelay();
-
-
 
         switch(allianceColor){
             case RED:
@@ -258,8 +258,17 @@ public class Production_Auton extends LinearOpMode {
             Pose2d commonPos = trajectoryConfig.getCommonMarkPose(allianceColor);
             Pose2d boardPos = trajectoryConfig.getBoardPose(location, allianceColor, stagePosition);
             Pose2d parkPos = trajectoryConfig.getParkPose(fieldParkPosition, allianceColor);
-            Pose2d apronSafePos = trajectoryConfig.getApronSafePose(allianceColor);
-            Pose2d apronTrussPos = trajectoryConfig.getApronTrussPose(allianceColor);
+            Pose2d apronSafePos;
+            Pose2d apronTrussPos;
+
+            if(altPath==AltPath.ALT_PATH) {
+                apronSafePos = trajectoryConfig.getApronSafePoseAlt(allianceColor);
+                apronTrussPos = trajectoryConfig.getApronTrussPoseAlt(allianceColor);
+            } else {
+                apronSafePos = trajectoryConfig.getApronSafePose(allianceColor);
+                apronTrussPos = trajectoryConfig.getApronTrussPose(allianceColor);
+            }
+
 
 
             TrajectorySequence spikeMarkTraj;
@@ -314,8 +323,10 @@ public class Production_Auton extends LinearOpMode {
         visionPortal.close();
 
         // Print out detected spike mark location for debugging
-        telemetry.addData("Spike Mark Location", location.toString());
-        telemetry.update();
+        if(location!=null) {
+            telemetry.addData("Spike Mark Location", location.toString());
+            telemetry.update();
+        }
     }
 
     private void initTfod() {
