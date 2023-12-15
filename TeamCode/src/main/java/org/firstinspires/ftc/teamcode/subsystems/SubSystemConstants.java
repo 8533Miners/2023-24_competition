@@ -25,7 +25,7 @@ public class SubSystemConstants {
         // Percent of claw servo range
         OPEN(0.52),
         SCORE(0.57),
-        CLOSED(0.6);
+        CLOSED(1.0);//0.6);
         private final double clawPosition;
 
         ClawPosition(double clawPosition) {
