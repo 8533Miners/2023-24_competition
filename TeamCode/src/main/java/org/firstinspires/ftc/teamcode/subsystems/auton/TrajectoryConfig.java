@@ -56,9 +56,9 @@ public class TrajectoryConfig {
         pose_H = currentPositionStartPose.getHeading();
 
         if (stagePosition == StagePosition.APRON) {
-            pose_X = -44;
+            pose_X = -40.25;
         } else {
-            pose_X = 20;
+            pose_X = (allianceColor == AllianceColor.BLUE) ? 18.25 : 16.25;
         }
 
         return new Pose2d(pose_X, pose_Y, Math.toRadians(pose_H));
@@ -77,7 +77,7 @@ public class TrajectoryConfig {
                     pose_X = (allianceColor == AllianceColor.RED) ? -45 : -29;
                     pose_H = (allianceColor == AllianceColor.RED) ? 90 : 305;
                 } else {
-                    pose_X = (allianceColor == AllianceColor.RED) ? 6.5 : 28;
+                    pose_X = (allianceColor == AllianceColor.RED) ? 6 : 28; //6.5
                 }
                 break;
             case RIGHT:
@@ -85,7 +85,7 @@ public class TrajectoryConfig {
                     pose_X = (allianceColor == AllianceColor.RED) ? -29 : -45;
                     pose_H = (allianceColor == AllianceColor.RED) ? 55 : 270;
                 } else {
-                    pose_X = (allianceColor == AllianceColor.RED) ? 28 : 6.5;
+                    pose_X = (allianceColor == AllianceColor.RED) ? 27 : 6; //28:6.5
                 }
                 break;
             case CENTER:
@@ -126,7 +126,7 @@ public class TrajectoryConfig {
         }
 
 //        fudge_factor = (stagePosition != StagePosition.APRON) ? 0 : fudge_factor;
-        pose_X = 51.5; //53.5
+        pose_X = (allianceColor == AllianceColor.RED) ? 53.5 : 53.5; //53.5
         pose_Y = (allianceColor == AllianceColor.RED) ? -35 : 35;
         pose_H = 180;
 

@@ -235,7 +235,7 @@ public class Production_Auton extends LinearOpMode {
 
             runtime.reset();
 
-            while (opModeIsActive() & !propDetected & runtime.seconds() < 2.5) {
+            while (opModeIsActive() & !propDetected & runtime.seconds() < 3) {
                 telemetryTfod();
 
                 location = tfObjectPropDetect.getSpikeMark(invertedDetection);
