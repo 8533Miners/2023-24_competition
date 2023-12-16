@@ -117,11 +117,16 @@ public class TrajectoryConfig {
         double pose_X;
         double pose_Y;
         double pose_H;
+        double fudge_factor = 0;
 
-        double fudge_factor = (allianceColor == AllianceColor.RED) ? -9.5 : 1.5;
+        if (stagePosition == StagePosition.BACKSTAGE){
+            fudge_factor = (allianceColor == AllianceColor.RED) ? 0 : -2;
+        } else if (stagePosition == StagePosition.APRON){
+            fudge_factor = (allianceColor == AllianceColor.RED) ? -9.5 : 1.5;
+        }
 
-        fudge_factor = (stagePosition != StagePosition.APRON) ? 0 : fudge_factor;
-        pose_X = 53.5;
+//        fudge_factor = (stagePosition != StagePosition.APRON) ? 0 : fudge_factor;
+        pose_X = 51.5; //53.5
         pose_Y = (allianceColor == AllianceColor.RED) ? -35 : 35;
         pose_H = 180;
 

@@ -235,7 +235,7 @@ public class Production_Auton extends LinearOpMode {
 
             runtime.reset();
 
-            while (opModeIsActive() & !propDetected & runtime.seconds() < 3) {
+            while (opModeIsActive() & !propDetected & runtime.seconds() < 2.5) {
                 telemetryTfod();
 
                 location = tfObjectPropDetect.getSpikeMark(invertedDetection);
@@ -302,13 +302,13 @@ public class Production_Auton extends LinearOpMode {
             }
 
             drive.followTrajectorySequence(spikeMarkTraj);
-            picker.auton_place_spike(Picker.PickerState.AUTON, 1.5, runtime);
+            picker.auton_place_spike(Picker.PickerState.AUTON, 1, runtime);
             picker.auton_place_spike(Picker.PickerState.HOLD, 0.1, runtime);
             placer.auton_deploy_elevator(Placer.PlacerState.STOW, 0.2, runtime, true);
             drive.followTrajectorySequence(boardTraj);
-            placer.auton_deploy_elevator(Placer.PlacerState.DEPLOY, 2, runtime, false);
+            placer.auton_deploy_elevator(Placer.PlacerState.DEPLOY, 1.5, runtime, false);
             placer.auton_deploy_elevator(Placer.PlacerState.PLACE_SECOND, 0.2, runtime, false);
-            placer.auton_deploy_elevator(Placer.PlacerState.READY_TO_INTAKE, 1, runtime, false);
+            placer.auton_deploy_elevator(Placer.PlacerState.READY_TO_INTAKE, 0.75, runtime, false);
             drive.followTrajectorySequence(parkTraj);
         }
         visionPortal.close();
