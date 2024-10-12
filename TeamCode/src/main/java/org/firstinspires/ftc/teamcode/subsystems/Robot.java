@@ -1,15 +1,22 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 public class Robot {
+    private IMU imu;
     private Picker picker;
     private Placer placer;
     private DroneLauncher drone_launcher;
@@ -32,6 +39,18 @@ public class Robot {
         drone_launcher = new DroneLauncher(hardwareMap);
         drive = new SampleMecanumDrive(hardwareMap);
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        imu = hardwareMap.get(IMU.class, "imu");
+
+        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.LEFT;
+        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.DOWN;
+
+        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
+
+
+
+        // Now initialize the IMU with this mounting orientation
+        // Note: if you choose two conflicting directions, this initialization will cause a code exception.
+        imu.initialize(new IMU.Parameters(orientationOnRobot));
     }
     public void updateTeleOp(Gamepad driver_controller, Gamepad operator_controller, Telemetry telemetry) {
         Picker.PickerState new_picker_state;
@@ -207,15 +226,40 @@ public class Robot {
         }
 
         //Chassis drive is run independent of robot state
+
+        Pose2d poseEstimate = drive.getPoseEstimate();
+
+        YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
+
+        double headingDouble = orientation.getYaw(AngleUnit.DEGREES);
+
+
+//        drive.setWeightedDrivePower(
+//                new Pose2d(
+//                        forward,
+//                        strafe,
+//                        rotation
+//                )
+//        );
+
+        Vector2d input = new Vector2d(
+                -driver_controller.left_stick_y,
+                -driver_controller.left_stick_x
+        ).rotated(-poseEstimate.getHeading());
+
+        // Pass in the rotated input + right stick value for rotation
+        // Rotation is not part of the rotated input thus must be passed in separately
         drive.setWeightedDrivePower(
                 new Pose2d(
-                        forward,
-                        strafe,
-                        rotation
+                        input.getX(),
+                        input.getY(),
+                        -driver_controller.right_stick_x
                 )
         );
 
         telemetry.addData("Placer state", new_placer_state.toString());
+        telemetry.addData("pose estimate heading", poseEstimate.getHeading());
+        telemetry.addData("yaw value", headingDouble);
 
         picker.update(new_picker_state);
         placer.update(new_placer_state,false);
