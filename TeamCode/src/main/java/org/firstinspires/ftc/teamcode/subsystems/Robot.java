@@ -46,10 +46,6 @@ public class Robot {
 
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
 
-
-
-        // Now initialize the IMU with this mounting orientation
-        // Note: if you choose two conflicting directions, this initialization will cause a code exception.
         imu.initialize(new IMU.Parameters(orientationOnRobot));
     }
     public void updateTeleOp(Gamepad driver_controller, Gamepad operator_controller, Telemetry telemetry) {
@@ -231,8 +227,7 @@ public class Robot {
 
         YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
 
-        double headingDouble = orientation.getYaw(AngleUnit.DEGREES);
-
+//        double headingDouble = orientation.getYaw(AngleUnit.DEGREES);
 
 //        drive.setWeightedDrivePower(
 //                new Pose2d(
@@ -242,10 +237,17 @@ public class Robot {
 //                )
 //        );
 
+        // use pose estimate for heading information
+//        Vector2d input = new Vector2d(
+//                -driver_controller.left_stick_y,
+//                -driver_controller.left_stick_x
+//        ).rotated(-poseEstimate.getHeading());
+
+        // use built in IMU for heading information
         Vector2d input = new Vector2d(
                 -driver_controller.left_stick_y,
                 -driver_controller.left_stick_x
-        ).rotated(-poseEstimate.getHeading());
+        ).rotated(-orientation.getYaw(AngleUnit.RADIANS));
 
         // Pass in the rotated input + right stick value for rotation
         // Rotation is not part of the rotated input thus must be passed in separately
@@ -259,7 +261,8 @@ public class Robot {
 
         telemetry.addData("Placer state", new_placer_state.toString());
         telemetry.addData("pose estimate heading", poseEstimate.getHeading());
-        telemetry.addData("yaw value", headingDouble);
+        telemetry.addData("yaw value radians", orientation.getYaw(AngleUnit.RADIANS));
+        telemetry.addData("yaw value degrees", orientation.getYaw(AngleUnit.DEGREES));
 
         picker.update(new_picker_state);
         placer.update(new_placer_state,false);
